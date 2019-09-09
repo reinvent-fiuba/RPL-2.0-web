@@ -8,6 +8,9 @@
     "start": "webpack-dev-server --open --hot --mode development",
     "build": "webpack --mode production"
   },
+  "engines": {
+    "node": "10.16.3"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tutecano1995/RPL-2.0-web.git"
