@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./app.css";
+import * as submissionService from "../service/submissionService"
 
 class App extends React.Component {
   constructor(props) {
@@ -18,14 +19,9 @@ class App extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    fetch('http://0.0.0.0:3001/api/submit', {
-      method: 'POST',
-      body: JSON.stringify({
-        quantity: this.state.quantity
-      })
-    })
-    .then(response => response.json())
-    .then(state => this.setState(state));
+    submissionService.submit({quantity: this.state.quantity})
+      .then(response => console.log(response.json()))
+      .then(state => this.setState(state));
   };
 
   render() {
