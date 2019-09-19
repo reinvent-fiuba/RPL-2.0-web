@@ -3,11 +3,11 @@ kind: Service
 metadata:
   name: webapp
 spec:
-  type: NodePort
-  ports:
-  - nodePort: 31317
-    port: 8080
-    protocol: TCP
-    targetPort: 8080
   selector:
     app: webapp
+    tier: frontend
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 80
+  type: NodePort                # Exposes the service by opening a port on each node

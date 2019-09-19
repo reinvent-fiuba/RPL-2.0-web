@@ -20,8 +20,10 @@ class App extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     submissionService.submit({quantity: this.state.quantity})
-      .then(response => console.log(response.json()))
-      .then(state => this.setState(state));
+      .then(response => response.text())
+      .then(data => console.log(data));
+      // .then(state => this.setState(state))
+      
   };
 
   render() {
