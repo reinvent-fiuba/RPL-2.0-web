@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp
+spec:
+  selector:
+    app: webapp
+    tier: frontend
+  ports:
+  - nodePort: 30022
+    protocol: "TCP"
+    port: 80
+    targetPort: 80
+  type: NodePort                # Exposes the service by opening a port on each node

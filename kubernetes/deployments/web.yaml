@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+      tier: frontend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webapp
+        tier: frontend
+        track: stable
+    spec:
+      containers:
+      - name: webapp
+        image: rpl-2.0-web
+        imagePullPolicy: IfNotPresent
