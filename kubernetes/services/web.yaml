@@ -7,7 +7,8 @@ spec:
     app: webapp
     tier: frontend
   ports:
-  - protocol: "TCP"
+  - nodePort: 30022
+    protocol: "TCP"
     port: 80
     targetPort: 80
   type: NodePort                # Exposes the service by opening a port on each node
