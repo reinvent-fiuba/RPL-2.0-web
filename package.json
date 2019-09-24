@@ -5,7 +5,8 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server -e --open --hot --mode development --host 0.0.0.0 --port 8080 --config webpack.config.js"
+    "start": "webpack-dev-server -e --open --hot --mode development --host 0.0.0.0 --port 8080 --config webpack.config.js",
+    "build": "webpack --config webpack.config.js"
   },
   "engines": {
     "node": "10.16.3"
@@ -45,6 +46,7 @@
   },
   "dependencies": {
     "dot-env": "0.0.1",
+    "dotenv-webpack": "^1.7.0",
     "webpack-dotenv-plugin": "^2.1.0"
   }
 }
