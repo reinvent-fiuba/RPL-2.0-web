@@ -30,6 +30,7 @@
     "css-loader": "^3.2.0",
     "express": "^4.17.1",
     "express-pino-logger": "^4.0.0",
+    "file-loader": "^4.2.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
     "node-env-run": "^3.0.2",
@@ -40,6 +41,7 @@
     "react-dom": "^16.9.0",
     "style-loader": "^1.0.0",
     "to-string-loader": "^1.1.5",
+    "url-loader": "^2.1.0",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.0"
@@ -47,6 +49,7 @@
   "dependencies": {
     "dot-env": "0.0.1",
     "dotenv-webpack": "^1.7.0",
-    "webpack-dotenv-plugin": "^2.1.0"
+    "webpack-dotenv-plugin": "^2.1.0",
+    "@material-ui/core": "4.4.3"
   }
 }
