@@ -33,13 +33,15 @@ class HomePage extends React.Component {
   render(){
     const { classes } = this.props;
 
+    const {Form} = this.props;
+
     return(
       <Grid container className={classes.root} component="main">
         <CssBaseline />
         <Grid item xs={false} sm={4} md={7} className={classes.image}/>
         <Grid item xs={12} sm={8} md={5} elevation={6} square component={Paper}>
           <div className={classes.paper}>
-            <LoginForm/>
+            <Form/>
           </div>
         </Grid>
       </Grid>  
