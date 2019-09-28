@@ -15,13 +15,14 @@ const styles = theme => ({
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
+    padding: `0px ${theme.spacing(4)}px`,
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
 });
 
-class Login extends React.Component {
+class LoginForm extends React.Component {
   constructor(props, defaultProps) {
     super(props, defaultProps);
 
@@ -36,11 +37,10 @@ class Login extends React.Component {
 
     return([
           <Typography component="h1" variant="h5">
-            Sign in
+            Log In
           </Typography>,
           <form noValidate className={classes.form}>
             <TextField
-              variant="outlined"
               margin="normal"
               required
               fullWidth
@@ -51,7 +51,6 @@ class Login extends React.Component {
               autoFocus
             />
             <TextField
-              variant="outlined"
               margin="normal"
               required
               fullWidth
@@ -68,7 +67,7 @@ class Login extends React.Component {
               color="primary"
               className={classes.submit}
             >
-              Sign In
+              Log In
             </Button>         
           </form>,
           <Grid container>
@@ -87,4 +86,4 @@ class Login extends React.Component {
   }
 }
 
-export default withStyles(styles)(Login);
+export default withStyles(styles)(LoginForm);
