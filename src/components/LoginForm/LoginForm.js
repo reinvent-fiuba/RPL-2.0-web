@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Card from '@material-ui/core/Card';
+import { Link as RouterLink } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -60,15 +61,17 @@ class LoginForm extends React.Component {
               id="password"
               autoComplete="current-password"
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Log In
-            </Button>         
+            <RouterLink to="/">
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                Log In
+              </Button>
+            </RouterLink>
           </form>,
           <Grid container>
             <Grid item xs>
