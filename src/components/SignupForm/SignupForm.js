@@ -182,4 +182,4 @@ class Signup extends React.Component {
   }
 }
 
-export default withStyles(styles)(Signup);
+export default withState(withStyles(styles)(Signup));

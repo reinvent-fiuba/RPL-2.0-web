@@ -44,7 +44,7 @@ class LoginForm extends React.Component {
 
   handleClick(event) {
     event.preventDefault();
-    authenticationService.signup({
+    authenticationService.login({
       username:   this.state.username,
       password:   this.state.password,
     }).then(response => response.text())
@@ -109,4 +109,4 @@ class LoginForm extends React.Component {
   }
 }
 
-export default withStyles(styles)(LoginForm);
+export default withState(withStyles(styles)(LoginForm));

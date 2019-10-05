@@ -5,6 +5,7 @@ import LoginForm from '../LoginForm/LoginForm';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import SignupForm from '../SignupForm/SignupForm';
+import Fiuba from './fiuba.jpg'
 
 const styles = theme => ({
   root: {
@@ -17,7 +18,7 @@ const styles = theme => ({
     alignItems: 'center',
   },
   image: {
-    backgroundImage: 'url(src/components/HomePage/fiuba.jpg)',
+    backgroundImage: `url(${Fiuba})`,
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -34,7 +35,6 @@ class HomePage extends React.Component {
     const { classes } = this.props;
 
     const {Form} = this.props;
-
     return(
       <Grid container className={classes.root} component="main">
         <CssBaseline />

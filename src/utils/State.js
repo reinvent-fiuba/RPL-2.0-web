@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 
-
 export const State = React.createContext();
 
 export const StateProvider = (props) => {
