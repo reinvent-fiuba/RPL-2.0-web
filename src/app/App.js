@@ -1,8 +1,8 @@
+import "./app.css";
 import React, { useContext } from "react";
 import ReactDOM from "react-dom";
-import "./app.css";
-import * as submissionService from "../services/submissionService"
-import { withState } from '../utils/State'
+import * as submissionService from "../services/submissionService";
+import { withState } from '../utils/State';
 
 class App extends React.Component {
   constructor(props) {

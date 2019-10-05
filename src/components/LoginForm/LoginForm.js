@@ -7,6 +7,7 @@ import Link from '@material-ui/core/Link';
 import Card from '@material-ui/core/Card';
 import { Link as RouterLink } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import authenticationService from '../../services/authenticationService';
 
 const styles = theme => ({
   avatar: {
@@ -31,7 +32,23 @@ class LoginForm extends React.Component {
       username: '',
       password: '',
     };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleClick  = this.handleClick.bind(this);
   }
+
+  handleChange(event) {
+    event.persist();
+    this.setState({ [event.target.id]: event.target.value });
+  }
+
+  handleClick(event) {
+    event.preventDefault();
+    authenticationService.signup({
+      username:   this.state.username,
+      password:   this.state.password,
+    }).then(response => response.text())
+  };
 
   render(){
     const { classes } = this.props;
@@ -50,6 +67,7 @@ class LoginForm extends React.Component {
               name="username"
               autoComplete="username"
               autoFocus
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
@@ -60,6 +78,7 @@ class LoginForm extends React.Component {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange = {this.handleChange}
             />
             <RouterLink to="/">
               <Button
@@ -68,6 +87,7 @@ class LoginForm extends React.Component {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
+                onClick={this.handleClick}
               >
                 Log In
               </Button>

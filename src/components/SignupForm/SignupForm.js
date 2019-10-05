@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { withStyles } from '@material-ui/core/styles';
+import authenticationService from '../../services/authenticationService';
 
 const styles = theme => ({
   avatar: {
@@ -26,16 +27,37 @@ class Signup extends React.Component {
     super(props, defaultProps);
 
     this.state = {
+      username: '',
+      email: '',
+      password: '',
       name: '',
       surname: '',
       studentId: '',
       degree: '',
       university: '',
-      username: '',
-      email: '',
-      password: ''
     };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleClick  = this.handleClick.bind(this);
   }
+
+  handleChange(event) {
+    event.persist();
+    this.setState({ [event.target.id]: event.target.value });
+  }
+
+  handleClick(event) {
+    event.preventDefault();
+    authenticationService.signup({
+      username:   this.state.username,
+      email:      this.state.email,
+      password:   this.state.password,
+      name:       this.state.name,
+      surname:    this.state.surname,
+      degree:     this.state.degree,
+      university: this.state.university,
+    }).then(response => response.text())
+  };
 
   render(){
     const { classes } = this.props;
@@ -54,6 +76,7 @@ class Signup extends React.Component {
               name="Name"
               autoComplete="name"
               autoFocus
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
@@ -64,6 +87,7 @@ class Signup extends React.Component {
               name="Surname"
               autoComplete="surname"
               autoFocus
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
@@ -74,6 +98,7 @@ class Signup extends React.Component {
               name="Student Id"
               autoComplete="studentId"
               autoFocus
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
@@ -84,6 +109,7 @@ class Signup extends React.Component {
               name="Degree"
               autoComplete="degree"
               autoFocus
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
@@ -94,6 +120,7 @@ class Signup extends React.Component {
               name="University"
               autoComplete="university"
               autoFocus
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
@@ -104,6 +131,7 @@ class Signup extends React.Component {
               name="Username"
               autoComplete="username"
               autoFocus
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
@@ -114,6 +142,7 @@ class Signup extends React.Component {
               name="Email"
               autoComplete="email"
               autoFocus
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
@@ -124,6 +153,7 @@ class Signup extends React.Component {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange = {this.handleChange}
             />
             <Button
               type="submit"
@@ -131,6 +161,7 @@ class Signup extends React.Component {
               variant="contained"
               color="primary"
               className={classes.submit}
+              onClick={this.handleClick}
             >
               Sign Up
             </Button>         
