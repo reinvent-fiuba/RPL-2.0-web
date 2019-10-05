@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { withStyles } from '@material-ui/core/styles';
+import { withState } from '../../utils/State';
 import authenticationService from '../../services/authenticationService';
 
 const styles = theme => ({

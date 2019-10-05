@@ -7,6 +7,7 @@ import Link from '@material-ui/core/Link';
 import Card from '@material-ui/core/Card';
 import { Link as RouterLink } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import { withState } from '../../utils/State';
 import authenticationService from '../../services/authenticationService';
 
 const styles = theme => ({
