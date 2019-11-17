@@ -4,9 +4,14 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import { Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { withState } from '../../utils/State';
+import { withErrorHandling } from '../../utils/Error';
+import ErrorNotification from '../../utils/ErrorNotification';
 import authenticationService from '../../services/authenticationService';
+
+const _ = require('lodash');
 
 const styles = theme => ({
   avatar: {
@@ -44,7 +49,8 @@ class Signup extends React.Component {
 
   handleChange(event) {
     event.persist();
-    this.setState({ [event.target.id]: event.target.value });
+    // Close error message 
+    this.setState({ [event.target.id]: event.target.value, error: {open: false, message: ''} });
   }
 
   handleClick(event) {
@@ -57,13 +63,22 @@ class Signup extends React.Component {
       surname:    this.state.surname,
       degree:     this.state.degree,
       university: this.state.university,
-    }).then(response => response.text())
+    }).then(response => {
+      this.setState({ toLoginPage: true });
+    }).catch(err => {
+      this.setState({ error: {open: true, message: 'Hubo un error de sign up, revisa que los datos ingresados sean validos.'}});
+    });
   };
 
   render(){
     const { classes } = this.props;
 
+    if (this.state.toLoginPage) {
+      return <Redirect to="/login"/>
+    }
+
     return([
+          <ErrorNotification open={_.get(this.state, 'error.open')} message={_.get(this.state, 'error.message')}/>,
           <Typography component="h1" variant="h5">
             Sign Up
           </Typography>,
@@ -174,8 +189,8 @@ class Signup extends React.Component {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+              <Link href="/login" variant="body2">
+                {"Already have an account? Log in"}
               </Link>
             </Grid>
           </Grid>      
@@ -183,4 +198,4 @@ class Signup extends React.Component {
   }
 }
 
-export default withState(withStyles(styles)(Signup));
+export default withErrorHandling(withState(withStyles(styles)(Signup)));

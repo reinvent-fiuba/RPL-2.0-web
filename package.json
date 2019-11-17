@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@material-ui/core": "4.4.3",
+    "@material-ui/icons": "4.5.1",
     "dot-env": "0.0.1",
     "dotenv-webpack": "^1.7.0",
     "react-router-dom": "^5.1.1",

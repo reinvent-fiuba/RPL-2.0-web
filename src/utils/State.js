@@ -29,6 +29,6 @@ export const withState = (Component) => {
   return (props) => {
     const state = useContext(State);
 
-    return <Component state={state} {...props} />;
+    return <Component context={state} {...props} />;
   };
 };

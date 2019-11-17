@@ -4,11 +4,14 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import Card from '@material-ui/core/Card';
-import { Link as RouterLink } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { withState } from '../../utils/State';
+import { withErrorHandling } from '../../utils/Error';
+import ErrorNotification from '../../utils/ErrorNotification';
 import authenticationService from '../../services/authenticationService';
+
+const _ = require('lodash');
 
 const styles = theme => ({
   avatar: {
@@ -40,21 +43,33 @@ class LoginForm extends React.Component {
 
   handleChange(event) {
     event.persist();
-    this.setState({ [event.target.id]: event.target.value });
+    // Close error message 
+    this.setState({ [event.target.id]: event.target.value, error: {open: false, message: ''} });
   }
 
   handleClick(event) {
     event.preventDefault();
     authenticationService.login({
-      username:   this.state.username,
-      password:   this.state.password,
-    }).then(response => response.text())
+      usernameOrEmail:   this.state.username,
+      password:          this.state.password,
+    }).then(response => {
+      this.props.context.set('access_token', response.access_token);
+      this.props.context.set('token_type',   response.token_type);
+      this.setState({ toMainPage: true });
+    }).catch(err => {
+      this.setState({ error: {open: true, message: 'Hubo un error de login, revisa que los datos ingresados sean validos.'}});
+    });
   };
 
   render(){
     const { classes } = this.props;
 
+    if (this.state.toMainPage) {
+      return <Redirect to="/"/>
+    }
+
     return([
+          <ErrorNotification open={_.get(this.state, 'error.open')} message={_.get(this.state, 'error.message')}/>,
           <Typography component="h1" variant="h5">
             Log In
           </Typography>,
@@ -81,18 +96,16 @@ class LoginForm extends React.Component {
               autoComplete="current-password"
               onChange = {this.handleChange}
             />
-            <RouterLink to="/">
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                onClick={this.handleClick}
-              >
-                Log In
-              </Button>
-            </RouterLink>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={this.handleClick}
+            >
+              Log In
+            </Button>
           </form>,
           <Grid container>
             <Grid item xs>
@@ -101,7 +114,7 @@ class LoginForm extends React.Component {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
@@ -110,4 +123,4 @@ class LoginForm extends React.Component {
   }
 }
 
-export default withState(withStyles(styles)(LoginForm));
+export default withErrorHandling(withState(withStyles(styles)(LoginForm)));
