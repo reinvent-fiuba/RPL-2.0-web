@@ -1,7 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
 import "./app.css";
-import * as submissionService from "../service/submissionService"
+import React, { useContext } from "react";
+import ReactDOM from "react-dom";
+import * as submissionService from "../services/submissionService";
+import { withState } from '../utils/State';
 
 class App extends React.Component {
   constructor(props) {
@@ -44,6 +45,4 @@ class App extends React.Component {
     )};
 };
 
-export default App;
-
-ReactDOM.render(<App />, document.getElementById("app"));
+export default withState(App);

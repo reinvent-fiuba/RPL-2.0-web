@@ -25,9 +25,15 @@ module.exports = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
-      }
-
+      },
+      {
+        test: /\.(png|jpg|gif|svg)$/i,
+        use: ['file-loader'],
+      }  
     ]
+  },
+  devServer: {
+    historyApiFallback: true,
   },
   plugins: [
     new HtmlWebPackPlugin({
