@@ -13,7 +13,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import List from '@material-ui/core/List';
 import MenuIcon from '@material-ui/icons/Menu';
-
+import { withState } from '../../utils/State';
 
 const drawerWidth = 240;
 
@@ -64,7 +64,8 @@ class TopBar extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, title } = this.props;
+    const { name, surname } = this.props.context.profile;
 
     return (<AppBar
       position="fixed"
@@ -81,16 +82,16 @@ class TopBar extends React.Component {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title} noWrap>
-            Cursos
+            {title}
           </Typography>
           <Typography variant="body1" className={classes.user}>
-            Matias Cano
+            {name} {surname}
           </Typography>
-          <Avatar className={classes.avatar}>MC</Avatar>
+          <Avatar className={classes.avatar}>{name[0]}{surname[0]}</Avatar>
         </Toolbar>
       </AppBar>
     );
   }
 }
 
-export default withStyles(styles)(TopBar);
+export default withState(withStyles(styles)(TopBar));

@@ -15,6 +15,7 @@ import Grid from '@material-ui/core/Grid';
 import SideBar from '../SideBar/SideBar';
 import TopBar from '../TopBar/TopBar';
 import coursesService from '../../services/coursesService';
+import { withState } from '../../utils/State';
 
 const _ = require('lodash');
 
@@ -60,10 +61,15 @@ class CoursesPage extends React.Component {
     this.handleDrawerClose = this.handleDrawerClose.bind(this);
     this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
     this.renderCourseCards = this.renderCourseCards.bind(this);    
-
+    const { profile } = this.props.context;
+    let allCourses;
     coursesService.getAll()
       .then(response => {
-        this.setState({ myCourses: response, allCourses: response });
+        allCourses = response;
+        return coursesService.getAllByUser(profile.id);
+      })
+      .then(myCourses => {
+        this.setState({ myCourses, allCourses });
       });
   }
 
@@ -73,7 +79,7 @@ class CoursesPage extends React.Component {
       <Grid container item xs={12} spacing={3}>
         {_.map(row, course => 
           console.log(course) || <Grid item xs={3}>
-            <CourseCard id={course.course.university_course_id} name={course.course.name} description={course.description}/>
+            <CourseCard id={course.course.university_course_id} name={course.course.name} description={course.description} imgUri={course.imgUri}/>
           </Grid>
         )}
       </Grid>
@@ -93,7 +99,7 @@ class CoursesPage extends React.Component {
     const { classes } = this.props;
 
     return([
-    <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open}></TopBar>,
+    <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open} title='Cursos'></TopBar>,
     <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open}></SideBar>,
     <main
           className={`${classes.content} ${this.state.open ? console.log(this.state.open) || classes.contentShift : ''}`}
@@ -113,4 +119,4 @@ class CoursesPage extends React.Component {
   }
 }
 
-export default withStyles(styles)(CoursesPage);
+export default withState(withStyles(styles)(CoursesPage));

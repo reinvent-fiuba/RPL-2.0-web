@@ -10,3 +10,10 @@ exports.getAll = () => {
     method: 'GET'
   }); 
 }
+
+exports.getAllByUser = (userId) => {
+  return request({
+    url: `http://${producer.base_url}/api/users/${userId}/courses`,
+    method: 'GET'
+  }); 
+}

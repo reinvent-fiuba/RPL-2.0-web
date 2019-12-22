@@ -32,3 +32,7 @@ export const withState = (Component) => {
     return <Component context={state} {...props} />;
   };
 };
+
+export const getState = () => {
+  return JSON.parse(localStorage.getItem('state')) || {};
+}

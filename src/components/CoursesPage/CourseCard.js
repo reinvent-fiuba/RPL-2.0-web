@@ -55,7 +55,7 @@ class CourseCard extends React.Component {
         />
         <CardMedia
           className={classes.media}
-          image="http://cholilaonline.com/wp-content/uploads/2018/01/algoritmo-amor.jpg"
+          image={this.props.imgUri}
           title={this.props.name}
         />
         <CardContent>
