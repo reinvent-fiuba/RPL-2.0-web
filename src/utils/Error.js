@@ -31,9 +31,9 @@ class ErrorBoundary extends React.Component {
 }
 
 export const withErrorHandling = (Component) => {
-  return () => {
+  return (props) => {
     return <ErrorBoundary>
-      <Component/>
+      <Component {...props}/>
     </ErrorBoundary>;
   };
 };

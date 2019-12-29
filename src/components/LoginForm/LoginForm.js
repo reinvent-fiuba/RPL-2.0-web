@@ -55,6 +55,9 @@ class LoginForm extends React.Component {
     }).then(response => {
       this.props.context.set('access_token', response.access_token);
       this.props.context.set('token_type',   response.token_type);
+    }).then(() => authenticationService.getProfile()
+    ).then((response) => {
+      this.props.context.set('profile', response);
       this.setState({ toMainPage: true });
     }).catch(err => {
       this.setState({ error: {open: true, message: 'Hubo un error de login, revisa que los datos ingresados sean validos.'}});
@@ -65,7 +68,7 @@ class LoginForm extends React.Component {
     const { classes } = this.props;
 
     if (this.state.toMainPage) {
-      return <Redirect to="/"/>
+      return <Redirect to="/courses"/>
     }
 
     return([

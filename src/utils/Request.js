@@ -1,10 +1,13 @@
+const { getState } = require('./State');
+
 exports.request = (options) => {
   const headers = new Headers({
     'Content-Type': 'application/json',
   })
-  
-  if(localStorage.getItem('access_token')) {
-    headers.append('Authorization', 'Bearer ' + localStorage.getItem('access_token'))
+  const localStorageState = getState();
+
+  if (localStorageState.access_token) {
+    headers.append('Authorization', `Bearer ${localStorageState.access_token}`);
   }
 
   const defaults = {headers: headers};

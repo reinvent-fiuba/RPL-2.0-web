@@ -20,3 +20,10 @@ exports.signup = (user) => {
     method: 'POST'
   }); 
 }
+
+exports.getProfile = () => {
+  return request({
+    url: `http://${producer.base_url}/api/auth/profile`,
+    method: 'GET'
+  });
+}
