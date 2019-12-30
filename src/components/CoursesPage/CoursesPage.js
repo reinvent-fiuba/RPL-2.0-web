@@ -9,6 +9,7 @@ import SchoolIcon from '@material-ui/icons/School';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Avatar from '@material-ui/core/Avatar'
+import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import CourseCard from './CourseCard';
 import Grid from '@material-ui/core/Grid';
@@ -16,6 +17,9 @@ import SideBar from '../SideBar/SideBar';
 import TopBar from '../TopBar/TopBar';
 import coursesService from '../../services/coursesService';
 import { withState } from '../../utils/State';
+import AddIcon from "@material-ui/icons/Add";
+import Icon from "@material-ui/core/Icon";
+import Fab from "@material-ui/core/Fab"
 
 const _ = require('lodash');
 
@@ -51,6 +55,11 @@ const styles = theme => ({
   },
   divider: {
     margin: 20
+  },
+  rightButton: {
+    display: 'flex',
+    marginLeft: 'auto',
+    marginRight: theme.spacing(2),
   }
 });
 
@@ -78,8 +87,8 @@ class CoursesPage extends React.Component {
     { _.chunk(courses, 4).map(row => 
       <Grid container item xs={12} spacing={3}>
         {_.map(row, course => 
-          console.log(course) || <Grid item xs={3}>
-            <CourseCard id={course.course.university_course_id} name={course.course.name} description={course.description} imgUri={course.imgUri}/>
+          <Grid item xs={3}>
+            <CourseCard id={course.university_course_id} name={course.name} description={course.description} imgUri={course.img_uri}/>
           </Grid>
         )}
       </Grid>
@@ -102,9 +111,16 @@ class CoursesPage extends React.Component {
     <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open} title='Cursos'></TopBar>,
     <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open}></SideBar>,
     <main
-          className={`${classes.content} ${this.state.open ? console.log(this.state.open) || classes.contentShift : ''}`}
+          className={`${classes.content} ${this.state.open ? classes.contentShift : ''}`}
         >
           <div className={classes.drawerHeader} />
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.rightButton}
+          >
+            <AddIcon/>
+          </Fab>
           <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
             Mis Cursos
           </Typography>
