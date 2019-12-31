@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from "react-dom";
-import { Route, BrowserRouter as Router } from 'react-router-dom'
+import { Route, Swi, BrowserRouter as Router} from 'react-router-dom'
 import App from "./app/App"
 import LoginPage from "./components/LoginPage/LoginPage"
 import SignupPage from "./components/SignupPage/SignupPage"
 import { StateProvider, State } from './utils/State'
 import CoursesPage from './components/CoursesPage/CoursesPage';
+import CreateCoursePage from './components/CreateCoursePage/CreateCoursePage';
 
 const routing = (
   <StateProvider>
@@ -14,7 +15,8 @@ const routing = (
         <Route exact path="/" component={App} />
         <Route path="/login" component={LoginPage} />
         <Route path="/signup" component={SignupPage} />
-        <Route path="/courses" component={CoursesPage} />
+        <Route exact path='/courses' component={CoursesPage}/>
+        <Route path='/courses/create' component={CreateCoursePage}/>
       </div>
     </Router>
   </StateProvider>

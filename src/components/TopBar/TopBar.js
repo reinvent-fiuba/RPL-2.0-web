@@ -65,7 +65,8 @@ class TopBar extends React.Component {
 
   render() {
     const { classes, title } = this.props;
-    const { name, surname } = this.props.context.profile;
+    console.log('context', this.props.context);
+    const { name, surname } = this.props.context.profile || { name: 'Mati', surname: 'Cano'};
 
     return (<AppBar
       position="fixed"
