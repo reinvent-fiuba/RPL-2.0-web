@@ -64,6 +64,7 @@ class CreateCourseForm extends React.Component {
 
   handleCreateClick() {
     event.preventDefault();
+    console.log(this.state);
     coursesService.create({
       name:                 this.state.name,
       university:           this.state.university,
@@ -112,10 +113,11 @@ class CreateCourseForm extends React.Component {
               margin="normal"
               required
               fullWidth
-              id="university-course-id"
+              id="universityCourseId"
               label="Id del Curso"
-              name="university-course-id"
-              autoComplete="university-course-id"
+              name="universityCourseId"
+              autoComplete="universityCourseId"
+              onChange = {this.handleChange}
             />
             <TextField
               margin="normal"
