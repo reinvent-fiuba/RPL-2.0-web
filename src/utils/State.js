@@ -6,9 +6,9 @@ export const StateProvider = (props) => {
 
   const set = (key, value) => {
     const newState = {...state, [key]: value};
-    setState(newState);
     const localStorageState = JSON.parse(localStorage.getItem('state')) || {};
     localStorage.setItem('state', JSON.stringify(Object.assign(localStorageState, newState)));
+    return setState(newState);
   };
 
   const initState = {

@@ -6,8 +6,8 @@ exports.request = (options) => {
   })
   const localStorageState = getState();
 
-  if (localStorageState.access_token) {
-    headers.append('Authorization', `Bearer ${localStorageState.access_token}`);
+  if (localStorageState.token) {
+    headers.append('Authorization', `${localStorageState.token.tokenType} ${localStorageState.token.accessToken}`);
   }
 
   const defaults = {headers: headers};

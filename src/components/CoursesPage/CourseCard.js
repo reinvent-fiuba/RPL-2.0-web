@@ -18,6 +18,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { withState } from '../../utils/State';
 import { withErrorHandling } from '../../utils/Error';
 import { Button } from '@material-ui/core';
+import SchoolIcon from '@material-ui/icons/School';
 
 const styles = theme => ({
   card: {
@@ -26,6 +27,8 @@ const styles = theme => ({
     media: {
       height: 0,
       paddingTop: '56.25%', // 16:9
+      backgroundColor: 'lightsteelblue',
+      backgroundSize: 'contain',
     },
     action: {
       marginLeft: 'auto',
@@ -44,7 +47,6 @@ class CourseCard extends React.Component {
 
   render(){
     const { classes } = this.props;
-    console.log('props', this.props);
 
     return(<Card className={classes.card}>
         <CardHeader
@@ -55,7 +57,7 @@ class CourseCard extends React.Component {
         />
         <CardMedia
           className={classes.media}
-          image={this.props.imgUri}
+          image={this.props.imgUri || 'https://www.materialui.co/materialIcons/social/school_black_192x192.png'}
           title={this.props.name}
         />
         <CardContent>

@@ -53,8 +53,7 @@ class LoginForm extends React.Component {
       usernameOrEmail:   this.state.username,
       password:          this.state.password,
     }).then(response => {
-      this.props.context.set('access_token', response.access_token);
-      this.props.context.set('token_type',   response.token_type);
+      this.props.context.set('token', { accessToken: response.access_token, tokenType: response.token_type });
     }).then(() => authenticationService.getProfile()
     ).then((response) => {
       this.props.context.set('profile', response);
