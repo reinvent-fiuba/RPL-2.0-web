@@ -26,7 +26,6 @@ const styles = theme => ({
 class ErrorNotifier extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
     this.state = { open: this.props.open };
     this.handleClose = this.handleClose.bind(this);
   }

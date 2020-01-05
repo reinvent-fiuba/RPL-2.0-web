@@ -64,7 +64,6 @@ class CreateCourseForm extends React.Component {
 
   handleCreateClick() {
     event.preventDefault();
-    console.log(this.state);
     coursesService.create({
       name:                 this.state.name,
       university:           this.state.university,
@@ -74,7 +73,7 @@ class CreateCourseForm extends React.Component {
     }).then(response => {
       this.setState({ toCoursesPage: true });
     }).catch(err => {
-      this.setState({ error: {open: true, message: 'Hubo un error de sign up, revisa que los datos ingresados sean validos.'}});
+      this.setState({ error: {open: true, message: 'Hubo un error al crear el curso, revisa que los datos ingresados sean validos.'}});
     });
   }
 

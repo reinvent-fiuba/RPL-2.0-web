@@ -62,7 +62,6 @@ class CreateCoursePage extends React.Component {
 
   render(){
     const { classes } = this.props;
-    console.log(classes);
     return([
     <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open} title='Crear Curso'></TopBar>,
     <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open}></SideBar>,
