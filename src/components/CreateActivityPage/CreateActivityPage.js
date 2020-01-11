@@ -92,6 +92,10 @@ const styles = theme => ({
     }
   },
   mdEditor: {
+    '& .mde-preview': {
+      height: '53vh',
+      overflow: 'scroll'
+    },
     '& .grip': {
       display: 'none'
     }
