@@ -15,9 +15,10 @@ import MonacoEditor from 'react-monaco-editor'
 import ReactMde from "react-mde";
 import * as Showdown from "showdown";
 import ReactResizeDetector from 'react-resize-detector';
+import activitiesService from '../../services/activitiesService';
+
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
-
 
 const _ = require('lodash');
 
@@ -117,14 +118,22 @@ const styles = theme => ({
 class CreateActivityPage extends React.Component {
   constructor(props) {
     super(props);
+    const { courseId } = this.props.match.params;
     this.state = {
+      courseId,
       mdText: '',
       mdEditorTab: 'write',
       editor: null
     };
-    this.handleDrawerClose = this.handleDrawerClose.bind(this);
-    this.handleDrawerOpen  = this.handleDrawerOpen.bind(this);
-    this.handleChange      = this.handleChange.bind(this);
+    this.handleDrawerClose        = this.handleDrawerClose.bind(this);
+    this.handleDrawerOpen         = this.handleDrawerOpen.bind(this);
+    this.handleChange             = this.handleChange.bind(this);
+    this.handleCreateClick        = this.handleCreateClick.bind(this);
+    this.renderCategoriesDropdown = this.renderCategoriesDropdown.bind(this);
+    activitiesService.getActivityCategories(this.state.courseId)
+    .then(response => {
+      this.setState({ categories: response });
+    });
   }
 
   handleDrawerOpen() {
@@ -137,12 +146,34 @@ class CreateActivityPage extends React.Component {
 
   handleChange(event) {
     event.persist();
-    console.log(event);
     // Close error message 
     this.setState({ [event.target.id]: event.target.value });
   }
 
-  render(){
+  handleCreateClick() {
+    event.preventDefault();
+    activitiesService.create({
+      courseId:             this.state.courseId,
+      name:                 this.state.name,
+      points:               this.state.points,
+      language:             this.state.language,
+      activityCategoryId:   this.state.category,
+      supportingFile:       this.state.code,
+      description:          this.state.mdText,
+    }).then(response => {
+      this.setState({ toCoursesPage: true });
+    }).catch(err => {
+      this.setState({ error: {open: true, message: 'Hubo un error al crear la actividad, revisa que los datos ingresados sean validos.'}});
+    });
+  }
+
+  renderCategoriesDropdown(categories) {
+    return _.map(categories, category => 
+            <MenuItem value={category.id}>{category.name}</MenuItem>
+        );
+  }
+
+  render() {
     const { classes } = this.props;
   
     return([
@@ -197,9 +228,7 @@ class CreateActivityPage extends React.Component {
                 value={this.state.category}
                 onChange={event => this.setState({ category: event.target.value })}
               >
-                <MenuItem value={'basic'}>{'Basico'}</MenuItem>
-                <MenuItem value={'medium'}>{'Medio'}</MenuItem>
-                <MenuItem value={'advanced'}>{'Avanzado'}</MenuItem>
+                { this.renderCategoriesDropdown(this.state.categories) }
               </Select>
             </FormControl>
           </form>
