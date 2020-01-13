@@ -5,10 +5,12 @@ export const State = React.createContext();
 export const StateProvider = (props) => {
 
   const set = (key, value) => {
-    const newState = {...state, [key]: value};
-    const localStorageState = JSON.parse(localStorage.getItem('state')) || {};
-    localStorage.setItem('state', JSON.stringify(Object.assign(localStorageState, newState)));
-    return setState(newState);
+    return setState(oldState => {
+      const newState = {...oldState, [key]: value};
+      const localStorageState = JSON.parse(localStorage.getItem('state')) || {};
+      localStorage.setItem('state', JSON.stringify(Object.assign(localStorageState, newState)));  
+      return newState;
+    });
   };
 
   const initState = {
