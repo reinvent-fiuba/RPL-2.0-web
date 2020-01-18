@@ -48,7 +48,7 @@
     "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
-    "@material-ui/core": "4.4.3",
+    "@material-ui/core": "latest",
     "@material-ui/icons": "4.5.1",
     "dot-env": "0.0.1",
     "dotenv-webpack": "^1.7.0",
