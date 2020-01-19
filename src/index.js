@@ -7,6 +7,7 @@ import SignupPage from "./components/SignupPage/SignupPage"
 import { StateProvider, State } from './utils/State'
 import CoursesPage from './components/CoursesPage/CoursesPage';
 import CreateCoursePage from './components/CreateCoursePage/CreateCoursePage';
+import CreateActivityPage from './components/CreateActivityPage/CreateActivityPage';
 
 const routing = (
   <StateProvider>
@@ -17,6 +18,7 @@ const routing = (
         <Route path="/signup" component={SignupPage} />
         <Route exact path='/courses' component={CoursesPage}/>
         <Route path='/courses/create' component={CreateCoursePage}/>
+        <Route path='/courses/:courseId/activities/create' component={CreateActivityPage}/>
       </div>
     </Router>
   </StateProvider>
