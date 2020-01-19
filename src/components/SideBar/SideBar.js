@@ -10,6 +10,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import SchoolIcon from '@material-ui/icons/School';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { Link } from 'react-router-dom';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import List from '@material-ui/core/List';
 
@@ -56,7 +57,9 @@ class SideBar extends React.Component {
 
 
   render() {
-    const { classes } = this.props;
+    const { classes, courseId } = this.props;
+
+    const itemsLinks = { Cursos: '/courses', Actividades: courseId && `/courses/${courseId}/activities` };
 
     return (
       <Drawer
@@ -77,11 +80,17 @@ class SideBar extends React.Component {
         <List>
           {['Cursos', 'Actividades'].map((text) => {
             const Icon = actionIcons[text];
+
             return (
-              <ListItem button key={text}>
-                <ListItemIcon><Icon /></ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
+              <div>
+                {itemsLinks[text]
+                  && (
+                    <ListItem button key={text} component={Link} to={itemsLinks[text]}>
+                      <ListItemIcon><Icon /></ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItem>
+                  )}
+              </div>
             );
           })}
         </List>

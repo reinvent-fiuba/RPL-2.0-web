@@ -4,13 +4,13 @@ import SideBar from '../SideBar/SideBar';
 import TopBar from '../TopBar/TopBar';
 import coursesService from '../../services/coursesService';
 import { withState } from '../../utils/State';
-import CreateCourseForm from "./CreateCourseForm/CreateCourseForm"
+import CreateCourseForm from './CreateCourseForm/CreateCourseForm';
 
 const _ = require('lodash');
 
 const drawerWidth = 240;
 
-const styles = theme => ({
+const styles = (theme) => ({
   drawerHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -36,11 +36,11 @@ const styles = theme => ({
   },
   title: {
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   divider: {
-    margin: 20
-  }
+    margin: 20,
+  },
 });
 
 class CreateCoursePage extends React.Component {
@@ -49,29 +49,30 @@ class CreateCoursePage extends React.Component {
     this.state = {};
     this.handleDrawerClose = this.handleDrawerClose.bind(this);
     this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
-    const { profile } = this.props.context;
   }
 
   handleDrawerOpen() {
-    this.setState({open: true});
+    this.setState({ open: true });
   }
 
   handleDrawerClose() {
-    this.setState({open: false});
+    this.setState({ open: false });
   }
 
-  render(){
+  render() {
     const { classes } = this.props;
-    return([
-    <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open} title='Crear Curso'></TopBar>,
-    <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open}></SideBar>,
-    <main
+    return (
+      <div>
+        <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open} title="Crear Curso" />
+        <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
+        <main
           className={`${classes.content} ${this.state.open ? classes.contentShift : ''}`}
         >
           <div className={classes.drawerHeader} />
-          <CreateCourseForm></CreateCourseForm>
-      </main>
-    ]);
+          <CreateCourseForm />
+        </main>
+      </div>
+    );
   }
 }
 

@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
-import { Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import SideBar from '../SideBar/SideBar';
 import TopBar from '../TopBar/TopBar';
 import { withState } from '../../utils/State';
@@ -83,8 +83,6 @@ class ActivitiesPage extends React.Component {
     this.handleDrawerClose = this.handleDrawerClose.bind(this);
     this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
     this.handleAddClick = this.handleAddClick.bind(this);
-
-    console.log(props.match.params.courseId);
   }
 
   componentDidMount() {
@@ -145,37 +143,34 @@ class ActivitiesPage extends React.Component {
     const { classes } = this.props;
 
     const {
-      activities, toCreateActivitiePage, open, error,
+      activities, open, error,
     } = this.state;
-
-    if (toCreateActivitiePage) {
-      return <Redirect to="/activities/create" />;
-    }
-
 
     console.log(activities);
 
     const activitiesByCategory = _.groupBy(activities, 'category_name');
     console.log(activitiesByCategory);
-    // activities.
-
 
     return (
       <div>
         <TopBar handleDrawerOpen={this.handleDrawerOpen} open={open} title="Actividades" />
-        <SideBar handleDrawerClose={this.handleDrawerClose} open={open} />
+        <SideBar handleDrawerClose={this.handleDrawerClose} open={open} courseId={this.props.match.params.courseId} />
         <main
           className={`${classes.content} ${open ? classes.contentShift : ''}`}
         >
           <div className={classes.drawerHeader} />
+
           <Fab
             color="primary"
             aria-label="add"
             className={classes.rightButton}
             onClick={this.handleAddClick}
+            component={Link}
+            to={`/courses/${this.props.match.params.courseId}/activity/create`}
           >
             <AddIcon />
           </Fab>
+
 
           {error && <ErrorNotification open={_.get(this.state, 'error.open')} message={_.get(this.state, 'error.message')} />}
 
@@ -185,7 +180,7 @@ class ActivitiesPage extends React.Component {
             </div>
           ))}
         </main>
-      </div>
+      </div >
     );
   }
 }

@@ -8,9 +8,9 @@ class SignupPage extends React.Component {
     this.state = {};
   }
 
-  render(){
-    return(
-        <HomePage Form={SignupForm} />
+  render() {
+    return (
+      <HomePage Form={SignupForm} />
     );
   }
 }

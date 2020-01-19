@@ -13,7 +13,7 @@ import authenticationService from '../../services/authenticationService';
 
 const _ = require('lodash');
 
-const styles = theme => ({
+const styles = (theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
@@ -38,90 +38,94 @@ class LoginForm extends React.Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleClick  = this.handleClick.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleChange(event) {
     event.persist();
-    // Close error message 
-    this.setState({ [event.target.id]: event.target.value, error: {open: false, message: ''} });
+    // Close error message
+    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: '' } });
   }
 
   handleClick(event) {
     event.preventDefault();
+    const { username, password } = this.state;
+
     authenticationService.login({
-      usernameOrEmail:   this.state.username,
-      password:          this.state.password,
-    }).then(response => {
+      usernameOrEmail: username,
+      password,
+    }).then((response) => {
       this.props.context.set('token', { accessToken: response.access_token, tokenType: response.token_type });
-    }).then(() => authenticationService.getProfile()
-    ).then((response) => {
+    }).then(() => authenticationService.getProfile()).then((response) => {
       this.props.context.set('profile', response);
       this.setState({ toMainPage: true });
-    }).catch(err => {
-      this.setState({ error: {open: true, message: 'Hubo un error de login, revisa que los datos ingresados sean validos.'}});
-    });
-  };
+    })
+      .catch((err) => {
+        this.setState({ error: { open: true, message: 'Hubo un error de login, revisa que los datos ingresados sean validos.' } });
+      });
+  }
 
-  render(){
+  render() {
     const { classes } = this.props;
 
     if (this.state.toMainPage) {
-      return <Redirect to="/courses"/>
+      return <Redirect to="/courses" />;
     }
 
-    return([
-          <ErrorNotification open={_.get(this.state, 'error.open')} message={_.get(this.state, 'error.message')}/>,
-          <Typography component="h1" variant="h5">
-            Log In
-          </Typography>,
-          <form noValidate className={classes.form}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              autoFocus
-              onChange = {this.handleChange}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              onChange = {this.handleChange}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={this.handleClick}
-            >
-              Log In
-            </Button>
-          </form>,
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="/signup" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>      
-    ]);
+    return (
+      <div>
+        <ErrorNotification open={_.get(this.state, 'error.open')} message={_.get(this.state, 'error.message')} />
+        <Typography component="h1" variant="h5">
+          Log In
+        </Typography>
+        <form noValidate className={classes.form}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
+            autoFocus
+            onChange={this.handleChange}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            onChange={this.handleChange}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            onClick={this.handleClick}
+          >
+            Iniciar Sesión
+          </Button>
+        </form>
+        <Grid container>
+          <Grid item xs>
+            <Link href="#" variant="body2">
+              Olvidé mi contraseña
+            </Link>
+          </Grid>
+          <Grid item>
+            <Link href="/signup" variant="body2">
+              No tenés una cuenta? Registrate
+            </Link>
+          </Grid>
+        </Grid>
+      </div>
+    );
   }
 }
 
