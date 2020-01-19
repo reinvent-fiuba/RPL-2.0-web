@@ -8,16 +8,20 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
+import Fab from '@material-ui/core/Fab';
+import { Redirect } from 'react-router-dom';
 import SideBar from '../SideBar/SideBar';
 import TopBar from '../TopBar/TopBar';
 import { withState } from '../../utils/State';
-import AddIcon from "@material-ui/icons/Add";
-import Fab from "@material-ui/core/Fab"
-import { Redirect } from 'react-router-dom';
+import activitiesService from '../../services/activitiesService';
+import ErrorNotification from '../../utils/ErrorNotification';
+
+const _ = require('lodash');
 
 const drawerWidth = 240;
 
-const styles = theme => ({
+const styles = (theme) => ({
   drawerHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -43,10 +47,10 @@ const styles = theme => ({
   },
   title: {
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   divider: {
-    margin: 20
+    margin: 20,
   },
   rightButton: {
     display: 'flex',
@@ -55,7 +59,18 @@ const styles = theme => ({
   },
   table: {
     minWidth: 650,
-  }
+  },
+  tableContainerDiv: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: '0px 30px 30px 30px',
+  },
+  tableTitle: {
+    alignSelf: 'start',
+    paddingLeft: '15px',
+  },
 });
 
 class ActivitiesPage extends React.Component {
@@ -65,11 +80,17 @@ class ActivitiesPage extends React.Component {
     this.handleDrawerClose = this.handleDrawerClose.bind(this);
     this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
     this.handleAddClick = this.handleAddClick.bind(this);
-    this.createData = this.createData.bind(this);
-    this.renderCategoriyActivities = this.renderCategoriyActivities.bind(this);
-    const { profile } = this.props.context;
 
     console.log(props.match.params.courseId);
+  }
+
+  componentDidMount() {
+    activitiesService.getAllActivities(this.props.match.params.courseId)
+      .then((response) => {
+        this.setState({ activities: response });
+      }).catch((err) => {
+        this.setState({ error: { open: true, message: 'Hubo un error al obtener las actividades, Por favor reintenta' } });
+      });
   }
 
   handleAddClick() {
@@ -84,85 +105,97 @@ class ActivitiesPage extends React.Component {
     this.setState({ open: false });
   }
 
-  createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
+  static createData(name, calories, fat, carbs, protein) {
+    return {
+      name, calories, fat, carbs, protein,
+    };
   }
 
-  renderCategoriyActivities(activities, classes) {
-    return <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Nombre</TableCell>
-            <TableCell align="right">Última actividad</TableCell>
-            <TableCell align="right">Puntos</TableCell>
-            <TableCell align="right">Estado</TableCell>
-            <TableCell align="right"></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {activities.map(row => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
+  static renderCategoriyActivities(activities, classes) {
+    return (
+      <TableContainer component={Paper} width="80%">
+        <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
+          {activities[0].category_name}
+        </Typography>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell key={1}>Nombre</TableCell>
+              <TableCell key={2} align="right">Última actividad</TableCell>
+              <TableCell key={3} align="right">Puntos</TableCell>
+              <TableCell key={4} align="right">Estado</TableCell>
+              <TableCell key={5} align="right" />
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {activities.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell key={1} component="th" scope="row">
+                  {row.name}
+                </TableCell>
+                {/* <TableCell key={1} align="right">{row.calories}</TableCell>
+              <TableCell key={1} align="right">{row.fat}</TableCell>
+              <TableCell key={1} align="right">{row.carbs}</TableCell>
+              <TableCell key={1} align="right">{row.protein}</TableCell> */}
+                <TableCell key={2} align="right">{(row.last_submission_date && row.last_submission_date.split('T')[0]) || '-'}</TableCell>
+                <TableCell key={3} align="right">{15}</TableCell>
+                <TableCell key={4} align="right">{row.submission_status || 'SIN EMPEZAR'}</TableCell>
+                <TableCell key={5} align="right">Descargar</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
   }
-
 
 
   render() {
     const { classes } = this.props;
 
-    const categoryActivities = [
-      this.createData('Ejercicio 1', "Apr 24 2020", 15, "Completado", "Descargar"),
-      this.createData('Ejercicio 2', "-", 15, "-", "Descargar"),
-      this.createData('Ejercicio 3', "Apr 24 2020", 15, "Completado", "Descargar"),
-      this.createData('Ejercicio 4', "Apr 24 2020", 15, "Corriendo", "Descargar"),
-      this.createData('Ejercicio 5', "Apr 24 2020", 15, "Completado", "Descargar"),
-    ];
+    const {
+      activities, toCreateActivitiePage, open, error,
+    } = this.state;
 
-    const categories = ["Conceptos básicos", "Conceptos no tan básicos"]
-
-    if (this.state.toCreateActivitiePage) {
-      return <Redirect to="/activities/create" />
+    if (toCreateActivitiePage) {
+      return <Redirect to="/activities/create" />;
     }
 
-    return ([
-      <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open} title='Actividades'></TopBar>,
-      <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open}></SideBar>,
-      <main
-        className={`${classes.content} ${this.state.open ? classes.contentShift : ''}`}
-      >
-        <div className={classes.drawerHeader} />
-        <Fab
-          color="primary"
-          aria-label="add"
-          className={classes.rightButton}
-          onClick={this.handleAddClick}
+
+    console.log(activities);
+
+    const activitiesByCategory = _.groupBy(activities, 'category_name');
+    console.log(activitiesByCategory);
+    // activities.
+
+
+    return (
+      <div>
+        <TopBar handleDrawerOpen={this.handleDrawerOpen} open={open} title="Actividades" />
+        <SideBar handleDrawerClose={this.handleDrawerClose} open={open} />
+        <main
+          className={`${classes.content} ${open ? classes.contentShift : ''}`}
         >
-          <AddIcon />
-        </Fab>
+          <div className={classes.drawerHeader} />
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.rightButton}
+            onClick={this.handleAddClick}
+          >
+            <AddIcon />
+          </Fab>
 
+          {error && <ErrorNotification open={_.get(this.state, 'error.open')} message={_.get(this.state, 'error.message')} />}
 
-        {categories.map(categorie =>
-          <div>
-            <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
-              {categorie}
-            </Typography>
-            {this.renderCategoriyActivities(categoryActivities, classes)}
-          </div>
-        )}
-      </main>
-    ]);
+          {activities && Object.keys(activitiesByCategory).map((category) => (
+            <div className={classes.tableContainerDiv}>
+              {ActivitiesPage.renderCategoriyActivities(activitiesByCategory[category], classes)}
+            </div>
+          ))}
+        </main>
+      </div>
+    );
   }
 }
 

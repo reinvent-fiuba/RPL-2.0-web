@@ -27,3 +27,11 @@ exports.getActivityCategories = (courseId) => {
     method: 'GET'
   }); 
 }
+
+
+exports.getAllActivities = (courseId) => {
+  return request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
+    method: 'GET'
+  }); 
+}

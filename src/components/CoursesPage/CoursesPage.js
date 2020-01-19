@@ -62,6 +62,7 @@ class CoursesPage extends React.Component {
     this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
     this.renderCourseCards = this.renderCourseCards.bind(this);    
     this.handleAddClick = this.handleAddClick.bind(this);
+    this.handleGoToCourseClick = this.handleGoToCourseClick.bind(this);
     const { profile } = this.props.context;
     let allCourses;
     coursesService.getAll()
@@ -74,13 +75,17 @@ class CoursesPage extends React.Component {
       });
   }
 
+  handleGoToCourseClick(courseId) {
+    this.setState({toCoursePage: true, courseId: courseId});
+  }
+
   renderCourseCards(courses) {
     return <Grid container spacing={1}>      
     { _.chunk(courses, 4).map(row => 
       <Grid container item xs={12} spacing={3}>
         {_.map(row, course => 
           <Grid item xs={3}>
-            <CourseCard id={course.university_course_id} name={course.name} description={course.description} imgUri={course.img_uri}/>
+            <CourseCard id={course.id} university_course_id={course.university_course_id} name={course.name} description={course.description} imgUri={course.img_uri} handleGoToCourseClick={this.handleGoToCourseClick}/>
           </Grid>
         )}
       </Grid>
@@ -106,6 +111,11 @@ class CoursesPage extends React.Component {
     if (this.state.toCreateCoursePage) {
       return <Redirect to="/courses/create"/>
     }
+
+    if (this.state.toCoursePage) {
+      return <Redirect to={`/courses/${this.state.courseId}/activities`}/>
+    }
+
 
     return([
     <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open} title='Cursos'></TopBar>,
