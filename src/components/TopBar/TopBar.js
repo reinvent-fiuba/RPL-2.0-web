@@ -53,10 +53,10 @@ const actionIcons = {
 }
 
 class TopBar extends React.Component {
-  
+
   constructor(props, defaultProps) {
     super(props, defaultProps);
-    this.state = {open: this.props.open};
+    this.state = { open: this.props.open };
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -70,11 +70,12 @@ class TopBar extends React.Component {
 
   render() {
     const { classes, title } = this.props;
-    const { name, surname } = (this.props.context && this.props.context.profile) || { name: 'Mati', surname: 'Cano'};
+    const { name, surname } = (this.props.context && this.props.context.profile);
 
-    return (<AppBar
-      position="fixed"
-      className={`${classes.appBar} ${this.state.open ? classes.appBarShift : ''}`}
+    return (
+      <AppBar
+        position="fixed"
+        className={`${classes.appBar} ${this.state.open ? classes.appBarShift : ''}`}
       >
         <Toolbar>
           <IconButton
