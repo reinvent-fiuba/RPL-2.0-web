@@ -18,7 +18,7 @@ const routing = (
         <Route path="/signup" component={SignupPage} />
         <Route exact path='/courses' component={CoursesPage}/>
         <Route path='/courses/create' component={CreateCoursePage}/>
-        <Route path='/courses/:courseId/activity/create' component={CreateActivityPage}/>
+        <Route path='/courses/:courseId/activities/create' component={CreateActivityPage}/>
       </div>
     </Router>
   </StateProvider>
