@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server -e --open --hot --mode development --host 0.0.0.0 --port 8088 --config webpack.config.js",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "lint": "eslint src/**/*.js src/**/*.jsx"
   },
   "engines": {
     "node": "10.16.3"
@@ -28,6 +29,12 @@
     "babel-loader": "^8.0.6",
     "body-parser": "^1.19.0",
     "css-loader": "^3.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.18.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
     "express": "^4.17.1",
     "express-pino-logger": "^4.0.0",
     "file-loader": "^4.2.0",
@@ -38,7 +45,6 @@
     "nodemon": "^1.19.1",
     "npm-run-all": "^4.1.5",
     "pino-colada": "^1.4.5",
-    "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "style-loader": "^1.0.0",
     "to-string-loader": "^1.1.5",
@@ -48,11 +54,13 @@
     "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
-    "@material-ui/core": "4.4.3",
+    "@material-ui/core": "latest",
     "@material-ui/icons": "4.5.1",
     "dot-env": "0.0.1",
     "dotenv-webpack": "^1.7.0",
+    "lodash": "^4.17.15",
     "monaco-editor": "^0.19.2",
+    "react": "^16.12.0",
     "react-mde": "^8.0.1",
     "react-monaco-editor": "^0.33.0",
     "react-resize-detector": "^4.2.1",

@@ -43,6 +43,12 @@ class CourseCard extends React.Component {
 
   constructor(props) {
     super(props);
+    this.handleAccessButton = this.handleAccessButton.bind(this);
+  }
+
+
+  handleAccessButton() {
+    this.props.handleGoToCourseClick(this.props.id);
   }
 
   render(){
@@ -51,7 +57,7 @@ class CourseCard extends React.Component {
     return(<Card className={classes.card}>
         <CardHeader
           avatar={
-          <Avatar className={classes.avatar}>{this.props.id}</Avatar>
+          <Avatar className={classes.avatar}>{this.props.university_course_id}</Avatar>
           }
           title={this.props.name}
         />
@@ -66,7 +72,7 @@ class CourseCard extends React.Component {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <Button>
+          <Button onClick={this.handleAccessButton}>
             Acceder
           </Button>
           <Button className={classes.action}>

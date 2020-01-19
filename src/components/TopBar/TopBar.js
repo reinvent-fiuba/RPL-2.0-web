@@ -53,23 +53,29 @@ const actionIcons = {
 }
 
 class TopBar extends React.Component {
-  
+
   constructor(props, defaultProps) {
     super(props, defaultProps);
-    this.state = {open: this.props.open};
+    this.state = { open: this.props.open };
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({open: newProps.open});
+  static getDerivedStateFromProps(props, state) {
+    if (props.open !== state.open) {
+      return {
+        open: props.open,
+      };
+    }
+    return { open: false };
   }
 
   render() {
     const { classes, title } = this.props;
     const { name, surname } = (this.props.context && this.props.context.profile);
 
-    return (<AppBar
-      position="fixed"
-      className={`${classes.appBar} ${this.state.open ? classes.appBarShift : ''}`}
+    return (
+      <AppBar
+        position="fixed"
+        className={`${classes.appBar} ${this.state.open ? classes.appBarShift : ''}`}
       >
         <Toolbar>
           <IconButton
