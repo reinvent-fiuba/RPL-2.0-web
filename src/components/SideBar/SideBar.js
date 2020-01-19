@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import CodeIcon from '@material-ui/icons/Code';
 import SchoolIcon from '@material-ui/icons/School';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -14,7 +15,7 @@ import List from '@material-ui/core/List';
 
 const drawerWidth = 240;
 
-const styles = theme => ({
+const styles = (theme) => ({
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -28,63 +29,74 @@ const styles = theme => ({
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
-  }
+  },
 });
 
 const actionIcons = {
-  'Cursos': SchoolIcon,
-  'Perfil': AccountCircleIcon,
-  'Configuracion': SettingsIcon
-}
+  Cursos: SchoolIcon,
+  Actividades: CodeIcon,
+  Perfil: AccountCircleIcon,
+  Configuracion: SettingsIcon,
+};
 
 class SideBar extends React.Component {
   constructor(props, defaultProps) {
     super(props, defaultProps);
-    this.state = {open: this.props.open};
+    this.state = { open: this.props.open };
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({open: newProps.open});
+  static getDerivedStateFromProps(props, state) {
+    if (props.open !== state.open) {
+      return {
+        open: props.open,
+      };
+    }
+    return { open: false };
   }
 
 
   render() {
     const { classes } = this.props;
 
-    return (<Drawer
-      className={classes.drawer}
-      variant="persistent"
-      anchor="left"
-      open={this.state.open}
-      classes={{
-        paper: classes.drawerPaper,
-      }}
+    return (
+      <Drawer
+        className={classes.drawer}
+        variant="persistent"
+        anchor="left"
+        open={this.state.open}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
       >
-      <div className={classes.drawerHeader}>
-        <IconButton onClick={this.props.handleDrawerClose}>
-          <ChevronLeftIcon/>
-        </IconButton>
-      </div>
-      <Divider />
-      <List>
-        {['Cursos'].map((text) => {
-          const Icon = actionIcons[text];
-          return <ListItem button key={text}>
-            <ListItemIcon><Icon/></ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        })}
-      </List>
-      <Divider />
-      <List>
-       {['Perfil', 'Configuracion'].map((text) => {
-          const Icon = actionIcons[text];
-          return <ListItem button key={text}>
-            <ListItemIcon><Icon/></ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-      })}
-      </List>
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={this.props.handleDrawerClose}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </div>
+        <Divider />
+        <List>
+          {['Cursos', 'Actividades'].map((text) => {
+            const Icon = actionIcons[text];
+            return (
+              <ListItem button key={text}>
+                <ListItemIcon><Icon /></ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            );
+          })}
+        </List>
+        <Divider />
+        <List>
+          {['Perfil', 'Configuracion'].map((text) => {
+            const Icon = actionIcons[text];
+            return (
+              <ListItem button key={text}>
+                <ListItemIcon><Icon /></ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            );
+          })}
+        </List>
       </Drawer>
     );
   }

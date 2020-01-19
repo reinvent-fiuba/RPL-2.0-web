@@ -60,6 +60,9 @@ const styles = (theme) => ({
   table: {
     minWidth: 650,
   },
+  tableContainer: {
+    width: '80%',
+  },
   tableContainerDiv: {
     display: 'flex',
     alignItems: 'center',
@@ -105,16 +108,10 @@ class ActivitiesPage extends React.Component {
     this.setState({ open: false });
   }
 
-  static createData(name, calories, fat, carbs, protein) {
-    return {
-      name, calories, fat, carbs, protein,
-    };
-  }
-
   static renderCategoriyActivities(activities, classes) {
     return (
-      <TableContainer component={Paper} width="80%">
-        <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
+      <TableContainer component={Paper} className={classes.tableContainer}>
+        <Typography variant="h5" color="textSecondary" component="p" className={classes.tableTitle}>
           {activities[0].category_name}
         </Typography>
         <Table className={classes.table} aria-label="simple table">
@@ -130,13 +127,7 @@ class ActivitiesPage extends React.Component {
           <TableBody>
             {activities.map((row) => (
               <TableRow key={row.id}>
-                <TableCell key={1} component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                {/* <TableCell key={1} align="right">{row.calories}</TableCell>
-              <TableCell key={1} align="right">{row.fat}</TableCell>
-              <TableCell key={1} align="right">{row.carbs}</TableCell>
-              <TableCell key={1} align="right">{row.protein}</TableCell> */}
+                <TableCell key={1} component="th" scope="row">{row.name}</TableCell>
                 <TableCell key={2} align="right">{(row.last_submission_date && row.last_submission_date.split('T')[0]) || '-'}</TableCell>
                 <TableCell key={3} align="right">{15}</TableCell>
                 <TableCell key={4} align="right">{row.submission_status || 'SIN EMPEZAR'}</TableCell>

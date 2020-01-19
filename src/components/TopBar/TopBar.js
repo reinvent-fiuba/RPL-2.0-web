@@ -59,8 +59,13 @@ class TopBar extends React.Component {
     this.state = {open: this.props.open};
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({open: newProps.open});
+  static getDerivedStateFromProps(props, state) {
+    if (props.open !== state.open) {
+      return {
+        open: props.open,
+      };
+    }
+    return { open: false };
   }
 
   render() {
