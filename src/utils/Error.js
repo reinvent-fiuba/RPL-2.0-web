@@ -1,6 +1,4 @@
 import React from 'react';
-import { Snackbar } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -8,14 +6,15 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
-  }
 
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service
     console.log(error, errorInfo);
+  }
+
+  static getDerivedStateFromError(error) {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
   }
 
   render() {
@@ -24,14 +23,12 @@ class ErrorBoundary extends React.Component {
       return <h1>Something went wrong.</h1>;
     }
 
-    return this.props.children; 
+    return this.props.children;
   }
 }
 
-export const withErrorHandling = (Component) => {
-  return (props) => {
-    return <ErrorBoundary>
-      <Component {...props}/>
-    </ErrorBoundary>;
-  };
-};
+export const withErrorHandling = (Component) => (props) => (
+  <ErrorBoundary>
+    <Component {...props} />
+  </ErrorBoundary>
+);

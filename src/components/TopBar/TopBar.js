@@ -7,7 +7,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import SchoolIcon from '@material-ui/icons/School';
-import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@material-ui/core/Avatar';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -17,7 +17,7 @@ import { withState } from '../../utils/State';
 
 const drawerWidth = 240;
 
-const styles = theme => ({
+const styles = (theme) => ({
   appBar: {
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
@@ -43,17 +43,11 @@ const styles = theme => ({
   },
   user: {
     marginRight: theme.spacing(2),
-  }
+  },
 });
 
-const actionIcons = {
-  'Cursos': SchoolIcon,
-  'Perfil': AccountCircleIcon,
-  'Configuracion': SettingsIcon
-}
 
 class TopBar extends React.Component {
-
   constructor(props, defaultProps) {
     super(props, defaultProps);
     this.state = { open: this.props.open };
@@ -91,9 +85,14 @@ class TopBar extends React.Component {
             {title}
           </Typography>
           <Typography variant="body1" className={classes.user}>
-            {name} {surname}
+            {name}
+            {' '}
+            {surname}
           </Typography>
-          <Avatar className={classes.avatar}>{name[0]}{surname[0]}</Avatar>
+          <Avatar className={classes.avatar}>
+            {name[0]}
+            {surname[0]}
+          </Avatar>
         </Toolbar>
       </AppBar>
     );

@@ -7,31 +7,30 @@ const producer = {
 exports.create = (activityDetails) => {
   const formData = new FormData();
 
-  activityDetails.supportingFile = new Blob([activityDetails.supportingFile]);
+  Object.keys(activityDetails).forEach((property) => {
+    if (!activityDetails[property]) {
+      return;
+    }
+    formData.append(property, activityDetails[property]);
+  });
 
-  for (const name in activityDetails) {
-    formData.append(name, activityDetails[name]);
-  }
+  formData.set('supportingFile', new Blob([activityDetails.supportingFile]));
 
   return request({
     url: `http://${producer.base_url}/api/courses/${activityDetails.courseId}/activities`,
     body: formData,
     method: 'POST',
-    headers: new Headers()
+    headers: new Headers(),
   });
-}
+};
 
-exports.getActivityCategories = (courseId) => {
-  return request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,
-    method: 'GET'
-  });
-}
+exports.getActivityCategories = (courseId) => request({
+  url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,
+  method: 'GET',
+});
 
 
-exports.getAllActivities = (courseId) => {
-  return request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
-    method: 'GET'
-  });
-}
+exports.getAllActivities = (courseId) => request({
+  url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
+  method: 'GET',
+});
