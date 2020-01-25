@@ -1,17 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, BrowserRouter as Router } from 'react-router-dom';
+import { Route, BrowserRouter } from 'react-router-dom';
 import LoginPage from './components/LoginPage/LoginPage';
 import SignupPage from './components/SignupPage/SignupPage';
 import { StateProvider } from './utils/State';
 import CoursesPage from './components/CoursesPage/CoursesPage';
 import CreateCoursePage from './components/CreateCoursePage/CreateCoursePage';
 import CreateActivityPage from './components/CreateActivityPage/CreateActivityPage';
+import SolveActivityPage from './components/SolveActivityPage/SolveActivityPage';
 import ActivitiesPage from './components/ActivitiesPage/ActivitiesPage';
 
 const routing = (
   <StateProvider>
-    <Router>
+    <BrowserRouter>
       <div>
         <Route exact path="/" component={LoginPage} />
         <Route path="/login" component={LoginPage} />
@@ -20,8 +21,9 @@ const routing = (
         <Route path="/courses/create" component={CreateCoursePage} />
         <Route exact path="/courses/:courseId/activities" component={ActivitiesPage} />
         <Route path="/courses/:courseId/activity/create" component={CreateActivityPage} />
+        <Route path="/courses/:courseId/activities/:activityId" component={SolveActivityPage} />
       </div>
-    </Router>
+    </BrowserRouter>
   </StateProvider>
 );
 

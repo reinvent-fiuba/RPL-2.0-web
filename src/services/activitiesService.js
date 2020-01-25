@@ -6,7 +6,7 @@ const producer = {
   base_url: process.env.API_BASE_URL || "localhost:8080"
 };
 
-exports.create = (activityDetails: any) => {
+exports.createActivity = (activityDetails: any) => {
   const formData = new FormData();
 
   Object.keys(activityDetails).forEach(property => {
@@ -35,5 +35,11 @@ exports.getActivityCategories = (courseId: number): Promise<Array<string>> =>
 exports.getAllActivities = (courseId: number): Promise<Array<Activity>> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
+    method: "GET"
+  });
+
+exports.getActivity = (courseId: number, activityId: number): Promise<Activity> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     method: "GET"
   });

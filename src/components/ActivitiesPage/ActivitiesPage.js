@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import { useHistory } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -81,6 +82,7 @@ const styles = theme => ({
 type Props = {
   match: any,
   classes: any,
+  history: any,
   handleSwitchDrawer: any
 };
 
@@ -118,6 +120,11 @@ class ActivitiesPage extends React.Component<Props, State> {
     this.setState(prevState => ({ open: !prevState.open }));
   }
 
+  handleCellClick(event: any, activityId: number) {
+    // const history = useHistory();
+    this.props.history.push(`/courses/${this.props.match.params.courseId}/activities/${activityId}`);
+  }
+
   renderCategoryActivities(activities: Array<Activity>, classes: any) {
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
@@ -131,7 +138,7 @@ class ActivitiesPage extends React.Component<Props, State> {
         </Typography>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
-            <TableRow>
+            <TableRow key={0}>
               <TableCell key={1}>Nombre</TableCell>
               <TableCell key={2} align="right">
                 Última actividad
@@ -147,7 +154,11 @@ class ActivitiesPage extends React.Component<Props, State> {
           </TableHead>
           <TableBody>
             {activities.map(row => (
-              <TableRow key={row.id}>
+              <TableRow
+                hover
+                key={row.id}
+                onClick={event => this.handleCellClick(event, row.id)}
+              >
                 <TableCell key={1} component="th" scope="row">
                   {row.name}
                 </TableCell>
@@ -219,7 +230,7 @@ class ActivitiesPage extends React.Component<Props, State> {
 
           {activities &&
             Object.keys(activitiesByCategory).map(category => (
-              <div className={classes.tableContainerDiv}>
+              <div key={category} className={classes.tableContainerDiv}>
                 {this.renderCategoryActivities(
                   activitiesByCategory[category],
                   classes

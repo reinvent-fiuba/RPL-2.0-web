@@ -164,12 +164,13 @@ class CreateActivityPage extends React.Component {
     const {
       courseId, name, points, language, category, code, mdText,
     } = this.state;
-    activitiesService.create({
+    activitiesService.createActivity({
       courseId,
       name,
       points,
       language,
       activityCategoryId: category,
+      initialCode: code,
       supportingFile: code,
       description: mdText,
     }).then((response) => {
@@ -181,7 +182,7 @@ class CreateActivityPage extends React.Component {
 
   renderCategoriesDropdown() {
     const { categories } = this.state;
-    return _.map(categories, (category) => <MenuItem value={category.id}>{category.name}</MenuItem>);
+    return _.map(categories, (category) => <MenuItem key={category.id} value={category.id}>{category.name}</MenuItem>);
   }
 
   render() {
@@ -231,13 +232,13 @@ class CreateActivityPage extends React.Component {
                 value={language || ''}
                 onChange={(event) => this.setState({ language: event.target.value })}
               >
-                <MenuItem value="c">C</MenuItem>
-                <MenuItem value="python">Python</MenuItem>
-                <MenuItem value="java">Java</MenuItem>
+                <MenuItem key={0} value="c">C</MenuItem>
+                <MenuItem key={1} value="python">Python</MenuItem>
+                <MenuItem key={2} value="java">Java</MenuItem>
               </Select>
             </FormControl>
             <FormControl>
-              <InputLabel id="category">Categoria</InputLabel>
+              <InputLabel id="category">Categoría</InputLabel>
               <Select
                 labelId="category"
                 id="category"
@@ -248,7 +249,7 @@ class CreateActivityPage extends React.Component {
               </Select>
             </FormControl>
           </form>
-          <Grid container xs={12} spacing={3} className={classes.grid}>
+          <Grid container  spacing={3} className={classes.grid}>
             <Grid item xs={6} className={classes.codeEditor}>
               <ReactResizeDetector
                 handleWidth

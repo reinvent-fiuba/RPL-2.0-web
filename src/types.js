@@ -9,6 +9,7 @@ export type Activity = {
   description: string,
   language: string,
   active: boolean,
+  initial_code: string,
   file_id: number,
   submission_status: string,
   last_submission_date: string,
