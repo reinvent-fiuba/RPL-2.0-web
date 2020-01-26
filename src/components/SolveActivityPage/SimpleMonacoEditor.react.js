@@ -28,7 +28,8 @@ export default class SimpleMonacoEditor extends React.Component {
 
     
     onChange(newValue, e) {
-        console.log('onChange', newValue, e);
+        console.log('onCodeChange', newValue, e);
+        this.props.onCodeChange(newValue);
     }
 
     render() {

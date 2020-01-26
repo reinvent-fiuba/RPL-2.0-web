@@ -1,83 +1,68 @@
-import React from 'react';
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import Divider from '@material-ui/core/Divider';
-import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import SchoolIcon from '@material-ui/icons/School';
-import Avatar from '@material-ui/core/Avatar';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import SettingsIcon from '@material-ui/icons/Settings';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import List from '@material-ui/core/List';
-import MenuIcon from '@material-ui/icons/Menu';
-import { withState } from '../../utils/State';
+import React from "react";
+import Drawer from "@material-ui/core/Drawer";
+import IconButton from "@material-ui/core/IconButton";
+import Divider from "@material-ui/core/Divider";
+import { withStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import SchoolIcon from "@material-ui/icons/School";
+import Avatar from "@material-ui/core/Avatar";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import SettingsIcon from "@material-ui/icons/Settings";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import List from "@material-ui/core/List";
+import MenuIcon from "@material-ui/icons/Menu";
+import { withState } from "../../utils/State";
 
 const drawerWidth = 240;
 
-const styles = (theme) => ({
+const styles = theme => ({
   appBar: {
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
+      duration: theme.transitions.duration.leavingScreen
+    })
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(2)
   },
   hide: {
-    display: 'none',
+    display: "none"
   },
   title: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   user: {
-    marginRight: theme.spacing(2),
-  },
+    marginRight: theme.spacing(2)
+  }
 });
 
-
-class TopBar extends React.Component {
-  constructor(props, defaultProps) {
-    super(props, defaultProps);
-    this.state = { open: this.props.open };
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    if (props.open !== state.open) {
-      return {
-        open: props.open,
-      };
-    }
-    return { open: false };
-  }
-
+class TopBar extends React.PureComponent {
   render() {
-    const { classes, title } = this.props;
-    const { name, surname } = (this.props.context && this.props.context.profile);
+    const { open, title, handleDrawerOpen, context, classes } = this.props;
+    const { name, surname } = context && context.profile;
 
     return (
       <AppBar
         position="fixed"
-        className={`${classes.appBar} ${this.state.open ? classes.appBarShift : ''}`}
+        className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}
       >
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
-            onClick={this.props.handleDrawerOpen}
+            onClick={handleDrawerOpen}
             edge="start"
-            className={`${classes.menuButton} ${this.state.open ? classes.hide : ''}`}
+            className={`${classes.menuButton} ${open ? classes.hide : ""}`}
           >
             <MenuIcon />
           </IconButton>
@@ -85,9 +70,7 @@ class TopBar extends React.Component {
             {title}
           </Typography>
           <Typography variant="body1" className={classes.user}>
-            {name}
-            {' '}
-            {surname}
+            {name} {surname}
           </Typography>
           <Avatar className={classes.avatar}>
             {name[0]}

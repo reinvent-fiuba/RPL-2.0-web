@@ -40,23 +40,9 @@ const actionIcons = {
   Configuracion: SettingsIcon
 };
 
-class SideBar extends React.Component {
-  constructor(props, defaultProps) {
-    super(props, defaultProps);
-    this.state = { open: this.props.open };
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    if (props.open !== state.open) {
-      return {
-        open: props.open
-      };
-    }
-    return { open: false };
-  }
-
+class SideBar extends React.PureComponent {
   render() {
-    const { classes, courseId } = this.props;
+    const { open, classes, courseId, handleDrawerClose } = this.props;
 
     const itemsLinks = { Cursos: "/courses" };
 
@@ -69,13 +55,13 @@ class SideBar extends React.Component {
         className={classes.drawer}
         variant="persistent"
         anchor="left"
-        open={this.state.open}
+        open={open}
         classes={{
           paper: classes.drawerPaper
         }}
       >
         <div className={classes.drawerHeader}>
-          <IconButton onClick={this.props.handleDrawerClose}>
+          <IconButton onClick={handleDrawerClose}>
             <ChevronLeftIcon />
           </IconButton>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Route, BrowserRouter } from 'react-router-dom';
+import showdown from "showdown";
 import LoginPage from './components/LoginPage/LoginPage';
 import SignupPage from './components/SignupPage/SignupPage';
 import { StateProvider } from './utils/State';
@@ -9,6 +10,8 @@ import CreateCoursePage from './components/CreateCoursePage/CreateCoursePage';
 import CreateActivityPage from './components/CreateActivityPage/CreateActivityPage';
 import SolveActivityPage from './components/SolveActivityPage/SolveActivityPage';
 import ActivitiesPage from './components/ActivitiesPage/ActivitiesPage';
+
+showdown.setFlavor('github');
 
 const routing = (
   <StateProvider>
