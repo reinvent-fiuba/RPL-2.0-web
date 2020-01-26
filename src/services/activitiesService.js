@@ -16,7 +16,8 @@ exports.createActivity = (activityDetails: any) => {
     formData.append(property, activityDetails[property]);
   });
 
-  formData.set("supportingFile", new Blob([activityDetails.supportingFile]));
+  formData.append("supportingFile", new File(["Hola Mundo!"], "supporting_file1.txt"));
+  formData.append("supportingFile", new File(["Hola Mundo2!"], "supporting_file2.txt"));
 
   return request({
     url: `http://${producer.base_url}/api/courses/${activityDetails.courseId}/activities`,

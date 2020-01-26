@@ -1,49 +1,41 @@
-import React from 'react';
-import MonacoEditor from 'react-monaco-editor'
+// @flow
+import React from "react";
+import MonacoEditor from "react-monaco-editor";
 
-const code =
-`#include <stdio.h>
+type Props = {
+  onCodeChange: (code: string) => void,
+  language: string,
+  width: number | string,
+  initialCode: string
+};
 
-int main()
-{
-    int a, b, c;
-    printf("Enter the first value:");
-    scanf("%d", &a);
-    printf("Enter the second value:");
-    scanf("%d", &b);
-    c = a + b;
-    printf("%d + %d = %d", a, b, c);
-    return 0;
-}
+type State = {
+  code: string
+};
 
-`
-export default class SimpleMonacoEditor extends React.Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            width: props.width,
-            code: props.initialCode
-        }
-    }
+export default class SimpleMonacoEditor extends React.Component<Props, State> {
+  state = {
+    code: this.props.initialCode
+  };
 
-    
-    onChange(newValue, e) {
-        console.log('onCodeChange', newValue, e);
-        this.props.onCodeChange(newValue);
-    }
+  onChange(newValue: string, e: Event) {
+    this.setState({ code: newValue });
+    this.props.onCodeChange(newValue);
+  }
 
-    render() {
-        const {language} = this.props;
-        return (
-            <MonacoEditor
-                width={this.props.width}
-                // height="800"
-                language={language}
-                theme="vs-dark"
-                defaultValue=''
-                value={this.state.code}
-                onChange={this.onChange}
-            />
-        )
-    }
+  render() {
+    const { language } = this.props;
+    const { code } = this.state;
+    return (
+      <MonacoEditor
+        width={this.props.width}
+        // height="800"
+        language={language.split("_")[0]}
+        theme="vs-dark"
+        defaultValue=""
+        value={this.state.code}
+        onChange={(c: string, e: Event) => this.onChange(c, e)}
+      />
+    );
+  }
 }
