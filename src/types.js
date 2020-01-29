@@ -17,6 +17,11 @@ export type Activity = {
   last_updated: string
 };
 
+export type Category = {
+  id: number,
+  name: string
+}
+
 export type Course = {
   id: number,
   name: string,

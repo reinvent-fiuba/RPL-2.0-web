@@ -28,25 +28,11 @@ type Props = {
 };
 
 function TestResultsModal(props: Props) {
-  //   const [open, setOpen] = React.useState(true);
-
-  //   const handleClose = () => {
-  //     setOpen(false);
-  //   };
-
-  //   const descriptionElementRef = React.useRef(null);
-  //   React.useEffect(() => {
-  //     if (open) {
-  //       const { current: descriptionElement } = descriptionElementRef;
-  //       if (descriptionElement !== null) {
-  //         descriptionElement.focus();
-  //       }
-  //     }
-  //   }, [open]);
-
   const { classes, results, open, handleCloseModal } = props;
 
-  const title = results ? results.submission_status : "Corriendo pruebas";
+  const title = results
+    ? `Resultado de la corrida: ${results.submission_status}`
+    : "Corriendo pruebas";
 
   return (
     <div>
@@ -116,19 +102,3 @@ function TestResultsModal(props: Props) {
 }
 
 export default withStyles(styles)(TestResultsModal);
-
-//           <DialogContentText
-//             id="scroll-dialog-description"
-//             ref={descriptionElementRef}
-//             tabIndex={-1}
-//           >
-//             Esto puede tardar unos segundos
-//             {[...new Array(50)]
-//               .map(
-//                 () => `Cras mattis consectetur purus sit amet fermentum.
-// Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-// Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-// Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`
-//               )
-//               .join("\n")}
-//           </DialogContentText>

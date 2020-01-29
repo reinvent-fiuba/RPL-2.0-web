@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
@@ -12,11 +13,11 @@ import MonacoEditor from "react-monaco-editor";
 import ReactMde from "react-mde";
 import * as Showdown from "showdown";
 import ReactResizeDetector from "react-resize-detector";
-import { Link } from "react-router-dom";
 import { withState } from "../../utils/State";
 import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
 import activitiesService from "../../services/activitiesService";
+import type { Activity, Category } from "../../types";
 
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
@@ -68,6 +69,7 @@ const styles = theme => ({
   },
   form: {
     display: "inline-flex",
+    width: "100%",
     marginBottom: 20,
     "& > *": {
       width: 200,
@@ -115,40 +117,63 @@ const styles = theme => ({
   createButton: {
     display: "flex",
     marginLeft: "auto",
-    marginRight: theme.spacing(10),
     marginTop: theme.spacing(3)
+  },
+  studentPreviewButton: {
+    marginLeft: "auto",
+    alignSelf: "flex-end"
   }
 });
 
-class CreateActivityPage extends React.Component {
-  constructor(props) {
-    super(props);
-    const { courseId } = this.props.match.params;
-    this.state = {
-      courseId,
-      mdText: "",
-      mdEditorTab: "write",
-      editor: null
-    };
-    this.handleDrawerClose = this.handleDrawerClose.bind(this);
-    this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleCreateClick = this.handleCreateClick.bind(this);
-    this.renderCategoriesDropdown = this.renderCategoriesDropdown.bind(this);
-  }
+type Props = {
+  match: any,
+  classes: any,
+  history: any
+};
+
+type State = {
+  error: { open: boolean, message: ?string },
+  open: boolean,
+  activity: ?Activity,
+  categories: ?Array<Category>,
+  language: string,
+  category: ?Category,
+  name: string,
+  points: string,
+  code: string,
+  mdText: string,
+  mdEditorTab: string,
+  editor: any
+};
+
+class CreateActivityPage extends React.Component<Props, State> {
+  state = {
+    error: { open: false, message: null },
+    open: false,
+    activity: null,
+    categories: [],
+    language: "",
+    category: null,
+    name: "",
+    points: "",
+    code: "",
+    mdText: "",
+    mdEditorTab: "write",
+    editor: null
+  };
 
   componentDidMount() {
-    const { courseId } = this.state;
+    let { courseId } = this.props.match.params;
     activitiesService.getActivityCategories(courseId).then(response => {
       this.setState({ categories: response });
     });
   }
 
-  handleDrawerOpen() {
+  handleDrawerOpen(e: Event) {
     this.setState({ open: true });
   }
 
-  handleDrawerClose() {
+  handleDrawerClose(e: Event) {
     this.setState({ open: false });
   }
 
@@ -160,15 +185,9 @@ class CreateActivityPage extends React.Component {
 
   handleCreateClick(event) {
     event.preventDefault();
-    const {
-      courseId,
-      name,
-      points,
-      language,
-      category,
-      code,
-      mdText
-    } = this.state;
+    let { courseId } = this.props.match.params;
+
+    const { name, points, language, category, code, mdText } = this.state;
     activitiesService
       .createActivity({
         courseId,
@@ -196,6 +215,11 @@ class CreateActivityPage extends React.Component {
       });
   }
 
+  handleCancel(e: Event) {
+    let { courseId } = this.props.match.params;
+    this.props.history.push(`/courses/${courseId}/activities`);
+  }
+
   renderCategoriesDropdown() {
     const { categories } = this.state;
     return _.map(categories, category => (
@@ -207,9 +231,9 @@ class CreateActivityPage extends React.Component {
 
   render() {
     const { classes } = this.props;
+    let { courseId } = this.props.match.params;
 
     const {
-      courseId,
       name,
       points,
       language,
@@ -223,12 +247,12 @@ class CreateActivityPage extends React.Component {
     return (
       <div>
         <TopBar
-          handleDrawerOpen={this.handleDrawerOpen}
+          handleDrawerOpen={e => this.handleDrawerOpen(e)}
           open={open}
           title="Crear Actividad"
         />
         <SideBar
-          handleDrawerClose={this.handleDrawerClose}
+          handleDrawerClose={e => this.handleDrawerClose(e)}
           open={open}
           courseId={courseId}
         />
@@ -253,7 +277,7 @@ class CreateActivityPage extends React.Component {
               label="Nombre de Actividad"
               name="name"
               autoComplete="name"
-              onChange={this.handleChange}
+              onChange={e => this.handleChange(e)}
             />
             <TextField
               margin="normal"
@@ -263,7 +287,7 @@ class CreateActivityPage extends React.Component {
               label="Puntaje"
               name="points"
               autoComplete="points"
-              onChange={this.handleChange}
+              onChange={e => this.handleChange(e)}
             />
             <FormControl>
               <InputLabel id="language">Lenguaje</InputLabel>
@@ -299,13 +323,26 @@ class CreateActivityPage extends React.Component {
                 {this.renderCategoriesDropdown()}
               </Select>
             </FormControl>
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={classes.studentPreviewButton}
+              onClick={e => this.handleCreateClick(e)}
+            >
+              Student preview
+            </Button>
           </form>
+
           <Grid container spacing={3} className={classes.grid}>
             <Grid item xs={6} className={classes.codeEditor}>
               <ReactResizeDetector
                 handleWidth
                 handleHeight
-                onResize={() => (this.editor ? this.editor.layout : () => {})}
+                onResize={() =>
+                  this.state.editor ? this.state.editor.layout : () => {}
+                }
               >
                 <MonacoEditor
                   options={{
@@ -324,7 +361,7 @@ class CreateActivityPage extends React.Component {
                         domNode: document.createElement("span")
                       });
                     });
-                    this.editor = editor;
+                    this.setState({ editor });
                   }}
                 />
               </ReactResizeDetector>
@@ -353,8 +390,7 @@ class CreateActivityPage extends React.Component {
                 variant="contained"
                 color="secondary"
                 className={classes.cancelButton}
-                component={Link}
-                to={`/courses/${courseId}/activities`}
+                onClick={e => this.handleCancel(e)}
               >
                 Cancelar
               </Button>
@@ -365,9 +401,9 @@ class CreateActivityPage extends React.Component {
                 variant="contained"
                 color="primary"
                 className={classes.createButton}
-                onClick={this.handleCreateClick}
+                onClick={e => this.handleCreateClick(e)}
               >
-                Crear
+                Crear y Agregar Pruebas
               </Button>
             </Grid>
           </Grid>

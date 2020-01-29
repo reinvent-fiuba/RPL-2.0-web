@@ -1,6 +1,6 @@
 // @flow
 const { request } = require("../utils/Request");
-import type { Activity } from "../types";
+import type { Activity, Category } from "../types";
 
 const producer = {
   base_url: process.env.API_BASE_URL || "localhost:8080"
@@ -27,7 +27,7 @@ exports.createActivity = (activityDetails: any) => {
   });
 };
 
-exports.getActivityCategories = (courseId: number): Promise<Array<string>> =>
+exports.getActivityCategories = (courseId: number): Promise<Array<Category>> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,
     method: "GET"
