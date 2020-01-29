@@ -8,8 +8,11 @@ import activitiesService from "../../services/activitiesService";
 import submissionsService from "../../services/submissionsService";
 import SimpleMonacoEditor from "./SimpleMonacoEditor.react";
 import MarkdownRenderer from "./MarkdownRenderer";
+import SolvePageHeader from "./SolvePageHeader.react";
+import TestResultsModal from "./TestResultsModal.react";
 import SplitPane from "react-split-pane";
 import Button from "@material-ui/core/Button";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import "./SolveActivityPage.css";
 import type { Activity } from "../../types";
 
@@ -21,10 +24,6 @@ const _ = require("lodash");
 const drawerWidth = 240;
 
 const styles = theme => ({
-  // content: {
-  //   flexGrow: 1,
-  //   marginLeft: 0
-  // },
   drawerHeader: {
     display: "flex",
     alignItems: "center",
@@ -46,21 +45,10 @@ const styles = theme => ({
     }),
     marginLeft: drawerWidth
   },
-  secondHeader: {
-    backgroundColor: "rgb(244, 243, 243)",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "8px"
-  },
-  secondHeaderTitle: {
-    alignSelf: "center",
-    margin: "0px",
-    color: "rgb(121, 116, 116)",
-    fontFamily: "Arial, Verdana, san-serif"
-  },
-  submitButton: {
-    alignSelf: "flex-end"
+  circularProgress: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
   }
 });
 
@@ -75,7 +63,10 @@ type State = {
   open: boolean,
   activity: ?Activity,
   code: string,
-  editorWidth: string
+  editorWidth: string,
+  submittedActivity: boolean,
+  results: any,
+  getResultsTimerId: ?IntervalID
 };
 
 class SolveActivityPage extends React.Component<Props, State> {
@@ -84,7 +75,10 @@ class SolveActivityPage extends React.Component<Props, State> {
     open: false,
     editorWidth: "100%",
     activity: null,
-    code: ""
+    code: "",
+    submittedActivity: false,
+    results: null,
+    getResultsTimerId: null
   };
 
   componentDidMount() {
@@ -119,16 +113,38 @@ class SolveActivityPage extends React.Component<Props, State> {
     this.setState({ code });
   }
 
+  pullForResults(submissionId: number) {
+    console.log("HOLA A TODOS");
+    submissionsService
+      .getSubmissionResult(submissionId)
+      .then(response => {
+        clearInterval(this.state.getResultsTimerId);
+        this.setState({getResultsTimerId: null, results: response});
+      })
+      .catch(err => {
+        this.setState({
+          error: {
+            open: true,
+            message:
+              "Hubo un error al entregar la actividad, Por favor reintenta"
+          }
+        });
+      });
+
+  }
+
   handleSubmitActivity(event: any) {
     // event.preventDefault();
     console.log("Submit");
     const { courseId, activityId } = this.props.match.params;
-    const { code } = this.state;
+    const { code, activity } = this.state;
+
+    const filename = activity && activity.language.toLowerCase() == "c" ? "main.c" : "assignment_main.py";
 
     submissionsService
-      .createSubmission(courseId, activityId, code)
+      .createSubmission(courseId, activityId, code, filename)
       .then(response => {
-        // Do something
+        this.setState({submittedActivity: true, getResultsTimerId: setInterval(() => this.pullForResults(response.id), 1000)});
       })
       .catch(err => {
         this.setState({
@@ -141,9 +157,13 @@ class SolveActivityPage extends React.Component<Props, State> {
       });
   }
 
+  handleCloseModal(e: Event) {
+    this.setState({submittedActivity: false, results: null});
+  }
+
   render() {
     const { classes } = this.props;
-    const { activity, open } = this.state;
+    const { activity, open, submittedActivity, results } = this.state;
     return (
       <div>
         <TopBar
@@ -156,24 +176,14 @@ class SolveActivityPage extends React.Component<Props, State> {
           open={open}
           courseId={this.props.match.params.courseId}
         />
+        {!activity && <CircularProgress className={classes.circularProgress}/>}
         {activity && (
           <main className={classes.content}>
             <div className={classes.drawerHeader} />
-            <div className={classes.secondHeader}>
-              <div className={classes.secondHeaderTitle}>
-                Volver a modo editar
-              </div>
-              <h1 className={classes.secondHeaderTitle}>{activity.name}</h1>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.submitButton}
-                onClick={e => this.handleSubmitActivity(e)}
-              >
-                Entregar
-              </Button>
-            </div>
+            <SolvePageHeader
+              handleSubmitActivity={e => this.handleSubmitActivity(e)}
+              activityName={activity.name}
+            />
             <SplitPane
               split="vertical"
               defaultSize="50%"
@@ -191,6 +201,7 @@ class SolveActivityPage extends React.Component<Props, State> {
             </SplitPane>
           </main>
         )}
+        {submittedActivity && <TestResultsModal results={results} open={submittedActivity} handleCloseModal={e => this.handleCloseModal(e)}/>}
       </div>
     );
   }

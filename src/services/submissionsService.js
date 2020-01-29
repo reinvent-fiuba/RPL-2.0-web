@@ -8,12 +8,13 @@ const producer = {
 exports.createSubmission = (
   courseId: number,
   activityId: number,
-  code: string
+  code: string,
+  filename: string
 ) => {
   const formData = new FormData();
 
 
-  formData.append("file", new File([code], "main.c"));
+  formData.append("file", new File([code], filename));
   formData.append("description", "La descriptionnnnnn");
 
   return request({
@@ -23,3 +24,9 @@ exports.createSubmission = (
     headers: new Headers()
   });
 };
+
+exports.getSubmissionResult = (submissionId: number): Promise<any> =>
+  request({
+    url: `http://${producer.base_url}/api/submissions/${submissionId}/result`,
+    method: "GET"
+  });
