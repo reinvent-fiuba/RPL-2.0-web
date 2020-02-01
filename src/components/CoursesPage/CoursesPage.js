@@ -1,40 +1,42 @@
-import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
-import { Link } from 'react-router-dom';
-import CourseCard from './CourseCard';
-import SideBar from '../SideBar/SideBar';
-import TopBar from '../TopBar/TopBar';
-import coursesService from '../../services/coursesService';
-import { withState } from '../../utils/State';
+// @flow
+import React from "react";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import { withStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import AddIcon from "@material-ui/icons/Add";
+import Fab from "@material-ui/core/Fab";
+import CourseCard from "./CourseCard";
+import SideBar from "../SideBar/SideBar";
+import TopBar from "../TopBar/TopBar";
+import coursesService from "../../services/coursesService";
+import { withState } from "../../utils/State";
+import ErrorNotification from "../../utils/ErrorNotification";
+import type { Course } from "../../types";
 
-const _ = require('lodash');
+const _ = require("lodash");
 
 const drawerWidth = 240;
 
-const styles = (theme) => ({
+const styles = theme => ({
   drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: 0,
   },
   contentShift: {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -48,42 +50,71 @@ const styles = (theme) => ({
     margin: 20,
   },
   rightButton: {
-    display: 'flex',
-    marginLeft: 'auto',
+    display: "flex",
+    marginLeft: "auto",
     marginRight: theme.spacing(2),
   },
 });
 
-class CoursesPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { myCourses: [], allCourses: [] };
-    this.handleDrawerClose = this.handleDrawerClose.bind(this);
-    this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
-    this.renderCourseCards = this.renderCourseCards.bind(this);
-  }
+type Props = {
+  match: any,
+  classes: any,
+  context: any,
+  history: any,
+};
+
+type State = {
+  error: { open: boolean, message: ?string },
+  open: boolean,
+  myCourses: Array<Course>,
+  allCourses: Array<Course>,
+};
+
+class CoursesPage extends React.Component<Props, State> {
+  state = {
+    error: { open: false, message: null },
+    open: false,
+    myCourses: [],
+    allCourses: [],
+  };
 
   componentDidMount() {
     let allCourses;
     const { profile } = this.props.context;
-    coursesService.getAll()
-      .then((response) => {
+    coursesService
+      .getAll()
+      .then(response => {
         allCourses = response;
         return coursesService.getAllByUser(profile.id);
       })
-      .then((myCourses) => {
+      .then(myCourses => {
         this.setState({ myCourses, allCourses });
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al buscar los cursos, Por favor reintenta",
+          },
+        });
       });
   }
 
-  renderCourseCards(courses) {
+  renderCourseCards(courses: Array<Course>) {
     return (
       <Grid container spacing={1}>
-        {_.chunk(courses, 4).map((row) => (
-          <Grid container item xs={12} spacing={3}>
-            {_.map(row, (course) => (
-              <Grid item xs={3}>
-                <CourseCard id={course.id} university_course_id={course.university_course_id} name={course.name} description={course.description} imgUri={course.img_uri} handleGoToCourseClick={this.handleGoToCourseClick} />
+        {_.chunk(courses, 4).map((row, idx) => (
+          <Grid container item xs={12} spacing={3} id={idx}>
+            {_.map(row, course => (
+              <Grid item xs={3} id={course.id}>
+                <CourseCard
+                  courseId={course.id}
+                  universityCourseId={course.university_course_id}
+                  name={course.name}
+                  description={course.description}
+                  imgUri={course.img_uri}
+                  onClickGoToCourse={(e, courseId) => this.handleClickGoToCourse(e, courseId)}
+                />
               </Grid>
             ))}
           </Grid>
@@ -92,32 +123,39 @@ class CoursesPage extends React.Component {
     );
   }
 
-  handleDrawerOpen() {
-    this.setState({ open: true });
+  handleSwitchDrawer() {
+    this.setState(prevState => ({ open: !prevState.open }));
   }
 
-  handleDrawerClose() {
-    this.setState({ open: false });
+  handleCreateCourseClick() {
+    this.props.history.push("/courses/create");
+  }
+
+  handleClickGoToCourse(e: Event, courseId: number) {
+    e.preventDefault();
+    this.props.history.push(`/courses/${courseId}/activities`);
   }
 
   render() {
     const { classes } = this.props;
-    const { allCourses, myCourses, open } = this.state;
+    const { allCourses, myCourses, open, error } = this.state;
 
     return (
       <div>
-        <TopBar handleDrawerOpen={this.handleDrawerOpen} open={open} title="Cursos" />
-        <SideBar handleDrawerClose={this.handleDrawerClose} open={open} />
-        <main
-          className={`${classes.content} ${open ? classes.contentShift : ''}`}
-        >
+        {error.open && <ErrorNotification open={error.open} message={error.message} />}
+        <TopBar handleDrawerOpen={() => this.handleSwitchDrawer()} open={open} title="Cursos" />
+        <SideBar
+          handleDrawerClose={() => this.handleSwitchDrawer()}
+          open={open}
+          courseId={this.props.match.params.courseId}
+        />
+        <main className={`${classes.content} ${open ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <Fab
             color="primary"
             aria-label="add"
             className={classes.rightButton}
-            component={Link}
-            to="/courses/create"
+            onClick={() => this.handleCreateCourseClick()}
           >
             <AddIcon />
           </Fab>

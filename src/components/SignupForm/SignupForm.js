@@ -1,25 +1,22 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import { Redirect } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import { withState } from '../../utils/State';
-import { withErrorHandling } from '../../utils/Error';
-import ErrorNotification from '../../utils/ErrorNotification';
-import authenticationService from '../../services/authenticationService';
+// @flow
+import React from "react";
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import Link from "@material-ui/core/Link";
+import { withStyles } from "@material-ui/core/styles";
+import { withState } from "../../utils/State";
+import ErrorNotification from "../../utils/ErrorNotification";
+import authenticationService from "../../services/authenticationService";
 
-const _ = require('lodash');
-
-const styles = (theme) => ({
+const styles = theme => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
     padding: `0px ${theme.spacing(4)}px`,
   },
@@ -28,62 +25,75 @@ const styles = (theme) => ({
   },
 });
 
-class Signup extends React.Component {
-  constructor(props, defaultProps) {
-    super(props, defaultProps);
+type Props = {
+  classes: any,
+  history: any,
+};
 
-    this.state = {
-      username: '',
-      email: '',
-      password: '',
-      name: '',
-      surname: '',
-      studentId: '',
-      degree: '',
-      university: '',
-    };
+type State = {
+  error: { open: boolean, message: ?string },
+  username: string,
+  password: string,
+  email: string,
+  name: string,
+  surname: string,
+  degree: string,
+  university: string,
+};
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-  }
+class Signup extends React.Component<Props, State> {
+  state = {
+    error: { open: false, message: null },
+    username: "",
+    email: "",
+    password: "",
+    name: "",
+    surname: "",
+    degree: "",
+    university: "",
+  };
 
   handleChange(event) {
     event.persist();
     // Close error message
-    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: '' } });
+    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: "" } });
   }
 
   handleClick(event) {
     event.preventDefault();
-    const {
-      username, email, password, name, surname, degree, university,
-    } = this.state;
+    const { username, email, password, name, surname, degree, university } = this.state;
 
-    authenticationService.signup({
-      username,
-      email,
-      password,
-      name,
-      surname,
-      degree,
-      university,
-    }).then((response) => {
-      this.setState({ toLoginPage: true });
-    }).catch((err) => {
-      this.setState({ error: { open: true, message: 'Hubo un error de sign up, revisa que los datos ingresados sean validos.' } });
-    });
+    authenticationService
+      .signup({
+        username,
+        email,
+        password,
+        name,
+        surname,
+        degree,
+        university,
+      })
+      .then(response => {
+        this.props.history.push("/login");
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error de sign up, revisa que los datos ingresados sean validos.",
+          },
+        });
+      });
   }
 
   render() {
     const { classes } = this.props;
-
-    if (this.state.toLoginPage) {
-      return <Redirect to="/login" />;
-    }
+    const { error } = this.state;
 
     return (
       <div>
-        <ErrorNotification open={_.get(this.state, 'error.open')} message={_.get(this.state, 'error.message')} />
+        {error.open && <ErrorNotification open={error.open} message={error.message} />}
+
         <Typography component="h1" variant="h5">
           Sign Up
         </Typography>
@@ -97,7 +107,7 @@ class Signup extends React.Component {
             name="Name"
             autoComplete="name"
             autoFocus
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -108,7 +118,7 @@ class Signup extends React.Component {
             name="Surname"
             autoComplete="surname"
             autoFocus
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -119,7 +129,7 @@ class Signup extends React.Component {
             name="Student Id"
             autoComplete="studentId"
             autoFocus
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -130,7 +140,7 @@ class Signup extends React.Component {
             name="Degree"
             autoComplete="degree"
             autoFocus
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -141,7 +151,7 @@ class Signup extends React.Component {
             name="University"
             autoComplete="university"
             autoFocus
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -152,7 +162,7 @@ class Signup extends React.Component {
             name="Username"
             autoComplete="username"
             autoFocus
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -163,7 +173,7 @@ class Signup extends React.Component {
             name="Email"
             autoComplete="email"
             autoFocus
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -174,7 +184,7 @@ class Signup extends React.Component {
             type="password"
             id="password"
             autoComplete="current-password"
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <Button
             type="submit"
@@ -182,7 +192,7 @@ class Signup extends React.Component {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={this.handleClick}
+            onClick={e => this.handleClick(e)}
           >
             Sign Up
           </Button>
@@ -190,19 +200,18 @@ class Signup extends React.Component {
         <Grid container>
           <Grid item xs>
             <Link href="#" variant="body2">
-              Forgot password?
+              Olvidé mi contraseña
             </Link>
           </Grid>
           <Grid item>
             <Link href="/login" variant="body2">
-              Already have an account? Log in
+              Ya estás registrado. Iniciá sesión
             </Link>
           </Grid>
         </Grid>
-
       </div>
     );
   }
 }
 
-export default withErrorHandling(withState(withStyles(styles)(Signup)));
+export default withState(withStyles(styles)(Signup));

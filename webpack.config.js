@@ -1,16 +1,14 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
-const webpack = require('webpack');
-const DotenvPlugin = require('webpack-dotenv-plugin');
-const path = require('path');
-const Dotenv = require('dotenv-webpack');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const path = require("path");
+const Dotenv = require("dotenv-webpack");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 module.exports = {
-  entry: './src/index.js',
+  entry: "./src/index.js",
   output: {
-      publicPath: '/',
-      path: path.resolve(__dirname, './dist'),
-      filename: 'index_bundle.js'
+    publicPath: "/",
+    path: path.resolve(__dirname, "./dist"),
+    filename: "index_bundle.js",
   },
   module: {
     rules: [
@@ -18,43 +16,43 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
+          loader: "babel-loader",
+        },
       },
       {
         test: /\.html$/,
         use: [
           {
-            loader: "html-loader"
-          }
-        ]
+            loader: "html-loader",
+          },
+        ],
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.(png|jpg|gif|svg)$/i,
-        use: ['file-loader'],
+        use: ["file-loader"],
       },
       {
         test: /\.ttf$/,
-        use: ['file-loader'],
-      }, 
-    ]
+        use: ["file-loader"],
+      },
+    ],
   },
   devServer: {
     historyApiFallback: true,
   },
   plugins: [
     new HtmlWebPackPlugin({
-      template: './src/index.html',
-      filename: './index.html'
+      template: "./src/index.html",
+      filename: "./index.html",
     }),
     new Dotenv(),
     new MonacoWebpackPlugin({
       // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
-      // languages: ['json', 'javascript', 'python', 'python3']
+      // languages: ["c", "javascript", "python", "python3"],  All languages
     }),
-  ]
+  ],
 };

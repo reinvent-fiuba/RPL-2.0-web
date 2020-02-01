@@ -1,45 +1,40 @@
 {
-    "env": {
-        "browser": true,
-        "es6": true
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": [
+    "plugin:flowtype/recommended",
+    "plugin:react/recommended",
+    "airbnb",
+    "plugin:prettier/recommended"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    "extends": [
-        "plugin:react/recommended",
-        "airbnb"
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": ["flowtype", "react", "prettier"],
+  "rules": {
+    "react/sort-comp": [
+      1,
+      {
+        "order": ["lifecycle", "everything-else", "render"]
+      }
     ],
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react"
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [".js", ".jsx"]
+      }
     ],
-    "rules": {
-        "react/sort-comp": [
-            1,
-            {
-                "order": [
-                    "lifecycle",
-                    "everything-else",
-                    "render"
-                ]
-            }
-        ],
-        "react/jsx-filename-extension": [
-            1,
-            {
-                "extensions": [
-                    ".js",
-                    ".jsx"
-                ]
-            }
-        ]
-    }
+    "react/state-in-constructor": [0],
+    "prefer-promise-reject-errors": "off"
+  }
 }

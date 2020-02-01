@@ -1,17 +1,12 @@
-import React from 'react';
-import HomePage from '../HomePage/HomePage';
-import SignupForm from '../SignupForm/SignupForm';
+// @flow
+import React from "react";
+import HomePage from "../HomePage/HomePage";
+import SignupForm from "../SignupForm/SignupForm";
 
-class SignupPage extends React.Component {
-  constructor(props, defaultProps) {
-    super(props, defaultProps);
-    this.state = {};
-  }
-
+class SignupPage extends React.PureComponent<{ history: any }> {
   render() {
-    return (
-      <HomePage Form={SignupForm} />
-    );
+    const { history } = this.props;
+    return <HomePage Form={SignupForm} history={history} />;
   }
 }
 
