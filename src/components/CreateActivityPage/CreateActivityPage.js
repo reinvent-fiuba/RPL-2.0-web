@@ -13,6 +13,7 @@ import MonacoEditor from "react-monaco-editor";
 import ReactMde from "react-mde";
 import * as Showdown from "showdown";
 import ReactResizeDetector from "react-resize-detector";
+import ErrorNotification from "../../utils/ErrorNotification";
 import { withState } from "../../utils/State";
 import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
@@ -28,7 +29,7 @@ const converter = new Showdown.Converter({
   tables: true,
   simplifiedAutoLink: true,
   strikethrough: true,
-  tasklists: true
+  tasklists: true,
 });
 
 const drawerWidth = 240;
@@ -39,33 +40,27 @@ const styles = theme => ({
     alignItems: "center",
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: 0
-  },
-  form: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: 200
-    }
+    marginLeft: 0,
   },
   contentShift: {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
+      duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: drawerWidth
+    marginLeft: drawerWidth,
   },
   title: {
     flexGrow: 1,
-    marginLeft: 0
+    marginLeft: 0,
   },
   form: {
     display: "inline-flex",
@@ -73,62 +68,55 @@ const styles = theme => ({
     marginBottom: 20,
     "& > *": {
       width: 200,
-      margin: theme.spacing(1)
-    }
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    }),
-    marginLeft: drawerWidth
+      margin: theme.spacing(1),
+    },
   },
   divider: {
-    margin: 20
+    margin: 20,
   },
   grid: {
-    height: "60vh"
+    height: "60vh",
   },
   codeEditor: {
     display: "flex",
     "& .monaco-editor": {
-      height: "100vh"
-    }
+      height: "100vh",
+    },
   },
   mdEditor: {
     "& .mde-preview": {
       height: "53vh",
-      overflow: "scroll"
+      overflow: "scroll",
     },
     "& .grip": {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   buttons: {
     display: "flex",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   cancelButton: {
     flex: "0 1 auto",
     marginRight: theme.spacing(2),
     marginLeft: "auto",
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   createButton: {
     display: "flex",
     marginLeft: "auto",
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   studentPreviewButton: {
     marginLeft: "auto",
-    alignSelf: "flex-end"
-  }
+    alignSelf: "flex-end",
+  },
 });
 
 type Props = {
   match: any,
   classes: any,
-  history: any
+  history: any,
 };
 
 type State = {
@@ -143,7 +131,8 @@ type State = {
   code: string,
   mdText: string,
   mdEditorTab: string,
-  editor: any
+  editor: any,
+  addingTests: boolean,
 };
 
 class CreateActivityPage extends React.Component<Props, State> {
@@ -159,22 +148,19 @@ class CreateActivityPage extends React.Component<Props, State> {
     code: "",
     mdText: "",
     mdEditorTab: "write",
-    editor: null
+    editor: null,
+    addingTests: false,
   };
 
   componentDidMount() {
-    let { courseId } = this.props.match.params;
+    const { courseId } = this.props.match.params;
     activitiesService.getActivityCategories(courseId).then(response => {
       this.setState({ categories: response });
     });
   }
 
-  handleDrawerOpen(e: Event) {
-    this.setState({ open: true });
-  }
-
-  handleDrawerClose(e: Event) {
-    this.setState({ open: false });
+  handleSwitchDrawer() {
+    this.setState(prevState => ({ open: !prevState.open }));
   }
 
   handleChange(event) {
@@ -185,7 +171,7 @@ class CreateActivityPage extends React.Component<Props, State> {
 
   handleCreateClick(event) {
     event.preventDefault();
-    let { courseId } = this.props.match.params;
+    const { courseId } = this.props.match.params;
 
     const { name, points, language, category, code, mdText } = this.state;
     activitiesService
@@ -197,27 +183,37 @@ class CreateActivityPage extends React.Component<Props, State> {
         activityCategoryId: category,
         initialCode: code,
         supportingFile: code,
-        description: mdText
+        description: mdText,
       })
       .then(response => {
-        this.props.history.push(
-          `/courses/${this.props.match.params.courseId}/activities`
-        );
+        this.setState({ activity: response });
+        this.props.history.push(`/courses/${courseId}/activities/${response.id}/edit/correction`);
+        // this.setState({ addingTests: true });
       })
-      .catch(err => {
+      .catch(() => {
         this.setState({
           error: {
             open: true,
             message:
-              "Hubo un error al crear la actividad, revisa que los datos ingresados sean validos."
-          }
+              "Hubo un error al crear la actividad, revisa que los datos ingresados sean validos.",
+          },
         });
       });
   }
 
-  handleCancel(e: Event) {
-    let { courseId } = this.props.match.params;
+  handleCancel() {
+    const { courseId } = this.props.match.params;
     this.props.history.push(`/courses/${courseId}/activities`);
+  }
+
+  handleGoToStudentPreview() {
+    const { courseId } = this.props.match.params;
+    const { activity } = this.state;
+    if (activity === null || activity === undefined) {
+      alert("Primero tenes que guardar la actividad!");
+    } else {
+      this.props.history.push(`/courses/${courseId}/activities/${activity.id}/teacherTest`);
+    }
   }
 
   renderCategoriesDropdown() {
@@ -231,7 +227,7 @@ class CreateActivityPage extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.props;
-    let { courseId } = this.props.match.params;
+    const { courseId } = this.props.match.params;
 
     const {
       name,
@@ -241,31 +237,28 @@ class CreateActivityPage extends React.Component<Props, State> {
       code,
       mdText,
       mdEditorTab,
-      open
+      open,
+      addingTests,
+      error,
     } = this.state;
 
     return (
       <div>
+        {error.open && <ErrorNotification open={error.open} message={error.message} />}
+
         <TopBar
-          handleDrawerOpen={e => this.handleDrawerOpen(e)}
+          handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={open}
           title="Crear Actividad"
         />
         <SideBar
-          handleDrawerClose={e => this.handleDrawerClose(e)}
+          handleDrawerClose={() => this.handleSwitchDrawer()}
           open={open}
           courseId={courseId}
         />
-        <main
-          className={`${classes.content} ${open ? classes.contentShift : ""}`}
-        >
+        <main className={`${classes.content} ${open ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <Typography
-            variant="h5"
-            color="textSecondary"
-            component="p"
-            className={classes.title}
-          >
+          <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
             Crear Actividad
           </Typography>
           <form className={classes.form}>
@@ -295,9 +288,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 id="language"
                 name="language"
                 value={language || ""}
-                onChange={event =>
-                  this.setState({ language: event.target.value })
-                }
+                onChange={event => this.setState({ language: event.target.value })}
               >
                 <MenuItem key={0} value="c">
                   C
@@ -316,9 +307,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 labelId="category"
                 id="category"
                 value={category || ""}
-                onChange={event =>
-                  this.setState({ category: event.target.value })
-                }
+                onChange={event => this.setState({ category: event.target.value })}
               >
                 {this.renderCategoriesDropdown()}
               </Select>
@@ -329,7 +318,7 @@ class CreateActivityPage extends React.Component<Props, State> {
               variant="contained"
               color="primary"
               className={classes.studentPreviewButton}
-              onClick={e => this.handleCreateClick(e)}
+              onClick={() => this.handleGoToStudentPreview()}
             >
               Student preview
             </Button>
@@ -340,13 +329,11 @@ class CreateActivityPage extends React.Component<Props, State> {
               <ReactResizeDetector
                 handleWidth
                 handleHeight
-                onResize={() =>
-                  this.state.editor ? this.state.editor.layout : () => {}
-                }
+                onResize={() => (this.state.editor ? this.state.editor.layout : () => {})}
               >
                 <MonacoEditor
                   options={{
-                    renderFinalNewline: true
+                    renderFinalNewline: true,
                   }}
                   language={language}
                   theme="vs-dark"
@@ -358,7 +345,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                       changeAccessor.addZone({
                         afterLineNumber: 0,
                         heightInLines: 1,
-                        domNode: document.createElement("span")
+                        domNode: document.createElement("span"),
                       });
                     });
                     this.setState({ editor });
@@ -371,16 +358,11 @@ class CreateActivityPage extends React.Component<Props, State> {
                 minEditorHeight="53vh"
                 name="mdText"
                 value={mdText}
-                onChange={mdTextChanged =>
-                  this.setState({ mdText: mdTextChanged })
-                }
+                onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                 selectedTab={mdEditorTab}
                 onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })
-                }
-                generateMarkdownPreview={markdown =>
-                  Promise.resolve(converter.makeHtml(markdown))
-                }
+                  this.setState({ mdEditorTab: mdEditorTabChanged })}
+                generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
               />
             </Grid>
           </Grid>
@@ -390,7 +372,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 variant="contained"
                 color="secondary"
                 className={classes.cancelButton}
-                onClick={e => this.handleCancel(e)}
+                onClick={() => this.handleCancel()}
               >
                 Cancelar
               </Button>

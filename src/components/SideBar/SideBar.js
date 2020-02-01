@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
@@ -19,35 +20,42 @@ const drawerWidth = 240;
 const styles = theme => ({
   drawer: {
     width: drawerWidth,
-    flexShrink: 0
+    flexShrink: 0,
   },
   drawerPaper: {
-    width: drawerWidth
+    width: drawerWidth,
   },
   drawerHeader: {
     display: "flex",
     alignItems: "center",
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
-  }
+    justifyContent: "flex-end",
+  },
 });
 
 const actionIcons = {
   Cursos: SchoolIcon,
   Actividades: CodeIcon,
   Perfil: AccountCircleIcon,
-  Configuracion: SettingsIcon
+  Configuracion: SettingsIcon,
 };
 
-class SideBar extends React.PureComponent {
+type Props = {
+  open: boolean,
+  classes: any,
+  courseId: ?number,
+  handleDrawerClose: () => void,
+};
+
+class SideBar extends React.PureComponent<Props> {
   render() {
     const { open, classes, courseId, handleDrawerClose } = this.props;
 
     const itemsLinks = { Cursos: "/courses" };
 
     if (courseId) {
-      itemsLinks["Actividades"] = `/courses/${courseId}/activities`;
+      itemsLinks.Actividades = `/courses/${courseId}/activities`;
     }
 
     return (
@@ -57,26 +65,21 @@ class SideBar extends React.PureComponent {
         anchor="left"
         open={open}
         classes={{
-          paper: classes.drawerPaper
+          paper: classes.drawerPaper,
         }}
       >
         <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={() => handleDrawerClose()}>
             <ChevronLeftIcon />
           </IconButton>
         </div>
         <Divider />
         <List>
-          {["Cursos", "Actividades"].map(text => {
+          {Object.keys(itemsLinks).map(text => {
             const Icon = actionIcons[text];
 
             return (
-              <ListItem
-                button
-                key={text}
-                component={Link}
-                to={itemsLinks[text]}
-              >
+              <ListItem button key={text} component={Link} to={itemsLinks[text]}>
                 <ListItemIcon>
                   <Icon />
                 </ListItemIcon>

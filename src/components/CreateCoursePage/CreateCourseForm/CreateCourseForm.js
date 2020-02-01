@@ -1,17 +1,14 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import { Redirect } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import { withState } from '../../../utils/State';
-import { withErrorHandling } from '../../../utils/Error';
-import ErrorNotification from '../../../utils/ErrorNotification';
-import coursesService from '../../../services/coursesService';
+// @flow
+import React from "react";
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import { withStyles } from "@material-ui/core/styles";
+import { withState } from "../../../utils/State";
+import ErrorNotification from "../../../utils/ErrorNotification";
+import coursesService from "../../../services/coursesService";
 
-const _ = require('lodash');
-
-const styles = (theme) => ({
+const styles = theme => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
@@ -23,68 +20,78 @@ const styles = (theme) => ({
     padding: `0px ${theme.spacing(4)}px`,
   },
   cancelButton: {
-    display: 'flex',
+    display: "flex",
     marginRight: theme.spacing(2),
-    marginLeft: 'auto',
+    marginLeft: "auto",
     marginTop: theme.spacing(3),
   },
   createButton: {
-    display: 'flex',
-    marginLeft: 'auto',
+    display: "flex",
+    marginLeft: "auto",
     marginRight: theme.spacing(44),
     marginTop: theme.spacing(3),
   },
 });
 
-class CreateCourseForm extends React.Component {
-  constructor(props, defaultProps) {
-    super(props, defaultProps);
+type Props = {
+  classes: any,
+  history: any,
+};
 
-    this.state = {
-      username: '',
-      password: '',
-    };
+type State = {
+  error: { open: boolean, message: ?string },
+  name: string,
+  university: string,
+  universityCourseId: string,
+  semester: string,
+  description: string,
+};
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleCancelClick = this.handleCancelClick.bind(this);
-    this.handleCreateClick = this.handleCreateClick.bind(this);
-  }
-
+class CreateCourseForm extends React.Component<Props, State> {
   handleChange(event) {
     event.persist();
     // Close error message
-    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: '' } });
+    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: "" } });
   }
 
-  handleCancelClick() {
-    this.setState({ toCoursesPage: true });
-  }
-
-  handleCreateClick() {
+  handleCancelClick(event) {
     event.preventDefault();
-    coursesService.create({
-      name: this.state.name,
-      university: this.state.university,
-      universityCourseId: this.state.universityCourseId,
-      semester: this.state.semester,
-      description: this.state.description,
-    }).then((response) => {
-      this.setState({ toCoursesPage: true });
-    }).catch((err) => {
-      this.setState({ error: { open: true, message: 'Hubo un error al crear el curso, revisa que los datos ingresados sean validos.' } });
-    });
+    this.props.history.push("/courses");
+  }
+
+  handleCreateClick(event) {
+    event.preventDefault();
+    const { name, university, universityCourseId, semester, description } = this.state;
+    coursesService
+      .create({
+        name,
+        university,
+        universityCourseId,
+        semester,
+        description,
+      })
+      .then(() => {
+        this.props.history.push("/courses");
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message:
+              "Hubo un error al crear el curso, revisa que los datos ingresados sean validos.",
+          },
+        });
+      });
   }
 
   render() {
     const { classes } = this.props;
 
-    if (this.state.toCoursesPage) {
-      return <Redirect to="/courses" />;
-    }
+    const { error } = this.state;
 
     return (
       <div>
-        <ErrorNotification open={_.get(this.state, 'error.open')} message={_.get(this.state, 'error.message')} />
+        {error.open && <ErrorNotification open={error.open} message={error.message} />}
         <form noValidate className={classes.form}>
           <TextField
             margin="normal"
@@ -94,7 +101,7 @@ class CreateCourseForm extends React.Component {
             label="Nombre del Curso"
             name="name"
             autoComplete="name"
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -105,7 +112,7 @@ class CreateCourseForm extends React.Component {
             type="university"
             id="university"
             autoComplete="university"
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -115,7 +122,7 @@ class CreateCourseForm extends React.Component {
             label="Id del Curso"
             name="universityCourseId"
             autoComplete="universityCourseId"
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -125,7 +132,7 @@ class CreateCourseForm extends React.Component {
             label="Semestre"
             name="semester"
             autoComplete="semester"
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
           />
           <TextField
             margin="normal"
@@ -138,7 +145,7 @@ class CreateCourseForm extends React.Component {
             type="description"
             id="description"
             autoComplete="description"
-            onChange={this.handleChange}
+            onChange={e => this.handleChange(e)}
             variant="outlined"
           />
         </form>
@@ -148,7 +155,7 @@ class CreateCourseForm extends React.Component {
               variant="contained"
               color="secondary"
               className={classes.cancelButton}
-              onClick={this.handleCancelClick}
+              onClick={e => this.handleCancelClick(e)}
             >
               Cancelar
             </Button>
@@ -159,7 +166,7 @@ class CreateCourseForm extends React.Component {
               variant="contained"
               color="primary"
               className={classes.createButton}
-              onClick={this.handleCreateClick}
+              onClick={e => this.handleCreateClick(e)}
             >
               Crear
             </Button>
@@ -170,4 +177,4 @@ class CreateCourseForm extends React.Component {
   }
 }
 
-export default withErrorHandling(withState(withStyles(styles)(CreateCourseForm)));
+export default withState(withStyles(styles)(CreateCourseForm));

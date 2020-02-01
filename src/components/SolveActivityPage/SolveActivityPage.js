@@ -1,6 +1,8 @@
 // @flow
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
+import SplitPane from "react-split-pane";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { withState } from "../../utils/State";
 import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
@@ -8,11 +10,9 @@ import activitiesService from "../../services/activitiesService";
 import submissionsService from "../../services/submissionsService";
 import SimpleMonacoEditor from "./SimpleMonacoEditor.react";
 import MarkdownRenderer from "./MarkdownRenderer";
+import ErrorNotification from "../../utils/ErrorNotification";
 import SolvePageHeader from "./SolvePageHeader.react";
 import TestResultsModal from "./TestResultsModal.react";
-import SplitPane from "react-split-pane";
-import Button from "@material-ui/core/Button";
-import CircularProgress from '@material-ui/core/CircularProgress';
 import "./SolveActivityPage.css";
 import type { Activity } from "../../types";
 
@@ -28,34 +28,34 @@ const styles = theme => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
-    height: 56
+    height: 56,
   },
   content: {
     flexGrow: 1,
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: 0
+    marginLeft: 0,
   },
   contentShift: {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
+      duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: drawerWidth
+    marginLeft: drawerWidth,
   },
   circularProgress: {
     position: "absolute",
     left: "50%",
     top: "50%",
-  }
+  },
 });
 
 type Props = {
   match: any,
   classes: any,
-  history: any
+  history: any,
 };
 
 type State = {
@@ -66,7 +66,7 @@ type State = {
   editorWidth: string,
   submittedActivity: boolean,
   results: any,
-  getResultsTimerId: ?IntervalID
+  getResultsTimerId: ?IntervalID,
 };
 
 class SolveActivityPage extends React.Component<Props, State> {
@@ -78,25 +78,21 @@ class SolveActivityPage extends React.Component<Props, State> {
     code: "",
     submittedActivity: false,
     results: null,
-    getResultsTimerId: null
+    getResultsTimerId: null,
   };
 
   componentDidMount() {
     activitiesService
-      .getActivity(
-        this.props.match.params.courseId,
-        this.props.match.params.activityId
-      )
+      .getActivity(this.props.match.params.courseId, this.props.match.params.activityId)
       .then(response => {
         this.setState({ activity: response, code: response.initial_code });
       })
-      .catch(err => {
+      .catch(() => {
         this.setState({
           error: {
             open: true,
-            message:
-              "Hubo un error al obtener la actividad, Por favor reintenta"
-          }
+            message: "Hubo un error al obtener la actividad, Por favor reintenta",
+          },
         });
       });
   }
@@ -114,58 +110,67 @@ class SolveActivityPage extends React.Component<Props, State> {
   }
 
   pullForResults(submissionId: number) {
-    console.log("HOLA A TODOS");
+    console.log("Pidiendo resultado");
     submissionsService
       .getSubmissionResult(submissionId)
       .then(response => {
         clearInterval(this.state.getResultsTimerId);
-        this.setState({getResultsTimerId: null, results: response});
+        this.setState({ getResultsTimerId: null, results: response });
       })
-      .catch(err => {
+      .catch(({ err, status }) => {
+        console.log(err);
+        if (status === 404) {
+          return;
+        }
         this.setState({
           error: {
             open: true,
-            message:
-              "Hubo un error al entregar la actividad, Por favor reintenta"
-          }
+            message: "Hubo un error al entregar la actividad, Por favor reintenta",
+          },
         });
       });
-
   }
 
   handleSubmitActivity(event: any) {
-    // event.preventDefault();
+    event.preventDefault();
     console.log("Submit");
     const { courseId, activityId } = this.props.match.params;
     const { code, activity } = this.state;
 
-    const filename = activity && activity.language.toLowerCase() == "c" ? "main.c" : "assignment_main.py";
+    const filename =
+      activity && activity.language.toLowerCase() === "c" ? "main.c" : "assignment_main.py";
 
     submissionsService
       .createSubmission(courseId, activityId, code, filename)
       .then(response => {
-        this.setState({submittedActivity: true, getResultsTimerId: setInterval(() => this.pullForResults(response.id), 1000)});
+        this.setState({
+          submittedActivity: true,
+          getResultsTimerId: setInterval(() => this.pullForResults(response.id), 1000),
+        });
       })
-      .catch(err => {
+      .catch(() => {
+        console.log(err);
         this.setState({
           error: {
             open: true,
-            message:
-              "Hubo un error al entregar la actividad, Por favor reintenta"
-          }
+            message: "Hubo un error al entregar la actividad, Por favor reintenta",
+          },
         });
       });
   }
 
   handleCloseModal(e: Event) {
-    this.setState({submittedActivity: false, results: null});
+    e.preventDefault();
+    this.setState({ submittedActivity: false, results: null });
   }
 
   render() {
     const { classes } = this.props;
-    const { activity, open, submittedActivity, results } = this.state;
+    const { activity, open, submittedActivity, results, editorWidth, error } = this.state;
     return (
       <div>
+        {error.open && <ErrorNotification open={error.open} message={error.message} />}
+
         <TopBar
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
           open={open}
@@ -176,7 +181,7 @@ class SolveActivityPage extends React.Component<Props, State> {
           open={open}
           courseId={this.props.match.params.courseId}
         />
-        {!activity && <CircularProgress className={classes.circularProgress}/>}
+        {!activity && <CircularProgress className={classes.circularProgress} />}
         {activity && (
           <main className={classes.content}>
             <div className={classes.drawerHeader} />
@@ -190,18 +195,25 @@ class SolveActivityPage extends React.Component<Props, State> {
               onChange={width => this.handleDrag(width)}
             >
               <SimpleMonacoEditor
-                width={this.state.editorWidth}
+                width={editorWidth}
                 initialCode={activity.initial_code}
                 language={activity.language.toLowerCase()}
                 onCodeChange={code => this.onCodeChange(code)}
               />
+
               <div>
                 <MarkdownRenderer content={activity.description} />
               </div>
             </SplitPane>
           </main>
         )}
-        {submittedActivity && <TestResultsModal results={results} open={submittedActivity} handleCloseModal={e => this.handleCloseModal(e)}/>}
+        {submittedActivity && (
+          <TestResultsModal
+            results={results}
+            open={submittedActivity}
+            handleCloseModal={e => this.handleCloseModal(e)}
+          />
+        )}
       </div>
     );
   }

@@ -1,9 +1,10 @@
 // @flow
-const { request } = require("../utils/Request");
 import type { Activity, Category } from "../types";
 
+const { request } = require("../utils/Request");
+
 const producer = {
-  base_url: process.env.API_BASE_URL || "localhost:8080"
+  base_url: process.env.API_BASE_URL || "localhost:8080",
 };
 
 exports.createActivity = (activityDetails: any) => {
@@ -23,24 +24,24 @@ exports.createActivity = (activityDetails: any) => {
     url: `http://${producer.base_url}/api/courses/${activityDetails.courseId}/activities`,
     body: formData,
     method: "POST",
-    headers: new Headers()
+    headers: new Headers(),
   });
 };
 
 exports.getActivityCategories = (courseId: number): Promise<Array<Category>> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,
-    method: "GET"
+    method: "GET",
   });
 
 exports.getAllActivities = (courseId: number): Promise<Array<Activity>> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
-    method: "GET"
+    method: "GET",
   });
 
 exports.getActivity = (courseId: number, activityId: number): Promise<Activity> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
-    method: "GET"
+    method: "GET",
   });

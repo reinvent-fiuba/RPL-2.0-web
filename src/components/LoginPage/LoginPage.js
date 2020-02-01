@@ -1,18 +1,13 @@
-import React, { useContext } from 'react';
-import LoginForm from '../LoginForm/LoginForm';
-import HomePage from '../HomePage/HomePage';
-import { withState } from '../../utils/State';
+// @flow
+import React from "react";
+import LoginForm from "../LoginForm/LoginForm";
+import HomePage from "../HomePage/HomePage";
+import { withState } from "../../utils/State";
 
-class LoginPage extends React.Component {
-  constructor(props, defaultProps) {
-    super(props, defaultProps);
-    this.state = {};
-  }
-
+class LoginPage extends React.PureComponent<{ history: any }> {
   render() {
-    return (
-      <HomePage Form={LoginForm} />
-    );
+    const { history } = this.props;
+    return <HomePage Form={LoginForm} history={history} />;
   }
 }
 

@@ -14,13 +14,13 @@ export type Activity = {
   submission_status: string,
   last_submission_date: string,
   date_created: string,
-  last_updated: string
+  last_updated: string,
 };
 
 export type Category = {
   id: number,
-  name: string
-}
+  name: string,
+};
 
 export type Course = {
   id: number,
@@ -31,5 +31,13 @@ export type Course = {
   semester: string,
   img_uri: string,
   date_created: string,
-  last_updated: string
+  last_updated: string,
+};
+
+export type CreateCourseProps = {
+  name: string,
+  university: string,
+  universityCourseId: string,
+  semester: string,
+  description: string,
 };

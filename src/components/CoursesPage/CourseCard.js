@@ -8,30 +8,27 @@ import CardActions from "@material-ui/core/CardActions";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
-import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
 import { withState } from "../../utils/State";
-import { withErrorHandling } from "../../utils/Error";
-import type { Course } from "../../types";
 
-const styles = theme => ({
+const styles = () => ({
   card: {
-    maxWidth: 345
+    maxWidth: 345,
   },
   media: {
     height: 0,
     paddingTop: "56.25%", // 16:9
     backgroundColor: "lightsteelblue",
-    backgroundSize: "contain"
+    backgroundSize: "contain",
   },
   action: {
-    marginLeft: "auto"
+    marginLeft: "auto",
   },
   avatar: {
     backgroundColor: red[500],
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 });
 
 type Props = {
@@ -40,7 +37,8 @@ type Props = {
   universityCourseId: string,
   name: string,
   description: string,
-  imgUri: string
+  imgUri: string,
+  onClickGoToCourse: (e: Event, courseId: number) => void,
 };
 
 class CourseCard extends React.PureComponent<Props> {
@@ -51,25 +49,21 @@ class CourseCard extends React.PureComponent<Props> {
       universityCourseId,
       name,
       description,
-      imgUri
+      imgUri,
+      onClickGoToCourse,
     } = this.props;
 
     return (
       <Card className={classes.card}>
         <CardHeader
-          avatar={
-            <Avatar className={classes.avatar}>
-              {universityCourseId}
-            </Avatar>
-          }
+          avatar={<Avatar className={classes.avatar}>{universityCourseId}</Avatar>}
           title={name}
         />
 
         <CardMedia
           className={classes.media}
           image={
-            imgUri ||
-            "https://www.materialui.co/materialIcons/social/school_black_192x192.png"
+            imgUri || "https://www.materialui.co/materialIcons/social/school_black_192x192.png"
           }
           title={name}
         />
@@ -81,9 +75,7 @@ class CourseCard extends React.PureComponent<Props> {
         </CardContent>
 
         <CardActions disableSpacing>
-          <Button component={Link} to={`/courses/${courseId}/activities`}>
-            Acceder
-          </Button>
+          <Button onClick={e => onClickGoToCourse(e, courseId)}>Acceder</Button>
 
           <Button className={classes.action}>Desincribirse</Button>
         </CardActions>
@@ -92,4 +84,4 @@ class CourseCard extends React.PureComponent<Props> {
   }
 }
 
-export default withErrorHandling(withState(withStyles(styles)(CourseCard)));
+export default withState(withStyles(styles)(CourseCard));

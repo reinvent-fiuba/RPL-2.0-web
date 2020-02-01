@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -12,7 +12,6 @@ import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
-import { Link } from "react-router-dom";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
@@ -30,73 +29,73 @@ const styles = theme => ({
     alignItems: "center",
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: 0
+    marginLeft: 0,
   },
   contentShift: {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
+      duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: drawerWidth
+    marginLeft: drawerWidth,
   },
   title: {
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   divider: {
-    margin: 20
+    margin: 20,
   },
   rightButton: {
     display: "flex",
     marginLeft: "auto",
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   table: {
-    minWidth: 650
+    minWidth: 650,
   },
   tableContainer: {
-    width: "80%"
+    width: "80%",
   },
   tableContainerDiv: {
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
     justifyContent: "center",
-    padding: "0px 30px 30px 30px"
+    padding: "0px 30px 30px 30px",
   },
   tableTitle: {
     alignSelf: "start",
-    paddingLeft: "15px"
-  }
+    paddingLeft: "15px",
+  },
 });
 
 type Props = {
   match: any,
   classes: any,
   history: any,
-  handleSwitchDrawer: any
+  handleSwitchDrawer: any,
 };
 
 type State = {
   error: { open: boolean, message: ?string },
   open: boolean,
-  activities: Array<Activity>
+  activities: Array<Activity>,
 };
 
 class ActivitiesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     open: false,
-    activities: []
+    activities: [],
   };
 
   componentDidMount() {
@@ -105,13 +104,12 @@ class ActivitiesPage extends React.Component<Props, State> {
       .then(response => {
         this.setState({ activities: response });
       })
-      .catch(err => {
+      .catch(() => {
         this.setState({
           error: {
             open: true,
-            message:
-              "Hubo un error al obtener las actividades, Por favor reintenta"
-          }
+            message: "Hubo un error al obtener las actividades, Por favor reintenta",
+          },
         });
       });
   }
@@ -122,18 +120,15 @@ class ActivitiesPage extends React.Component<Props, State> {
 
   handleCellClick(event: any, activityId: number) {
     // const history = useHistory();
-    this.props.history.push(`/courses/${this.props.match.params.courseId}/activities/${activityId}`);
+    this.props.history.push(
+      `/courses/${this.props.match.params.courseId}/activities/${activityId}`
+    );
   }
 
   renderCategoryActivities(activities: Array<Activity>, classes: any) {
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
-        <Typography
-          variant="h5"
-          color="textSecondary"
-          component="p"
-          className={classes.tableTitle}
-        >
+        <Typography variant="h5" color="textSecondary" component="p" className={classes.tableTitle}>
           {activities[0].category_name}
         </Typography>
         <Table className={classes.table} aria-label="simple table">
@@ -154,18 +149,12 @@ class ActivitiesPage extends React.Component<Props, State> {
           </TableHead>
           <TableBody>
             {activities.map(row => (
-              <TableRow
-                hover
-                key={row.id}
-                onClick={event => this.handleCellClick(event, row.id)}
-              >
+              <TableRow hover key={row.id} onClick={event => this.handleCellClick(event, row.id)}>
                 <TableCell key={1} component="th" scope="row">
                   {row.name}
                 </TableCell>
                 <TableCell key={2} align="right">
-                  {(row.last_submission_date &&
-                    row.last_submission_date.split("T")[0]) ||
-                    "-"}
+                  {(row.last_submission_date && row.last_submission_date.split("T")[0]) || "-"}
                 </TableCell>
                 <TableCell key={3} align="right">
                   {15}
@@ -196,6 +185,7 @@ class ActivitiesPage extends React.Component<Props, State> {
 
     return (
       <div>
+        {error.open && <ErrorNotification open={error.open} message={error.message} />}
         <TopBar
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
           open={open}
@@ -206,9 +196,7 @@ class ActivitiesPage extends React.Component<Props, State> {
           open={open}
           courseId={this.props.match.params.courseId}
         />
-        <main
-          className={`${classes.content} ${open ? classes.contentShift : ""}`}
-        >
+        <main className={`${classes.content} ${open ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
 
           <Fab
@@ -221,20 +209,10 @@ class ActivitiesPage extends React.Component<Props, State> {
             <AddIcon />
           </Fab>
 
-          {error && (
-            <ErrorNotification
-              open={_.get(this.state, "error.open")}
-              message={_.get(this.state, "error.message")}
-            />
-          )}
-
           {activities &&
             Object.keys(activitiesByCategory).map(category => (
               <div key={category} className={classes.tableContainerDiv}>
-                {this.renderCategoryActivities(
-                  activitiesByCategory[category],
-                  classes
-                )}
+                {this.renderCategoryActivities(activitiesByCategory[category], classes)}
               </div>
             ))}
         </main>
