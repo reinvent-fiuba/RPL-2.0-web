@@ -35,6 +35,7 @@
       }
     ],
     "react/state-in-constructor": [0],
-    "prefer-promise-reject-errors": "off"
+    "prefer-promise-reject-errors": "off",
+    "react/no-array-index-key": [0]
   }
 }

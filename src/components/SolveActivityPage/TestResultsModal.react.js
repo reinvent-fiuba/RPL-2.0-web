@@ -11,20 +11,20 @@ import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
   modal: {
-    minHeight: "200px"
+    minHeight: "200px",
   },
   circularProgress: {
     display: "block",
     marginLeft: "auto",
-    marginRight: "auto"
-  }
+    marginRight: "auto",
+  },
 });
 
 type Props = {
   handleCloseModal: Event => void,
   open: boolean,
   results: any,
-  classes: any
+  classes: any,
 };
 
 function TestResultsModal(props: Props) {
@@ -39,16 +39,16 @@ function TestResultsModal(props: Props) {
       <Dialog
         open={open}
         onClose={e => handleCloseModal(e)}
-        scroll={"paper"}
+        scroll="paper"
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
         className={classes.modal}
-        fullWidth={true}
+        fullWidth
         maxWidth={results ? "lg" : "xs"}
       >
         <DialogTitle id="scroll-dialog-title">{title}</DialogTitle>
         {!results && (
-          <DialogContent dividers={true}>
+          <DialogContent dividers>
             <DialogContentText
               id="scroll-dialog-description"
               //   ref={descriptionElementRef}
@@ -61,7 +61,7 @@ function TestResultsModal(props: Props) {
         )}
 
         {results && (
-          <DialogContent dividers={true}>
+          <DialogContent dividers>
             <DialogContentText
               id="scroll-dialog-description"
               //   ref={descriptionElementRef}
@@ -84,7 +84,8 @@ function TestResultsModal(props: Props) {
               })}
               <br />
               <br />
-              <h2>STDOUT:</h2> <br />
+              <h2>STDOUT:</h2>
+              <br />
               {results.stdout.split("\n").map((item, key) => {
                 return (
                   <span key={key}>
@@ -94,6 +95,11 @@ function TestResultsModal(props: Props) {
                 );
               })}
             </DialogContentText>
+            <DialogActions>
+              <Button onClick={e => handleCloseModal(e)} color="primary">
+                Cerrar
+              </Button>
+            </DialogActions>
           </DialogContent>
         )}
       </Dialog>

@@ -46,17 +46,17 @@ class ErrorNotifier extends React.Component {
         }}
         open={open}
         autoHideDuration={6000}
-        onClose={this.handleClose}
+        onClose={(_, reason) => this.handleClose(_, reason)}
       >
         <SnackbarContent
           // aria-describedby="client-snackbar"
           className={classes.error}
-          message={(
+          message={
             <span id="client-snackbar" className={classes.message}>
               <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
               {message}
             </span>
-          )}
+          }
           action={[
             <IconButton
               key="close"

@@ -48,6 +48,15 @@ type State = {
 };
 
 class CreateCourseForm extends React.Component<Props, State> {
+  state = {
+    error: { open: false, message: "" },
+    name: "",
+    university: "",
+    universityCourseId: "",
+    semester: "",
+    description: "",
+  };
+
   handleChange(event) {
     event.persist();
     // Close error message

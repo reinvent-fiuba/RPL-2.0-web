@@ -82,19 +82,18 @@ type Props = {
   match: any,
   classes: any,
   history: any,
-  handleSwitchDrawer: any,
 };
 
 type State = {
   error: { open: boolean, message: ?string },
-  open: boolean,
+  isSideBarOpen: boolean,
   activities: Array<Activity>,
 };
 
 class ActivitiesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    open: false,
+    isSideBarOpen: false,
     activities: [],
   };
 
@@ -115,7 +114,7 @@ class ActivitiesPage extends React.Component<Props, State> {
   }
 
   handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ open: !prevState.open }));
+    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   handleCellClick(event: any, activityId: number) {
@@ -176,7 +175,7 @@ class ActivitiesPage extends React.Component<Props, State> {
   render() {
     const { classes } = this.props;
 
-    const { activities, open, error } = this.state;
+    const { activities, isSideBarOpen, error } = this.state;
 
     console.log(activities);
 
@@ -188,15 +187,15 @@ class ActivitiesPage extends React.Component<Props, State> {
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
         <TopBar
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={open}
+          open={isSideBarOpen}
           title="Actividades"
         />
         <SideBar
           handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={open}
+          open={isSideBarOpen}
           courseId={this.props.match.params.courseId}
         />
-        <main className={`${classes.content} ${open ? classes.contentShift : ""}`}>
+        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
 
           <Fab

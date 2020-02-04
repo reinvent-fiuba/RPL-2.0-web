@@ -60,7 +60,7 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  open: boolean,
+  isSideBarOpen: boolean,
   activity: ?Activity,
   code: string,
   editorWidth: string,
@@ -72,7 +72,7 @@ type State = {
 class SolveActivityPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    open: false,
+    isSideBarOpen: false,
     editorWidth: "100%",
     activity: null,
     code: "",
@@ -102,7 +102,7 @@ class SolveActivityPage extends React.Component<Props, State> {
   }
 
   handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ open: !prevState.open }));
+    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   onCodeChange(code: string) {
@@ -166,19 +166,19 @@ class SolveActivityPage extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.props;
-    const { activity, open, submittedActivity, results, editorWidth, error } = this.state;
+    const { activity, isSideBarOpen, submittedActivity, results, editorWidth, error } = this.state;
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
 
         <TopBar
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={open}
+          open={isSideBarOpen}
           title="Resolver Actividad"
         />
         <SideBar
           handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={open}
+          open={isSideBarOpen}
           courseId={this.props.match.params.courseId}
         />
         {!activity && <CircularProgress className={classes.circularProgress} />}

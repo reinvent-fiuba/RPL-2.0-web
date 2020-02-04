@@ -1,5 +1,11 @@
 // @flow
 
+export type IOTest = {
+  id: number,
+  in: string,
+  out: string,
+};
+
 export type Activity = {
   id: number,
   course_id: number,
@@ -13,6 +19,8 @@ export type Activity = {
   file_id: number,
   submission_status: string,
   last_submission_date: string,
+  activity_unit_tests: string,
+  activity_iotests: Array<IOTest>,
   date_created: string,
   last_updated: string,
 };
