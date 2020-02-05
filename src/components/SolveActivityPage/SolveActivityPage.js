@@ -14,7 +14,7 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import SolvePageHeader from "./SolvePageHeader.react";
 import TestResultsModal from "./TestResultsModal.react";
 import "./SolveActivityPage.css";
-import type { Activity } from "../../types";
+import type { Activity, SubmissionResult } from "../../types";
 
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
@@ -65,7 +65,7 @@ type State = {
   code: string,
   editorWidth: string,
   submittedActivity: boolean,
-  results: any,
+  results: ?SubmissionResult,
   getResultsTimerId: ?IntervalID,
 };
 
@@ -149,7 +149,6 @@ class SolveActivityPage extends React.Component<Props, State> {
         });
       })
       .catch(() => {
-        console.log(err);
         this.setState({
           error: {
             open: true,
@@ -198,7 +197,7 @@ class SolveActivityPage extends React.Component<Props, State> {
                 width={editorWidth}
                 initialCode={activity.initial_code}
                 language={activity.language.toLowerCase()}
-                onCodeChange={code => this.onCodeChange(code)}
+                onCodeChange={_.throttle(code => this.onCodeChange(code))}
               />
 
               <div>
@@ -212,6 +211,7 @@ class SolveActivityPage extends React.Component<Props, State> {
             results={results}
             open={submittedActivity}
             handleCloseModal={e => this.handleCloseModal(e)}
+            showWaitingDialog
           />
         )}
       </div>

@@ -17,7 +17,11 @@ import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
 import ErrorNotification from "../../utils/ErrorNotification";
-import type { Activity } from "../../types";
+import type { Activity, SubmissionResult } from "../../types";
+import "./ActivitiesPage.css";
+import SubmissionsSidePanel from "./SubmissionsSidePanel.react";
+
+import TestResultsModal from "../SolveActivityPage/TestResultsModal.react";
 
 const _ = require("lodash");
 
@@ -88,6 +92,9 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   activities: Array<Activity>,
+  openPanel: boolean,
+  isSelectedResult: boolean,
+  selectedResult: ?SubmissionResult,
 };
 
 class ActivitiesPage extends React.Component<Props, State> {
@@ -95,6 +102,9 @@ class ActivitiesPage extends React.Component<Props, State> {
     error: { open: false, message: null },
     isSideBarOpen: false,
     activities: [],
+    openPanel: false,
+    isSelectedResult: false,
+    selectedResult: null,
   };
 
   componentDidMount() {
@@ -111,6 +121,10 @@ class ActivitiesPage extends React.Component<Props, State> {
           },
         });
       });
+  }
+
+  setOpenPanel() {
+    this.setState(prevState => ({ openPanel: !prevState.openPanel }));
   }
 
   handleSwitchDrawer(event: any) {
@@ -172,10 +186,34 @@ class ActivitiesPage extends React.Component<Props, State> {
     );
   }
 
+  handleClickOnSubmission(submission: SubmissionResult, idx: number) {
+    this.setState({ openPanel: false });
+    setTimeout(() => {
+      this.setState({ isSelectedResult: true, selectedResult: submission });
+    }, 200);
+  }
+
+  handleCloseModal(e: Event) {
+    e.preventDefault();
+    this.setState({ isSelectedResult: false });
+    setTimeout(() => {
+      this.setState({ openPanel: true, selectedResult: null });
+    }, 200);
+
+    // this.setState({ isSelectedResult: false, selectedResult: null, openPanel: true });
+  }
+
   render() {
     const { classes } = this.props;
 
-    const { activities, isSideBarOpen, error } = this.state;
+    const {
+      activities,
+      isSideBarOpen,
+      error,
+      openPanel,
+      selectedResult,
+      isSelectedResult,
+    } = this.state;
 
     console.log(activities);
 
@@ -185,6 +223,21 @@ class ActivitiesPage extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
+        <SubmissionsSidePanel
+          isOpen={openPanel}
+          activityId={1}
+          courseId={this.props.match.params.courseId}
+          backdropClicked={() => this.setOpenPanel()}
+          onSelectSubmission={(s, i) => this.handleClickOnSubmission(s, i)}
+        />
+
+        <TestResultsModal
+          results={selectedResult}
+          open={isSelectedResult}
+          handleCloseModal={e => this.handleCloseModal(e)}
+          showWaitingDialog={false}
+        />
+
         <TopBar
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
           open={isSideBarOpen}
@@ -198,6 +251,7 @@ class ActivitiesPage extends React.Component<Props, State> {
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
 
+          <button onClick={() => this.setOpenPanel()}>close</button>
           <Fab
             color="primary"
             aria-label="add"
