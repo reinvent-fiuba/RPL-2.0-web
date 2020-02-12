@@ -160,6 +160,7 @@ class SolveActivityPage extends React.Component<Props, State> {
 
   handleCloseModal(e: Event) {
     e.preventDefault();
+    clearInterval(this.state.getResultsTimerId);
     this.setState({ submittedActivity: false, results: null });
   }
 

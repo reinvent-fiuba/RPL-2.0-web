@@ -50,7 +50,7 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
   componentDidUpdate(prevProps) {
     const { courseId, activityId } = this.props;
 
-    if (activityId !== prevProps.activityId) {
+    if (activityId !== prevProps.activityId && activityId !== null) {
       submissionsService
         .getAllSubmissions(courseId, activityId)
         .then(response => {

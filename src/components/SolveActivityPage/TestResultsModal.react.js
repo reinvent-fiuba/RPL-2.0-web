@@ -9,6 +9,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
 import ReactDiffViewer from "react-diff-viewer";
+import Typography from "@material-ui/core/Typography";
 import type { SubmissionResult } from "../../types";
 
 const styles = () => ({
@@ -36,6 +37,16 @@ function TestResultsModal(props: Props) {
   const title = results
     ? `Resultado de la corrida: ${results.submission_status}`
     : "Corriendo pruebas";
+
+  const getStdoutColor = item => {
+    if (item.includes("start_BUILD") || item.includes("end_BUILD")) {
+      return "secondary";
+    }
+    if (item.includes("start_RUN") || item.includes("end_RUN")) {
+      return "primary";
+    }
+    return "textSecondary";
+  };
 
   return (
     <div>
@@ -67,8 +78,15 @@ function TestResultsModal(props: Props) {
           <DialogContent dividers>
             {results.io_test_run_results.map((ioResult, idx) => {
               return (
-                <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
-                  <h2>{`IO Test case: Nº${idx}`}</h2>
+                <DialogContentText
+                  key={idx}
+                  id="scroll-dialog-description"
+                  tabIndex={-1}
+                  component="div"
+                >
+                  <Typography variant="h2" color="textSecondary" component="p">
+                    {`IO Test case: Nº${idx}`}
+                  </Typography>
                   <ReactDiffViewer
                     key={ioResult.id}
                     oldValue={ioResult.expected_output}
@@ -81,35 +99,42 @@ function TestResultsModal(props: Props) {
               );
             })}
 
-            <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
-              <h2>EXIT MESSAGE:</h2>
-              <br />
+            {/* <DialogContentText id="scroll-dialog-description" tabIndex={-1}> */}
+            <Typography variant="h4" color="textSecondary" component="p">
+              EXIT MESSAGE:
+            </Typography>
+            <br />
+            <Typography variant="subtitle1" color="textSecondary" component="p">
               {results.exit_message}
-              <br />
-              <br />
-              <h2>STDERR:</h2>
-              <br />
-              {results.stderr.split("\n").map((item, key) => {
-                return (
-                  <span key={key}>
-                    {item}
-                    <br />
-                  </span>
-                );
-              })}
-              <br />
-              <br />
-              <h2>STDOUT:</h2>
-              <br />
-              {results.stdout.split("\n").map((item, key) => {
-                return (
-                  <span key={key}>
-                    {item}
-                    <br />
-                  </span>
-                );
-              })}
-            </DialogContentText>
+            </Typography>
+
+            <br />
+            <br />
+            <Typography variant="h4" color="textSecondary" component="p">
+              STDERR:
+            </Typography>
+
+            <br />
+            {results.stderr.split("\n").map((item, key) => (
+              <Typography key={key} variant="subtitle1" color="textSecondary" component="p">
+                {item}
+              </Typography>
+            ))}
+
+            <br />
+            <br />
+            <Typography variant="h4" color="textSecondary" component="p">
+              STDOUT:
+            </Typography>
+            <br />
+
+            {results.stdout.split("\n").map((item, key) => (
+              <Typography key={key} variant="subtitle1" color={getStdoutColor(item)} component="p">
+                {item}
+              </Typography>
+            ))}
+
+            {/* </DialogContentText> */}
             <DialogActions>
               <Button onClick={e => handleCloseModal(e)} color="primary">
                 Cerrar
