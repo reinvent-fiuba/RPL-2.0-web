@@ -52,7 +52,7 @@ module.exports = {
     new Dotenv(),
     new MonacoWebpackPlugin({
       // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
-      // languages: ["c", "javascript", "python", "python3"],  All languages
+      languages: ["c", "javascript", "python"],
     }),
   ],
 };

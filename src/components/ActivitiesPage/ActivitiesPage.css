@@ -8,9 +8,17 @@
   width: 100%;
   background-color: white;
   display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.panel-container h6 {
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
 }
 
 button {

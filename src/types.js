@@ -73,4 +73,5 @@ export type SubmissionResult = {
   stderr: string,
   stdout: string,
   io_test_run_results: Array<IOTestRunResult>,
+  submission_date: string,
 };
