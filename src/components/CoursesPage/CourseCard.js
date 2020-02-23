@@ -38,7 +38,10 @@ type Props = {
   name: string,
   description: string,
   imgUri: string,
+  enrolled: Boolean,
   onClickGoToCourse: (e: Event, courseId: number) => void,
+  onClickEnrollToCourse: (e: Event, courseId: number) => void,
+  onClickUnenrollToCourse: (e: Event, courseId: number) => void,
 };
 
 class CourseCard extends React.PureComponent<Props> {
@@ -49,8 +52,11 @@ class CourseCard extends React.PureComponent<Props> {
       universityCourseId,
       name,
       description,
+      enrolled,
       imgUri,
       onClickGoToCourse,
+      onClickEnrollToCourse,
+      onClickUnenrollToCourse,
     } = this.props;
 
     return (
@@ -77,7 +83,13 @@ class CourseCard extends React.PureComponent<Props> {
         <CardActions disableSpacing>
           <Button onClick={e => onClickGoToCourse(e, courseId)}>Acceder</Button>
 
-          <Button className={classes.action}>Desincribirse</Button>
+          <Button
+            onClick={e =>
+              enrolled ? onClickUnenrollToCourse(e, courseId) : onClickEnrollToCourse(e, courseId)}
+            className={classes.action}
+          >
+            {enrolled ? "Desinscribirse" : "Inscribirse"}
+          </Button>
         </CardActions>
       </Card>
     );

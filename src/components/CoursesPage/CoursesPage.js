@@ -67,7 +67,7 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   myCourses: Array<Course>,
-  allCourses: Array<Course>,
+  otherCourses: Array<Course>,
 };
 
 class CoursesPage extends React.Component<Props, State> {
@@ -75,10 +75,14 @@ class CoursesPage extends React.Component<Props, State> {
     error: { open: false, message: null },
     isSideBarOpen: false,
     myCourses: [],
-    allCourses: [],
+    otherCourses: [],
   };
 
   componentDidMount() {
+    this.loadCourses();
+  }
+
+  loadCourses() {
     let allCourses;
     const { profile } = this.props.context;
     coursesService
@@ -88,7 +92,8 @@ class CoursesPage extends React.Component<Props, State> {
         return coursesService.getAllByUser(profile.id);
       })
       .then(myCourses => {
-        this.setState({ myCourses, allCourses });
+        const otherCourses = _.differenceBy(allCourses, myCourses, "id");
+        this.setState({ myCourses, otherCourses });
       })
       .catch(() => {
         this.setState({
@@ -113,7 +118,12 @@ class CoursesPage extends React.Component<Props, State> {
                   name={course.name}
                   description={course.description}
                   imgUri={course.img_uri}
+                  enrolled={course.enrolled}
                   onClickGoToCourse={(e, courseId) => this.handleClickGoToCourse(e, courseId)}
+                  onClickEnrollToCourse={(e, courseId) =>
+                    this.handleClickEnrollToCourse(e, courseId)}
+                  onClickUnenrollToCourse={(e, courseId) =>
+                    this.handleClickUnenrollToCourse(e, courseId)}
                 />
               </Grid>
             ))}
@@ -136,9 +146,41 @@ class CoursesPage extends React.Component<Props, State> {
     this.props.history.push(`/courses/${courseId}/activities`);
   }
 
+  handleClickEnrollToCourse(e: Event, courseId: number) {
+    e.preventDefault();
+    coursesService
+      .enroll(courseId)
+      .then(() => {
+        this.props.history.push(`/courses/${courseId}/activities`);
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al inscribirse. Por favor reintenta",
+          },
+        });
+      });
+  }
+
+  handleClickUnenrollToCourse(e: Event, courseId: number) {
+    e.preventDefault();
+    coursesService
+      .unenroll(courseId)
+      .then(() => this.loadCourses())
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al desinscribirse. Por favor reintenta",
+          },
+        });
+      });
+  }
+
   render() {
     const { classes } = this.props;
-    const { allCourses, myCourses, isSideBarOpen, error } = this.state;
+    const { otherCourses, myCourses, isSideBarOpen, error } = this.state;
 
     return (
       <div>
@@ -171,7 +213,7 @@ class CoursesPage extends React.Component<Props, State> {
           <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
             Todos los Cursos
           </Typography>
-          {this.renderCourseCards(allCourses)}
+          {this.renderCourseCards(otherCourses)}
         </main>
       </div>
     );
