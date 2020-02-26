@@ -26,6 +26,22 @@ export type Activity = {
   last_updated: string,
 };
 
+export type Student = {
+  id: number,
+  name: string,
+  surname: string,
+  student_id: string,
+  username: string,
+  email: string,
+  email_validated: boolean,
+  university: string,
+  degree: string,
+  date_created: string,
+  last_updated: string,
+  role: string,
+  accepted: boolean,
+};
+
 export type Category = {
   id: number,
   name: string,

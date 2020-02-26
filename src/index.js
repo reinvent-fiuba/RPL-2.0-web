@@ -11,6 +11,7 @@ import CreateActivityPage from "./components/CreateActivityPage/CreateActivityPa
 import AddActivityCorrectionTests from "./components/AddActivityCorrectionTests/AddActivityCorrectionTests.react";
 import SolveActivityPage from "./components/SolveActivityPage/SolveActivityPage";
 import ActivitiesPage from "./components/ActivitiesPage/ActivitiesPage";
+import StudentsPage from "./components/StudentsPage/StudentsPage";
 
 showdown.setFlavor("github");
 
@@ -24,6 +25,7 @@ const routing = (
         <Route exact path="/courses" component={CoursesPage} />
         <Route path="/courses/create" component={CreateCoursePage} />
         <Route exact path="/courses/:courseId/activities" component={ActivitiesPage} />
+        <Route exact path="/courses/:courseId/students" component={StudentsPage} />
         <Route path="/courses/:courseId/activity/create" component={CreateActivityPage} />
         <Route
           exact
