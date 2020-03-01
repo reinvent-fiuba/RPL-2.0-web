@@ -1,16 +1,16 @@
 // @flow
-import React from 'react';
-import MonacoEditor from 'react-monaco-editor';
+import React from "react";
+import MonacoEditor from "react-monaco-editor";
 
 type Props = {
   onCodeChange: (code: string) => void,
   language: string,
   width: number | string,
-  initialCode: string
+  initialCode: string,
 };
 
 type State = {
-  code: string
+  code: string,
 };
 
 export default class SimpleMonacoEditor extends React.Component<Props, State> {
@@ -18,9 +18,19 @@ export default class SimpleMonacoEditor extends React.Component<Props, State> {
     code: this.props.initialCode,
   };
 
-  onChange(newValue: string, e: Event) {
+  onChange(newValue: string) {
     this.setState({ code: newValue });
     this.props.onCodeChange(newValue);
+  }
+
+  getLanguage(): string {
+    const { language } = this.props;
+
+    const lang = language.split("_")[0];
+    if (lang.includes("python")) {
+      return "python";
+    }
+    return lang;
   }
 
   render() {
@@ -30,11 +40,11 @@ export default class SimpleMonacoEditor extends React.Component<Props, State> {
       <MonacoEditor
         width={width}
         // height="800"
-        language={language.split('_')[0]}
+        language={this.getLanguage()}
         theme="vs-dark"
         defaultValue=""
         value={code}
-        onChange={(c: string, e: Event) => this.onChange(c, e)}
+        onChange={(c: string) => this.onChange(c)}
       />
     );
   }

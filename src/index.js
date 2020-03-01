@@ -8,6 +8,7 @@ import { StateProvider } from "./utils/State";
 import CoursesPage from "./components/CoursesPage/CoursesPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
 import CreateActivityPage from "./components/CreateActivityPage/CreateActivityPage";
+import AddActivityCorrectionTests from "./components/AddActivityCorrectionTests/AddActivityCorrectionTests.react";
 import SolveActivityPage from "./components/SolveActivityPage/SolveActivityPage";
 import ActivitiesPage from "./components/ActivitiesPage/ActivitiesPage";
 
@@ -24,7 +25,15 @@ const routing = (
         <Route path="/courses/create" component={CreateCoursePage} />
         <Route exact path="/courses/:courseId/activities" component={ActivitiesPage} />
         <Route path="/courses/:courseId/activity/create" component={CreateActivityPage} />
-        <Route path="/courses/:courseId/activities/:activityId" component={SolveActivityPage} />
+        <Route
+          path="/courses/:courseId/activities/:activityId/edit/correction"
+          component={AddActivityCorrectionTests}
+        />
+        <Route
+          exact
+          path="/courses/:courseId/activities/:activityId"
+          component={SolveActivityPage}
+        />
       </div>
     </BrowserRouter>
   </StateProvider>

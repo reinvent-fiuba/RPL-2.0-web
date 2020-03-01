@@ -1,45 +1,35 @@
-import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import SideBar from '../SideBar/SideBar';
-import TopBar from '../TopBar/TopBar';
-import coursesService from '../../services/coursesService';
-import { withState } from '../../utils/State';
-import CreateCourseForm from './CreateCourseForm/CreateCourseForm';
-
-const _ = require('lodash');
+import React from "react";
+import { withStyles } from "@material-ui/core/styles";
+import SideBar from "../SideBar/SideBar";
+import TopBar from "../TopBar/TopBar";
+import { withState } from "../../utils/State";
+import CreateCourseForm from "./CreateCourseForm/CreateCourseForm";
 
 const drawerWidth = 240;
 
-const styles = (theme) => ({
+const styles = theme => ({
   drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: 0,
   },
   contentShift: {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: drawerWidth,
-  },
-  title: {
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  divider: {
-    margin: 20,
   },
 });
 
@@ -60,16 +50,18 @@ class CreateCoursePage extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     return (
       <div>
-        <TopBar handleDrawerOpen={this.handleDrawerOpen} open={this.state.open} title="Crear Curso" />
+        <TopBar
+          handleDrawerOpen={this.handleDrawerOpen}
+          open={this.state.open}
+          title="Crear Curso"
+        />
         <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
-        <main
-          className={`${classes.content} ${this.state.open ? classes.contentShift : ''}`}
-        >
+        <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <CreateCourseForm />
+          <CreateCourseForm history={history} />
         </main>
       </div>
     );

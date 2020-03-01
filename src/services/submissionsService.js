@@ -1,4 +1,6 @@
 // @flow
+import type { SubmissionResult } from "../types";
+
 const { request } = require("../utils/Request");
 
 const producer = {
@@ -24,8 +26,17 @@ exports.createSubmission = (
   });
 };
 
-exports.getSubmissionResult = (submissionId: number): Promise<any> =>
+exports.getSubmissionResult = (submissionId: number): Promise<SubmissionResult> =>
   request({
     url: `http://${producer.base_url}/api/submissions/${submissionId}/result`,
+    method: "GET",
+  });
+
+exports.getAllSubmissions = (
+  courseId: number,
+  activityId: number
+): Promise<Array<SubmissionResult>> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
     method: "GET",
   });

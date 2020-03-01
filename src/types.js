@@ -1,5 +1,11 @@
 // @flow
 
+export type IOTest = {
+  id: number,
+  in: string,
+  out: string,
+};
+
 export type Activity = {
   id: number,
   course_id: number,
@@ -13,6 +19,8 @@ export type Activity = {
   file_id: number,
   submission_status: string,
   last_submission_date: string,
+  activity_unit_tests: string,
+  activity_iotests: Array<IOTest>,
   date_created: string,
   last_updated: string,
 };
@@ -40,4 +48,30 @@ export type CreateCourseProps = {
   universityCourseId: string,
   semester: string,
   description: string,
+};
+
+export type IOTestRunResult = {
+  id: number,
+  test_in: string,
+  expected_output: string,
+  run_output: string,
+};
+
+export type SubmissionResult = {
+  id: number,
+  submission_file_name: string,
+  submission_file_type: string,
+  submission_file_id: number,
+  activity_supporting_file_name: string,
+  activity_supporting_file_type: string,
+  activity_supporting_file_id: number,
+  activity_language: string,
+  activity_unit_tests: string,
+  activity_iotests: Array<string>,
+  submission_status: string,
+  exit_message: string,
+  stderr: string,
+  stdout: string,
+  io_test_run_results: Array<IOTestRunResult>,
+  submission_date: string,
 };

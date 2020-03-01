@@ -65,7 +65,7 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  open: boolean,
+  isSideBarOpen: boolean,
   myCourses: Array<Course>,
   allCourses: Array<Course>,
 };
@@ -73,7 +73,7 @@ type State = {
 class CoursesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    open: false,
+    isSideBarOpen: false,
     myCourses: [],
     allCourses: [],
   };
@@ -124,7 +124,7 @@ class CoursesPage extends React.Component<Props, State> {
   }
 
   handleSwitchDrawer() {
-    this.setState(prevState => ({ open: !prevState.open }));
+    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   handleCreateCourseClick() {
@@ -138,18 +138,22 @@ class CoursesPage extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.props;
-    const { allCourses, myCourses, open, error } = this.state;
+    const { allCourses, myCourses, isSideBarOpen, error } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <TopBar handleDrawerOpen={() => this.handleSwitchDrawer()} open={open} title="Cursos" />
+        <TopBar
+          handleDrawerOpen={() => this.handleSwitchDrawer()}
+          open={isSideBarOpen}
+          title="Cursos"
+        />
         <SideBar
           handleDrawerClose={() => this.handleSwitchDrawer()}
-          open={open}
+          open={isSideBarOpen}
           courseId={this.props.match.params.courseId}
         />
-        <main className={`${classes.content} ${open ? classes.contentShift : ""}`}>
+        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <Fab
             color="primary"

@@ -121,7 +121,7 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  open: boolean,
+  isSideBarOpen: boolean,
   activity: ?Activity,
   categories: ?Array<Category>,
   language: string,
@@ -138,7 +138,7 @@ type State = {
 class CreateActivityPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    open: false,
+    isSideBarOpen: false,
     activity: null,
     categories: [],
     language: "",
@@ -160,7 +160,7 @@ class CreateActivityPage extends React.Component<Props, State> {
   }
 
   handleSwitchDrawer() {
-    this.setState(prevState => ({ open: !prevState.open }));
+    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   handleChange(event) {
@@ -188,7 +188,6 @@ class CreateActivityPage extends React.Component<Props, State> {
       .then(response => {
         this.setState({ activity: response });
         this.props.history.push(`/courses/${courseId}/activities/${response.id}/edit/correction`);
-        // this.setState({ addingTests: true });
       })
       .catch(() => {
         this.setState({
@@ -237,7 +236,7 @@ class CreateActivityPage extends React.Component<Props, State> {
       code,
       mdText,
       mdEditorTab,
-      open,
+      isSideBarOpen,
       addingTests,
       error,
     } = this.state;
@@ -248,15 +247,15 @@ class CreateActivityPage extends React.Component<Props, State> {
 
         <TopBar
           handleDrawerOpen={() => this.handleSwitchDrawer()}
-          open={open}
+          open={isSideBarOpen}
           title="Crear Actividad"
         />
         <SideBar
           handleDrawerClose={() => this.handleSwitchDrawer()}
-          open={open}
+          open={isSideBarOpen}
           courseId={courseId}
         />
-        <main className={`${classes.content} ${open ? classes.contentShift : ""}`}>
+        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
             Crear Actividad
