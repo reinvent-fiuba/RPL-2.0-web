@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 
@@ -9,31 +10,48 @@ const styles = theme => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "8px"
+    padding: "8px",
   },
   secondHeaderTitle: {
     alignSelf: "center",
     margin: "0px",
     color: "rgb(121, 116, 116)",
-    fontFamily: "Arial, Verdana, san-serif"
+    fontFamily: "Arial, Verdana, san-serif",
   },
   submitButton: {
-    alignSelf: "flex-end"
-  }
+    alignSelf: "flex-end",
+  },
 });
 
 type Props = {
   handleSubmitActivity: Event => void,
   activityName: string,
-  classes: any
+  classes: any,
 };
 
+// A custom hook that builds on useLocation to parse
+// the query string for you.
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
+function getLeftTitle(query: URLSearchParams) {
+  if (query.get("teacherTest") !== null) {
+    return (
+      <Link to={`${useLocation().pathname}/edit`} component={Button}>
+        Volver a modo editar
+      </Link>
+    );
+  }
+  return <div> </div>;
+}
+
 function SolvePageHeader(props: Props) {
+  const query = useQuery();
+
   return (
     <div className={props.classes.secondHeader}>
-      <div className={props.classes.secondHeaderTitle}>
-        Volver a modo editar
-      </div>
+      {getLeftTitle(query)}
       <h1 className={props.classes.secondHeaderTitle}>{props.activityName}</h1>
       <Button
         type="submit"
@@ -46,6 +64,6 @@ function SolvePageHeader(props: Props) {
       </Button>
     </div>
   );
-};
+}
 
 export default withStyles(styles)(SolvePageHeader);

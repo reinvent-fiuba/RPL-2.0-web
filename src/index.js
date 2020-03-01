@@ -26,6 +26,11 @@ const routing = (
         <Route exact path="/courses/:courseId/activities" component={ActivitiesPage} />
         <Route path="/courses/:courseId/activity/create" component={CreateActivityPage} />
         <Route
+          exact
+          path="/courses/:courseId/activities/:activityId/edit"
+          component={CreateActivityPage}
+        />
+        <Route
           path="/courses/:courseId/activities/:activityId/edit/correction"
           component={AddActivityCorrectionTests}
         />

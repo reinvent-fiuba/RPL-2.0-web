@@ -132,6 +132,7 @@ class SolveActivityPage extends React.Component<Props, State> {
   }
 
   handleSubmitActivity(event: any) {
+    // TODO: si ?teacherTest=true que sea otro endpoint o algo para que en el backend se tome diferente
     event.preventDefault();
     console.log("Submit");
     const { courseId, activityId } = this.props.match.params;
