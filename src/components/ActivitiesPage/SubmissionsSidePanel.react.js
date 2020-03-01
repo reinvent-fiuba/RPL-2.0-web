@@ -30,14 +30,12 @@ type Props = {
 type State = {
   error: { open: boolean, message: ?string },
   submissions: Array<SubmissionResult>,
-  isOpen: boolean,
 };
 
 class SubmissionsSidePanel extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     submissions: [],
-    isOpen: false,
   };
 
   //   componentDidMount() {
@@ -67,20 +65,11 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
     }
   }
 
-  //   handleClickOnSubmission(submission: SubmissionResult, idx: number) {
-  //     this.setState({ isSelectedResult: true, selectedResult: submission, isOpen: false });
-  //   }
-
-  //   handleCloseModal(e: Event) {
-  //     e.preventDefault();
-  //     this.setState({ isSelectedResult: false, selectedResult: null, isOpen: true });
-  //   }
-
   getSubmissionResultStatusIcon(submissionStatus: string): any {
     if (submissionStatus === "SUCCESS") {
       return <ThumbUp style={{ color: green[500] }} />;
     }
-    if (submissionStatus === "FAILURE") {
+    if (submissionStatus === "FAILURE" || submissionStatus.includes("ERROR")) {
       return <ThumbDown style={{ color: red[500] }} />;
     }
     return <ThumbsUpDown style={{ color: yellow[800] }} />;
@@ -106,19 +95,19 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
         >
           <div className="panel-container">
             {submissions &&
-              Object.keys(submissionsByDate).map((date, idx) => {
+              Object.keys(submissionsByDate).map(date => {
                 return (
                   <div key={date}>
                     <Typography variant="h6" color="textSecondary" component="p">
                       {date}
                     </Typography>
                     <List>
-                      {submissionsByDate[date].map((submission, idx) => (
+                      {submissionsByDate[date].map((submission, idxx) => (
                         <ListItem
                           button
                           key={submission.id}
                           // className={classes.listItem}
-                          onClick={() => onSelectSubmission(submission, idx)}
+                          onClick={() => onSelectSubmission(submission, idxx)}
                         >
                           <ListItemAvatar>
                             <Avatar>
