@@ -28,6 +28,27 @@ exports.createActivity = (activityDetails: any) => {
   });
 };
 
+exports.updateActivity = (activityDetails: any) => {
+  const formData = new FormData();
+
+  Object.keys(activityDetails).forEach(property => {
+    if (!activityDetails[property]) {
+      return;
+    }
+    formData.append(property, activityDetails[property]);
+  });
+
+  formData.append("supportingFile", new File(["Hola Mundo!"], "supporting_file1.txt"));
+  formData.append("supportingFile", new File(["Hola Mundo2!"], "supporting_file2.txt"));
+
+  return request({
+    url: `http://${producer.base_url}/api/courses/${activityDetails.courseId}/activities/${activityDetails.activityId}`,
+    body: formData,
+    method: "PUT",
+    headers: new Headers(),
+  });
+};
+
 exports.getActivityCategories = (courseId: number): Promise<Array<Category>> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,

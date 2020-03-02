@@ -125,14 +125,13 @@ type State = {
   activity: ?Activity,
   categories: ?Array<Category>,
   language: string,
-  category: ?Category,
+  categoryId: ?number,
   name: string,
   points: string,
   code: string,
   mdText: string,
   mdEditorTab: string,
   editor: any,
-  addingTests: boolean,
 };
 
 class CreateActivityPage extends React.Component<Props, State> {
@@ -142,21 +141,33 @@ class CreateActivityPage extends React.Component<Props, State> {
     activity: null,
     categories: [],
     language: "",
-    category: null,
+    categoryId: null,
     name: "",
     points: "",
     code: "",
     mdText: "",
     mdEditorTab: "write",
     editor: null,
-    addingTests: false,
   };
 
   componentDidMount() {
-    const { courseId } = this.props.match.params;
+    const { courseId, activityId } = this.props.match.params;
     activitiesService.getActivityCategories(courseId).then(response => {
       this.setState({ categories: response });
     });
+    if (activityId !== undefined && activityId !== null) {
+      activitiesService.getActivity(courseId, activityId).then(activity => {
+        this.setState({
+          activity,
+          language: activity.language,
+          categoryId: activity.category_id,
+          name: activity.name,
+          points: "15",
+          code: activity.initial_code,
+          mdText: activity.description,
+        });
+      });
+    }
   }
 
   handleSwitchDrawer() {
@@ -169,35 +180,82 @@ class CreateActivityPage extends React.Component<Props, State> {
     this.setState({ [event.target.id]: event.target.value });
   }
 
-  handleCreateClick(event) {
+  handleCreateClick(event, testActivityAsStudent = false) {
     event.preventDefault();
-    const { courseId } = this.props.match.params;
+    const { courseId, activityId } = this.props.match.params;
 
-    const { name, points, language, category, code, mdText } = this.state;
-    activitiesService
-      .createActivity({
-        courseId,
-        name,
-        points,
-        language,
-        activityCategoryId: category,
-        initialCode: code,
-        supportingFile: code,
-        description: mdText,
-      })
-      .then(response => {
-        this.setState({ activity: response });
-        this.props.history.push(`/courses/${courseId}/activities/${response.id}/edit/correction`);
-      })
-      .catch(() => {
-        this.setState({
-          error: {
-            open: true,
-            message:
-              "Hubo un error al crear la actividad, revisa que los datos ingresados sean validos.",
-          },
+    const { name, points, language, categoryId, code, mdText, activity } = this.state;
+
+    // Crear actividad
+    if (activity === null || activity === undefined) {
+      activitiesService
+        .createActivity({
+          courseId,
+          name,
+          points,
+          language,
+          activityCategoryId: categoryId,
+          initialCode: code,
+          supportingFile: code,
+          description: mdText,
+        })
+        .then(response => {
+          this.setState({ activity: response });
+          if (testActivityAsStudent) {
+            this.props.history.push(
+              `/courses/${courseId}/activities/${activity.id}?teacherTest=true`
+            );
+          } else {
+            this.props.history.push(
+              `/courses/${courseId}/activities/${response.id}/edit/correction`
+            );
+          }
+        })
+        .catch(() => {
+          this.setState({
+            error: {
+              open: true,
+              message:
+                "Hubo un error al crear la actividad, revisa que los datos ingresados sean validos.",
+            },
+          });
         });
-      });
+    } else {
+      // Editar actividad
+      activitiesService
+        .updateActivity({
+          courseId,
+          activityId,
+          name,
+          points,
+          language,
+          activityCategoryId: categoryId,
+          initialCode: code,
+          supportingFile: code,
+          description: mdText,
+        })
+        .then(response => {
+          this.setState({ activity: response });
+          if (testActivityAsStudent) {
+            this.props.history.push(
+              `/courses/${courseId}/activities/${activity.id}?teacherTest=true`
+            );
+          } else {
+            this.props.history.push(
+              `/courses/${courseId}/activities/${response.id}/edit/correction`
+            );
+          }
+        })
+        .catch(() => {
+          this.setState({
+            error: {
+              open: true,
+              message:
+                "Hubo un error al modificar la actividad, revisa que los datos ingresados sean validos.",
+            },
+          });
+        });
+    }
   }
 
   handleCancel() {
@@ -205,14 +263,8 @@ class CreateActivityPage extends React.Component<Props, State> {
     this.props.history.push(`/courses/${courseId}/activities`);
   }
 
-  handleGoToStudentPreview() {
-    const { courseId } = this.props.match.params;
-    const { activity } = this.state;
-    if (activity === null || activity === undefined) {
-      alert("Primero tenes que guardar la actividad!");
-    } else {
-      this.props.history.push(`/courses/${courseId}/activities/${activity.id}/teacherTest`);
-    }
+  handleGoToStudentPreview(event) {
+    this.handleCreateClick(event, true);
   }
 
   renderCategoriesDropdown() {
@@ -232,13 +284,13 @@ class CreateActivityPage extends React.Component<Props, State> {
       name,
       points,
       language,
-      category,
+      categoryId,
       code,
       mdText,
       mdEditorTab,
       isSideBarOpen,
-      addingTests,
       error,
+      editor,
     } = this.state;
 
     return (
@@ -270,6 +322,7 @@ class CreateActivityPage extends React.Component<Props, State> {
               name="name"
               autoComplete="name"
               onChange={e => this.handleChange(e)}
+              value={name}
             />
             <TextField
               margin="normal"
@@ -280,6 +333,7 @@ class CreateActivityPage extends React.Component<Props, State> {
               name="points"
               autoComplete="points"
               onChange={e => this.handleChange(e)}
+              value={points}
             />
             <FormControl>
               <InputLabel id="language">Lenguaje</InputLabel>
@@ -305,8 +359,8 @@ class CreateActivityPage extends React.Component<Props, State> {
               <Select
                 labelId="category"
                 id="category"
-                value={category || ""}
-                onChange={event => this.setState({ category: event.target.value })}
+                value={categoryId || ""}
+                onChange={event => this.setState({ categoryId: event.target.value })}
               >
                 {this.renderCategoriesDropdown()}
               </Select>
@@ -317,9 +371,9 @@ class CreateActivityPage extends React.Component<Props, State> {
               variant="contained"
               color="primary"
               className={classes.studentPreviewButton}
-              onClick={() => this.handleGoToStudentPreview()}
+              onClick={e => this.handleGoToStudentPreview(e)}
             >
-              Student preview
+              Guardar y Probar
             </Button>
           </form>
 
@@ -328,7 +382,7 @@ class CreateActivityPage extends React.Component<Props, State> {
               <ReactResizeDetector
                 handleWidth
                 handleHeight
-                onResize={() => (this.state.editor ? this.state.editor.layout : () => {})}
+                onResize={() => (editor ? editor.layout : () => {})}
               >
                 <MonacoEditor
                   options={{
@@ -339,15 +393,15 @@ class CreateActivityPage extends React.Component<Props, State> {
                   defaultValue=""
                   value={code}
                   onChange={codeChanged => this.setState({ code: codeChanged })}
-                  editorDidMount={editor => {
-                    editor.changeViewZones(changeAccessor => {
+                  editorDidMount={mountedEditor => {
+                    mountedEditor.changeViewZones(changeAccessor => {
                       changeAccessor.addZone({
                         afterLineNumber: 0,
                         heightInLines: 1,
                         domNode: document.createElement("span"),
                       });
                     });
-                    this.setState({ editor });
+                    this.setState({ editor: mountedEditor });
                   }}
                 />
               </ReactResizeDetector>
@@ -384,7 +438,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 className={classes.createButton}
                 onClick={e => this.handleCreateClick(e)}
               >
-                Crear y Agregar Pruebas
+                Guardar y Agregar Pruebas
               </Button>
             </Grid>
           </Grid>

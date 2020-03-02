@@ -9,6 +9,7 @@ export type IOTest = {
 export type Activity = {
   id: number,
   course_id: number,
+  category_id: number,
   category_name: string,
   category_description: string,
   name: string,
