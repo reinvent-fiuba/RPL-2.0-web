@@ -1,15 +1,6 @@
 // @flow
 import React from "react";
 import { Link } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
@@ -18,11 +9,11 @@ import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
 import ErrorNotification from "../../utils/ErrorNotification";
-import type { Activity, SubmissionResult } from "../../types";
+import type { Activity } from "../../types";
 import "./ActivitiesPage.css";
 import SubmissionsSidePanel from "./SubmissionsSidePanel.react";
-
-import TestResultsModal from "../SolveActivityPage/TestResultsModal.react";
+import ActivitiesTable from "./ActivitiesTable.react";
+import SubmissionResultModal from "../SubmissionResultModal/TestResultsModal.react";
 
 const _ = require("lodash");
 
@@ -56,19 +47,10 @@ const styles = theme => ({
     marginTop: 20,
     marginBottom: 20,
   },
-  divider: {
-    margin: 20,
-  },
   rightButton: {
     display: "flex",
     marginLeft: "auto",
     marginRight: theme.spacing(2),
-  },
-  table: {
-    minWidth: 650,
-  },
-  tableContainer: {
-    width: "80%",
   },
   tableContainerDiv: {
     display: "flex",
@@ -76,10 +58,6 @@ const styles = theme => ({
     flexDirection: "column",
     justifyContent: "center",
     padding: "0px 30px 30px 30px",
-  },
-  tableTitle: {
-    alignSelf: "start",
-    paddingLeft: "15px",
   },
 });
 
@@ -95,7 +73,7 @@ type State = {
   activities: Array<Activity>,
   submissionsPanel: { isOpen: boolean, activityId: ?number },
   isSelectedResult: boolean,
-  selectedResult: ?SubmissionResult,
+  selectedSubmissionId: ?number,
 };
 
 class ActivitiesPage extends React.Component<Props, State> {
@@ -105,7 +83,7 @@ class ActivitiesPage extends React.Component<Props, State> {
     activities: [],
     submissionsPanel: { isOpen: false, activityId: null },
     isSelectedResult: false,
-    selectedResult: null,
+    selectedSubmissionId: null,
   };
 
   componentDidMount() {
@@ -125,89 +103,36 @@ class ActivitiesPage extends React.Component<Props, State> {
       });
   }
 
-  setOpenPanel(activityId: number) {
-    this.setState({ submissionsPanel: { isOpen: true, activityId } });
-  }
-
-  setClosePanel() {
-    this.setState({ submissionsPanel: { isOpen: false, activityId: null } });
-  }
-
   handleSwitchDrawer(event: any) {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
-  handleCellClick(event: any, activityId: number) {
+  // submissions sidepanel
+  setOpenPanel(activityId: number) {
+    this.setState({ submissionsPanel: { isOpen: true, activityId } });
+  }
+
+  // submissions sidepanel
+  setClosePanel() {
+    this.setState({ submissionsPanel: { isOpen: false, activityId: null } });
+  }
+
+  handleClickOnActivityTitle(event: any, activityId: number) {
     const { history, match } = this.props;
+    // TODO: si es un docente que vaya a /edit
     history.push(`/courses/${match.params.courseId}/activities/${activityId}`);
   }
 
-  renderCategoryActivities(activities: Array<Activity>, classes: any) {
-    return (
-      <TableContainer component={Paper} className={classes.tableContainer}>
-        <Typography variant="h5" color="textSecondary" component="p" className={classes.tableTitle}>
-          {activities[0].category_name}
-        </Typography>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow key={0}>
-              <TableCell key={1}>Nombre</TableCell>
-              <TableCell key={2} align="right">
-                Última actividad
-              </TableCell>
-              <TableCell key={3} align="right">
-                Puntos
-              </TableCell>
-              <TableCell key={4} align="right">
-                Estado
-              </TableCell>
-              <TableCell key={5} align="right" />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {activities.map(activity => (
-              <TableRow hover key={activity.id}>
-                <TableCell
-                  key={1}
-                  component="th"
-                  scope="row"
-                  onClick={event => this.handleCellClick(event, activity.id)}
-                >
-                  {activity.name}
-                </TableCell>
-                <TableCell key={2} align="right">
-                  {(activity.last_submission_date && activity.last_submission_date.split("T")[0]) ||
-                    "-"}
-                </TableCell>
-                <TableCell key={3} align="right">
-                  {15}
-                </TableCell>
-                <TableCell key={4} align="right">
-                  {activity.submission_status || "SIN EMPEZAR"}
-                </TableCell>
-                <TableCell key={5} align="right">
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => this.setOpenPanel(activity.id)}
-                  >
-                    Ver entregas
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
-
-  handleClickOnSubmission(submission: SubmissionResult, idx: number) {
+  // click on submission in the right SidePanel
+  handleClickOnSubmission(submissionId: number, idx: number) {
     this.setState(prevState => ({
       submissionsPanel: { isOpen: false, activityId: prevState.submissionsPanel.activityId },
     }));
     setTimeout(() => {
-      this.setState({ isSelectedResult: true, selectedResult: submission });
+      this.setState({
+        isSelectedResult: true,
+        selectedSubmissionId: submissionId,
+      });
     }, 200);
   }
 
@@ -217,11 +142,9 @@ class ActivitiesPage extends React.Component<Props, State> {
     setTimeout(() => {
       this.setState(prevState => ({
         submissionsPanel: { isOpen: true, activityId: prevState.submissionsPanel.activityId },
-        selectedResult: null,
+        selectedSubmissionId: null,
       }));
     }, 200);
-
-    // this.setState({ isSelectedResult: false, selectedResult: null, openPanel: true });
   }
 
   render() {
@@ -232,8 +155,8 @@ class ActivitiesPage extends React.Component<Props, State> {
       isSideBarOpen,
       error,
       submissionsPanel,
-      selectedResult,
       isSelectedResult,
+      selectedSubmissionId,
     } = this.state;
 
     console.log(activities);
@@ -245,20 +168,24 @@ class ActivitiesPage extends React.Component<Props, State> {
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
 
+        {/* Se abre cuando alguien presiona el boton de VER ENTEGAS */}
         <SubmissionsSidePanel
           isOpen={submissionsPanel.isOpen}
           activityId={submissionsPanel.activityId}
           courseId={match.params.courseId}
           backdropClicked={() => this.setClosePanel()}
-          onSelectSubmission={(s, i) => this.handleClickOnSubmission(s, i)}
+          onSelectSubmission={(submissionId, i) => this.handleClickOnSubmission(submissionId, i)}
         />
 
-        <TestResultsModal
-          results={selectedResult}
-          open={isSelectedResult}
-          handleCloseModal={e => this.handleCloseModal(e)}
-          showWaitingDialog={false}
-        />
+        {/* APARECE CUANDO SE QUIERE VER EL DETALLE DE UNA ENTEGA PASADA DESDE EL SIDE PANEL */}
+        {isSelectedResult && (
+          <SubmissionResultModal
+            open={isSelectedResult}
+            handleCloseModal={e => this.handleCloseModal(e)}
+            showWaitingDialog
+            activitySubmissionId={selectedSubmissionId}
+          />
+        )}
 
         <TopBar
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
@@ -272,6 +199,8 @@ class ActivitiesPage extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
+
+          {/* //TODO: SOLO SI ES DOCENTE */}
           <Fab
             color="primary"
             aria-label="add"
@@ -285,7 +214,12 @@ class ActivitiesPage extends React.Component<Props, State> {
           {activities &&
             Object.keys(activitiesByCategory).map(category => (
               <div key={category} className={classes.tableContainerDiv}>
-                {this.renderCategoryActivities(activitiesByCategory[category], classes)}
+                <ActivitiesTable
+                  activities={activitiesByCategory[category]}
+                  setOpenPanel={activityId => this.setOpenPanel(activityId)}
+                  handleCellClick={(event, activityId) =>
+                    this.handleClickOnActivityTitle(event, activityId)}
+                />
               </div>
             ))}
         </main>

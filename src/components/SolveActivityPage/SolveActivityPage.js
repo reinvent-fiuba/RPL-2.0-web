@@ -12,9 +12,9 @@ import SimpleMonacoEditor from "./SimpleMonacoEditor.react";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SolvePageHeader from "./SolvePageHeader.react";
-import TestResultsModal from "./TestResultsModal.react";
+import SubmissionResultModal from "../SubmissionResultModal/TestResultsModal.react";
 import "./SolveActivityPage.css";
-import type { Activity, SubmissionResult } from "../../types";
+import type { Activity } from "../../types";
 
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
@@ -65,8 +65,7 @@ type State = {
   code: string,
   editorWidth: string,
   submittedActivity: boolean,
-  results: ?SubmissionResult,
-  getResultsTimerId: ?IntervalID,
+  selectedSubmissionId: ?number,
 };
 
 class SolveActivityPage extends React.Component<Props, State> {
@@ -77,8 +76,7 @@ class SolveActivityPage extends React.Component<Props, State> {
     activity: null,
     code: "",
     submittedActivity: false,
-    results: null,
-    getResultsTimerId: null,
+    selectedSubmissionId: null,
   };
 
   componentDidMount() {
@@ -109,28 +107,6 @@ class SolveActivityPage extends React.Component<Props, State> {
     this.setState({ code });
   }
 
-  pullForResults(submissionId: number) {
-    console.log("Pidiendo resultado");
-    submissionsService
-      .getSubmissionResult(submissionId)
-      .then(response => {
-        clearInterval(this.state.getResultsTimerId);
-        this.setState({ getResultsTimerId: null, results: response });
-      })
-      .catch(({ err, status }) => {
-        console.log(err);
-        if (status === 404) {
-          return;
-        }
-        this.setState({
-          error: {
-            open: true,
-            message: "Hubo un error al entregar la actividad, Por favor reintenta",
-          },
-        });
-      });
-  }
-
   handleSubmitActivity(event: any) {
     // TODO: si ?teacherTest=true que sea otro endpoint o algo para que en el backend se tome diferente
     event.preventDefault();
@@ -146,7 +122,7 @@ class SolveActivityPage extends React.Component<Props, State> {
       .then(response => {
         this.setState({
           submittedActivity: true,
-          getResultsTimerId: setInterval(() => this.pullForResults(response.id), 1000),
+          selectedSubmissionId: response.id,
         });
       })
       .catch(() => {
@@ -161,13 +137,19 @@ class SolveActivityPage extends React.Component<Props, State> {
 
   handleCloseModal(e: Event) {
     e.preventDefault();
-    clearInterval(this.state.getResultsTimerId);
-    this.setState({ submittedActivity: false, results: null });
+    this.setState({ submittedActivity: false, selectedSubmissionId: null });
   }
 
   render() {
     const { classes } = this.props;
-    const { activity, isSideBarOpen, submittedActivity, results, editorWidth, error } = this.state;
+    const {
+      activity,
+      isSideBarOpen,
+      submittedActivity,
+      selectedSubmissionId,
+      editorWidth,
+      error,
+    } = this.state;
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -209,8 +191,8 @@ class SolveActivityPage extends React.Component<Props, State> {
           </main>
         )}
         {submittedActivity && (
-          <TestResultsModal
-            results={results}
+          <SubmissionResultModal
+            activitySubmissionId={selectedSubmissionId}
             open={submittedActivity}
             handleCloseModal={e => this.handleCloseModal(e)}
             showWaitingDialog

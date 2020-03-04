@@ -16,6 +16,7 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import type { SubmissionResult } from "../../types";
 import submissionsService from "../../services/submissionsService";
 import { withState } from "../../utils/State";
+import getText from "../../utils/messages";
 
 const _ = require("lodash");
 
@@ -24,7 +25,7 @@ type Props = {
   courseId: number,
   backdropClicked: void => void,
   isOpen: boolean,
-  onSelectSubmission: (submission: SubmissionResult, idx: number) => void,
+  onSelectSubmission: (submissionId: number, idx: number) => void,
 };
 
 type State = {
@@ -37,13 +38,6 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
     error: { open: false, message: null },
     submissions: [],
   };
-
-  //   componentDidMount() {
-  //     const { courseId, activityId } = this.props;
-
-  //     if (activityId === null) {
-  //     }
-  //   }
 
   componentDidUpdate(prevProps) {
     const { courseId, activityId } = this.props;
@@ -97,7 +91,7 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
             {submissions &&
               Object.keys(submissionsByDate).map(date => {
                 return (
-                  <div key={date}>
+                  <div key={date} className="date-submission-container">
                     <Typography variant="h6" color="textSecondary" component="p">
                       {date}
                     </Typography>
@@ -106,8 +100,7 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
                         <ListItem
                           button
                           key={submission.id}
-                          // className={classes.listItem}
-                          onClick={() => onSelectSubmission(submission, idxx)}
+                          onClick={() => onSelectSubmission(submission.id, idxx)}
                         >
                           <ListItemAvatar>
                             <Avatar>
@@ -115,7 +108,7 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
                             </Avatar>
                           </ListItemAvatar>
                           <ListItemText
-                            primary={submission.submission_status}
+                            primary={getText(submission.submission_status).toUpperCase()}
                             secondary={submission.submission_date.split("T")[1].split(".")[0]}
                           />
                           <ListItemSecondaryAction>
