@@ -21,6 +21,11 @@
   justify-content: center;
 }
 
+.date-submission-container {
+  background-color: white;
+  width: 100%;
+}
+
 button {
   margin: 2px;
 }
