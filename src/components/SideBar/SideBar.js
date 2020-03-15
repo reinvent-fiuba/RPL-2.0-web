@@ -9,6 +9,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CodeIcon from "@material-ui/icons/Code";
 import SchoolIcon from "@material-ui/icons/School";
+import PeopleIcon from "@material-ui/icons/People";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import SettingsIcon from "@material-ui/icons/Settings";
 import { Link } from "react-router-dom";
@@ -37,6 +38,7 @@ const styles = theme => ({
 const actionIcons = {
   Cursos: SchoolIcon,
   Actividades: CodeIcon,
+  Inscriptos: PeopleIcon,
   Perfil: AccountCircleIcon,
   Configuracion: SettingsIcon,
 };
@@ -56,6 +58,7 @@ class SideBar extends React.PureComponent<Props> {
 
     if (courseId) {
       itemsLinks.Actividades = `/courses/${courseId}/activities`;
+      itemsLinks.Inscriptos = `/courses/${courseId}/students`;
     }
 
     return (

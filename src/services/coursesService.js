@@ -39,3 +39,9 @@ exports.unenroll = (courseId: number) =>
     url: `http://${producer.base_url}/api/courses/${courseId}/unenroll`,
     method: "POST",
   });
+
+exports.getAllStudentsByCourseId = (courseId: number): Promise<Array<Student>> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/users?roleName=student`,
+    method: "GET",
+  });
