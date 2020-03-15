@@ -16,12 +16,15 @@ exports.request = options => {
     );
   }
 
-  return fetch(options.url, options).then(response =>
-    response.json().then(json => {
+  return fetch(options.url, options).then(response => {
+    if (response.status === 204) {
+      return Promise.resolve();
+    }
+    return response.json().then(json => {
       if (!response.ok) {
         return Promise.reject({ err: json, status: response.status });
       }
       return json;
-    })
-  );
+    });
+  });
 };
