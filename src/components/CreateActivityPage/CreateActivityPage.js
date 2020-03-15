@@ -8,6 +8,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import Dialog from "@material-ui/core/Dialog";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Grid from "@material-ui/core/Grid";
 import MonacoEditor from "react-monaco-editor";
 import ReactMde from "react-mde";
@@ -17,6 +19,7 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import { withState } from "../../utils/State";
 import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
+import CreateActivityCategoryModal from "./CreateActivityCategoryModal";
 import activitiesService from "../../services/activitiesService";
 import type { Activity, Category } from "../../types";
 
@@ -111,6 +114,9 @@ const styles = theme => ({
     marginLeft: "auto",
     alignSelf: "flex-end",
   },
+  addNewCategory: {
+    padding: "0",
+  },
 });
 
 type Props = {
@@ -132,6 +138,8 @@ type State = {
   mdText: string,
   mdEditorTab: string,
   editor: any,
+  addingTests: boolean,
+  isCreateCategoryModalOpen: boolean,
 };
 
 class CreateActivityPage extends React.Component<Props, State> {
@@ -148,11 +156,17 @@ class CreateActivityPage extends React.Component<Props, State> {
     mdText: "",
     mdEditorTab: "write",
     editor: null,
+    addingTests: false,
+    isCreateCategoryModalOpen: false,
   };
 
   componentDidMount() {
-    const { courseId, activityId } = this.props.match.params;
-    activitiesService.getActivityCategories(courseId).then(response => {
+    this.loadActivityCategories();
+  }
+
+  loadActivityCategories() {
+    const { courseId } = this.props.match.params;
+    return activitiesService.getActivityCategories(courseId).then(response => {
       this.setState({ categories: response });
     });
     if (activityId !== undefined && activityId !== null) {
@@ -268,12 +282,30 @@ class CreateActivityPage extends React.Component<Props, State> {
   }
 
   renderCategoriesDropdown() {
+    const { classes } = this.props;
     const { categories } = this.state;
     return _.map(categories, category => (
       <MenuItem key={category.id} value={category.id}>
         {category.name}
       </MenuItem>
-    ));
+    )).concat(
+      <MenuItem className={classes.addNewCategory}>
+        <Button
+          fullWidth
+          size="small"
+          color="primary"
+          onClick={() => this.setState({ isCreateCategoryModalOpen: true })}
+          endIcon={<AddCircleIcon />}
+        >
+          Nueva categoría
+        </Button>
+      </MenuItem>
+    );
+  }
+
+  handleCloseModal(e: Event) {
+    this.setState({ isCreateCategoryModalOpen: false });
+    this.loadActivityCategories();
   }
 
   render() {
@@ -291,12 +323,17 @@ class CreateActivityPage extends React.Component<Props, State> {
       isSideBarOpen,
       error,
       editor,
+      isCreateCategoryModalOpen,
     } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-
+        <CreateActivityCategoryModal
+          open={isCreateCategoryModalOpen}
+          handleCloseModal={e => this.handleCloseModal(e)}
+          courseId={courseId}
+        />
         <TopBar
           handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={isSideBarOpen}

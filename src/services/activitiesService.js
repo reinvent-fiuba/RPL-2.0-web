@@ -55,6 +55,13 @@ exports.getActivityCategories = (courseId: number): Promise<Array<Category>> =>
     method: "GET",
   });
 
+exports.createActivityCategories = (courseId: number, name: string, description: string): Promise<Array<Category>> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,
+    method: "POST",
+    body: JSON.stringify({ name, description }),
+  });
+
 exports.getAllActivities = (courseId: number): Promise<Array<Activity>> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
