@@ -159,10 +159,11 @@ class ActivitiesPage extends React.Component<Props, State> {
       selectedSubmissionId,
     } = this.state;
 
-    console.log(activities);
+    const { profile } = this.props.context;
 
     const activitiesByCategory = _.groupBy(activities, "category_name");
-    console.log(activitiesByCategory);
+
+    console.log('activityPage', this.props);
 
     return (
       <div>
@@ -191,6 +192,8 @@ class ActivitiesPage extends React.Component<Props, State> {
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
           open={isSideBarOpen}
           title="Actividades"
+          courseId={match.params.courseId}
+          userId={profile.id}
         />
         <SideBar
           handleDrawerClose={e => this.handleSwitchDrawer(e)}

@@ -204,6 +204,7 @@ class StudentsPage extends React.Component<Props, State> {
     const { classes, match } = this.props;
 
     const { students, isSideBarOpen, error } = this.state;
+    const { profile } = this.props.context;
 
     return (
       <div>
@@ -212,6 +213,8 @@ class StudentsPage extends React.Component<Props, State> {
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
           open={isSideBarOpen}
           title="Inscriptos"
+          courseId={match.params.courseId}
+          userId={profile.id}
         />
         <SideBar
           handleDrawerClose={e => this.handleSwitchDrawer(e)}

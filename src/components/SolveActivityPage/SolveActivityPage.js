@@ -141,7 +141,7 @@ class SolveActivityPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, match } = this.props;
     const {
       activity,
       isSideBarOpen,
@@ -150,6 +150,9 @@ class SolveActivityPage extends React.Component<Props, State> {
       editorWidth,
       error,
     } = this.state;
+
+    const { profile } = this.props.context;
+
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -158,6 +161,8 @@ class SolveActivityPage extends React.Component<Props, State> {
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
           open={isSideBarOpen}
           title="Resolver Actividad"
+          userId={profile.id}
+          courseId={match.params.courseId}
         />
         <SideBar
           handleDrawerClose={e => this.handleSwitchDrawer(e)}

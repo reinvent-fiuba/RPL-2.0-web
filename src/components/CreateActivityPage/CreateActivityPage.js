@@ -326,6 +326,8 @@ class CreateActivityPage extends React.Component<Props, State> {
       isCreateCategoryModalOpen,
     } = this.state;
 
+    const { profile } = this.props.context;
+
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -338,6 +340,8 @@ class CreateActivityPage extends React.Component<Props, State> {
           handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={isSideBarOpen}
           title="Crear Actividad"
+          userId={userJd}
+          couseId={couseId}
         />
         <SideBar
           handleDrawerClose={() => this.handleSwitchDrawer()}

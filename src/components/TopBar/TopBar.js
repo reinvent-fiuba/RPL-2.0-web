@@ -13,7 +13,10 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
 import MenuIcon from "@material-ui/icons/Menu";
+import Badge from '@material-ui/core/Badge';
 import { withState } from "../../utils/State";
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import NotificationsModal from "../SideBar/NotificationsModal";
 
 const drawerWidth = 240;
 
@@ -38,6 +41,9 @@ const styles = theme => ({
   hide: {
     display: "none"
   },
+  notifications: {
+    marginRight: theme.spacing(2)
+  },
   title: {
     flexGrow: 1
   },
@@ -47,15 +53,23 @@ const styles = theme => ({
 });
 
 class TopBar extends React.PureComponent {
+  state = {
+    error: { open: false, message: null },
+    isNotificationModalOpen: false,
+    notificationRef: null,
+  };
+
+  handleCloseNotificationModal(){
+    this.setState({ isNotificationModalOpen: false })
+  }
+
   render() {
+    console.log('TopBar', this.props);
     const { open, title, handleDrawerOpen, context, classes } = this.props;
     const { name, surname } = context && context.profile;
 
     return (
-      <AppBar
-        position="fixed"
-        className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}
-      >
+      <AppBar position="fixed" className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -69,10 +83,29 @@ class TopBar extends React.PureComponent {
           <Typography variant="h6" className={classes.title} noWrap>
             {title}
           </Typography>
+          <IconButton 
+            className={classes.notifications} 
+            component="span"
+            onClick={() => this.setState({ isNotificationModalOpen: !this.state.isNotificationModalOpen })}
+            buttonRef={(node) => { 
+              this.notificationRef = node;
+            }}
+            >
+            <Badge color="secondary" badgeContent={99}>
+              <NotificationsIcon />
+            </Badge>
+          </IconButton> 
+          <NotificationsModal
+            open={this.state.isNotificationModalOpen}
+            handleClose={e => this.handleCloseNotificationModal(e)}
+            notificationRef={this.notificationRef}
+            userId={this.props.userId}
+            courseId={this.props.courseId}
+          />
           <Typography variant="body1" className={classes.user}>
             {name} {surname}
           </Typography>
-          <Avatar className={classes.avatar}>
+          <Avatar>
             {name[0]}
             {surname[0]}
           </Avatar>

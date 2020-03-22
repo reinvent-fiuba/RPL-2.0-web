@@ -182,6 +182,8 @@ class CoursesPage extends React.Component<Props, State> {
     const { classes } = this.props;
     const { otherCourses, myCourses, isSideBarOpen, error } = this.state;
 
+    const { profile } = this.props.context;
+
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -189,6 +191,7 @@ class CoursesPage extends React.Component<Props, State> {
           handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={isSideBarOpen}
           title="Cursos"
+          userId={profile.id}
         />
         <SideBar
           handleDrawerClose={() => this.handleSwitchDrawer()}
