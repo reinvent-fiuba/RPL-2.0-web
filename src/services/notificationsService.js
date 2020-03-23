@@ -16,8 +16,10 @@ exports.get = (userId: number, courseId: number): Promise<Array<Notification>> =
     if (pendingStudents.length === 0){
       return null;
     }
+
+    const multipleStudents = pendingStudents.length > 1;
     return {
-      message: `Tienes ${pendingStudents.length} alumnos esperando a ser aceptados!`,
+      message: `Tienes ${pendingStudents.length} alumno${multipleStudents ? 's' : ''} esperando a ser aceptado${multipleStudents ? 's' : ''}!`,
       redirect: `/courses/${courseId}/students`,
       type: "students"
     };
