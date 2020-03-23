@@ -14,6 +14,8 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
 import MenuIcon from "@material-ui/icons/Menu";
 import { withState } from "../../utils/State";
+import NotificationsButton from "../SideBar/NotificationsButton";
+import { withRouter } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -47,15 +49,23 @@ const styles = theme => ({
 });
 
 class TopBar extends React.PureComponent {
+  state = {
+    error: { open: false, message: null },
+    isNotificationModalOpen: false,
+    notificationRef: null,
+  };
+
+  handleCloseNotificationModal(){
+    this.setState({ isNotificationModalOpen: false })
+  }
+
   render() {
     const { open, title, handleDrawerOpen, context, classes } = this.props;
     const { name, surname } = context && context.profile;
+    const { isNotificationModalOpen } = this.state;
 
     return (
-      <AppBar
-        position="fixed"
-        className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}
-      >
+      <AppBar position="fixed" className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -69,10 +79,16 @@ class TopBar extends React.PureComponent {
           <Typography variant="h6" className={classes.title} noWrap>
             {title}
           </Typography>
+          <NotificationsButton
+            open={isNotificationModalOpen}
+            handleClose={e => this.handleCloseNotificationModal(e)}
+            notificationRef={this.notificationRef}
+            onClick={() => this.setState({ isNotificationModalOpen: !isNotificationModalOpen })}
+          />
           <Typography variant="body1" className={classes.user}>
             {name} {surname}
           </Typography>
-          <Avatar className={classes.avatar}>
+          <Avatar>
             {name[0]}
             {surname[0]}
           </Avatar>
@@ -82,4 +98,4 @@ class TopBar extends React.PureComponent {
   }
 }
 
-export default withState(withStyles(styles)(TopBar));
+export default withRouter(withState(withStyles(styles)(TopBar)));

@@ -74,6 +74,12 @@ export type IOTestRunResult = {
   run_output: string,
 };
 
+export type Notification = {
+  message: string,
+  redirect: string, 
+  type: string,
+}
+
 export type SubmissionResult = {
   id: number,
   submission_file_name: string,

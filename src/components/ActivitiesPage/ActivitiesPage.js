@@ -159,10 +159,7 @@ class ActivitiesPage extends React.Component<Props, State> {
       selectedSubmissionId,
     } = this.state;
 
-    console.log(activities);
-
     const activitiesByCategory = _.groupBy(activities, "category_name");
-    console.log(activitiesByCategory);
 
     return (
       <div>
