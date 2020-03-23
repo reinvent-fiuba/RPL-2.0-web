@@ -17,6 +17,7 @@ import Badge from '@material-ui/core/Badge';
 import { withState } from "../../utils/State";
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import NotificationsModal from "../SideBar/NotificationsModal";
+import { withRouter } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -40,9 +41,6 @@ const styles = theme => ({
   },
   hide: {
     display: "none"
-  },
-  notifications: {
-    marginRight: theme.spacing(2)
   },
   title: {
     flexGrow: 1
@@ -83,24 +81,13 @@ class TopBar extends React.PureComponent {
           <Typography variant="h6" className={classes.title} noWrap>
             {title}
           </Typography>
-          <IconButton 
-            className={classes.notifications} 
-            component="span"
-            onClick={() => this.setState({ isNotificationModalOpen: !this.state.isNotificationModalOpen })}
-            buttonRef={(node) => { 
-              this.notificationRef = node;
-            }}
-            >
-            <Badge color="secondary" badgeContent={99}>
-              <NotificationsIcon />
-            </Badge>
-          </IconButton> 
           <NotificationsModal
             open={this.state.isNotificationModalOpen}
             handleClose={e => this.handleCloseNotificationModal(e)}
             notificationRef={this.notificationRef}
             userId={this.props.userId}
             courseId={this.props.courseId}
+            onClick={() => this.setState({ isNotificationModalOpen: !this.state.isNotificationModalOpen })}
           />
           <Typography variant="body1" className={classes.user}>
             {name} {surname}
@@ -115,4 +102,4 @@ class TopBar extends React.PureComponent {
   }
 }
 
-export default withState(withStyles(styles)(TopBar));
+export default withRouter(withState(withStyles(styles)(TopBar)));

@@ -3,26 +3,30 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import { withStyles } from "@material-ui/core/styles";
 import ErrorNotification from "../../utils/ErrorNotification";
 import activitiesService from "../../services/activitiesService";
 import Popover from '@material-ui/core/Popover';
+import IconButton from "@material-ui/core/IconButton";
+import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
+import { withRouter } from 'react-router-dom';
 
 import notificationsService from '../../services/notificationsService';
 
 const styles = theme => ({
-  popover: {
+  menu: {
     width: '250px',
   },
   typography: {
     padding: theme.spacing(2),
     whiteSpace: "normal",
+    fontSize: 14,
+  },
+  notifications: {
+    marginRight: theme.spacing(2)
   },
 });
 
@@ -64,36 +68,54 @@ class NotificationsModal extends React.Component<Props, State> {
   loadNotifications() {
     const { courseId, userId } = this.props;
     if (courseId && userId) {
-      notificationsService.get(1, 1).then(notifications => {
+      notificationsService.get(userId, courseId).then(notifications => {
         this.setState({ notifications });
       });
     }
   }
 
   renderNotifications() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const { notifications } = this.state; 
-    return notifications ? notifications.map(notification => 
-      <MenuItem>
+    console.log('renderNotifications', this.props);
+    return (notifications && !!notifications.length) ? notifications.map(notification => 
+      <MenuItem
+        onClick={() => history.push(notification.redirect)}
+      >
         <Typography className={classes.typography}>{notification.message}</Typography>
       </MenuItem>
-    ) : [];
+    ) : [
+      <MenuItem>
+        <Typography className={classes.typography}> No tienes notificaciones pendientes</Typography>
+      </MenuItem>
+    ];
   }
 
   render() {
-    const { classes, open, handleClose, notificationRef } = this.props;
-    const { error, } = this.state;
+    const { classes, open, handleClose, onClick } = this.props;
+    const { error, notifications } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
+        <IconButton 
+          className={classes.notifications} 
+          component="span"
+          onClick={onClick}
+          buttonRef={(node) => { 
+            this.notificationRef = node;
+          }}
+          >
+          <Badge color="secondary" badgeContent={notifications && notifications.length}>
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
         <Popover
-          className={classes.popover} 
           open={open}
           onClose={e => { 
             handleClose(e);
           }}
-          anchorEl={notificationRef}
+          anchorEl={this.notificationRef}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'center',
@@ -102,7 +124,7 @@ class NotificationsModal extends React.Component<Props, State> {
             vertical: 'top',
             horizontal: 'right',
           }}>
-          <MenuList className={classes.popover} autoFocusItem={open} id="menu-list-grow" >
+          <MenuList className={classes.menu} autoFocusItem={open}>
             {this.renderNotifications()}
           </MenuList>
         </Popover>
@@ -111,4 +133,4 @@ class NotificationsModal extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(NotificationsModal);
+export default withRouter(withStyles(styles)(NotificationsModal));

@@ -76,6 +76,7 @@ export type IOTestRunResult = {
 
 export type Notification = {
   message: string,
+  redirect: string, 
   type: string,
 }
 
