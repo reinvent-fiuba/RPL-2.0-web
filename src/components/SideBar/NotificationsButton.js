@@ -1,12 +1,9 @@
 // @flow
 import React from "react";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
 import Typography from "@material-ui/core/Typography";
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { withStyles } from "@material-ui/core/styles";
 import ErrorNotification from "../../utils/ErrorNotification";
-import activitiesService from "../../services/activitiesService";
 import Popover from '@material-ui/core/Popover';
 import IconButton from "@material-ui/core/IconButton";
 import Badge from '@material-ui/core/Badge';
@@ -32,14 +29,20 @@ const styles = theme => ({
 });
 
 type Props = {
-
+  classes: any,
+  history: any,
+  context: any,
+  match: any,
+  open: boolean,
+  handleClose: (event: Event) => any,
+  onClick: (event: Event) => any,
 };
 
 type State = {
   error: { open: boolean, message: ?string },
 };
 
-class NotificationsModal extends React.Component<Props, State> {
+class NotificationsButton extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
   };
@@ -62,19 +65,23 @@ class NotificationsModal extends React.Component<Props, State> {
 
   renderNotifications() {
     const { classes, history } = this.props;
-    const { notifications } = this.state; 
+    const { notifications } = this.state;
 
-    return (notifications && !!notifications.length) ? notifications.map(notification => 
-      <MenuItem
-        onClick={() => history.push(notification.redirect)}
-      >
+    if (!notifications || !notifications.length) {
+      return [
+        <MenuItem>
+          <Typography className={classes.typography}>
+            No tienes notificaciones pendientes
+          </Typography>
+        </MenuItem>,
+      ];
+    }
+
+    return notifications.map(notification => (
+      <MenuItem onClick={() => history.push(notification.redirect)}>
         <Typography className={classes.typography}>{notification.message}</Typography>
       </MenuItem>
-    ) : [
-      <MenuItem>
-        <Typography className={classes.typography}> No tienes notificaciones pendientes</Typography>
-      </MenuItem>
-    ];
+    ));
   }
 
   render() {
@@ -84,32 +91,33 @@ class NotificationsModal extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <IconButton 
-          className={classes.notifications} 
+        <IconButton
+          className={classes.notifications}
           component="span"
           onClick={onClick}
-          buttonRef={(node) => { 
+          buttonRef={node => {
             this.notificationRef = node;
           }}
-          >
+        >
           <Badge color="secondary" badgeContent={notifications && notifications.length}>
             <NotificationsIcon />
           </Badge>
         </IconButton>
         <Popover
           open={open}
-          onClose={e => { 
+          onClose={e => {
             handleClose(e);
           }}
           anchorEl={this.notificationRef}
           anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
+            vertical: "bottom",
+            horizontal: "center",
           }}
           transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}>
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
           <MenuList className={classes.menu} autoFocusItem={open}>
             {this.renderNotifications()}
           </MenuList>
@@ -119,4 +127,4 @@ class NotificationsModal extends React.Component<Props, State> {
   }
 }
 
-export default withRouter(withState(withStyles(styles)(NotificationsModal)));
+export default withRouter(withState(withStyles(styles)(NotificationsButton)));

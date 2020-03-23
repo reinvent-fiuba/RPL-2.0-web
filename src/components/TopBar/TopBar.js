@@ -13,10 +13,8 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
 import MenuIcon from "@material-ui/icons/Menu";
-import Badge from '@material-ui/core/Badge';
 import { withState } from "../../utils/State";
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import NotificationsModal from "../SideBar/NotificationsModal";
+import NotificationsButton from "../SideBar/NotificationsButton";
 import { withRouter } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -64,6 +62,7 @@ class TopBar extends React.PureComponent {
   render() {
     const { open, title, handleDrawerOpen, context, classes } = this.props;
     const { name, surname } = context && context.profile;
+    const { isNotificationModalOpen } = this.state;
 
     return (
       <AppBar position="fixed" className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}>
@@ -80,13 +79,11 @@ class TopBar extends React.PureComponent {
           <Typography variant="h6" className={classes.title} noWrap>
             {title}
           </Typography>
-          <NotificationsModal
-            open={this.state.isNotificationModalOpen}
+          <NotificationsButton
+            open={isNotificationModalOpen}
             handleClose={e => this.handleCloseNotificationModal(e)}
             notificationRef={this.notificationRef}
-            userId={this.props.userId}
-            courseId={this.props.courseId}
-            onClick={() => this.setState({ isNotificationModalOpen: !this.state.isNotificationModalOpen })}
+            onClick={() => this.setState({ isNotificationModalOpen: !isNotificationModalOpen })}
           />
           <Typography variant="body1" className={classes.user}>
             {name} {surname}
