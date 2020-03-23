@@ -151,8 +151,6 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
       selectedIdx,
     } = this.state;
 
-    const { profile } = this.props.context;
-
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -160,8 +158,6 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={isSideBarOpen}
           title="Agregar Tests"
-          userId={profile.id}
-          courseId={courseId}
         />
         <SideBar
           handleDrawerClose={() => this.handleSwitchDrawer()}

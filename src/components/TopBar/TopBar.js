@@ -62,7 +62,6 @@ class TopBar extends React.PureComponent {
   }
 
   render() {
-    console.log('TopBar', this.props);
     const { open, title, handleDrawerOpen, context, classes } = this.props;
     const { name, surname } = context && context.profile;
 

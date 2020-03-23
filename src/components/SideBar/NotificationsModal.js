@@ -13,6 +13,7 @@ import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import { withRouter } from 'react-router-dom';
+import { withState } from "../../utils/State";
 
 import notificationsService from '../../services/notificationsService';
 
@@ -31,34 +32,16 @@ const styles = theme => ({
 });
 
 type Props = {
-  handleCloseModal: Event => void,
-  open: boolean,
-  ioTest: ?IOTest,
-  idx: ?number,
-  courseId: number,
-  activityId: number,
-  classes: any,
+
 };
 
 type State = {
   error: { open: boolean, message: ?string },
-
-  textIn: ?string,
-  textOut: ?string,
-  textInError: ?string,
-  textOutError: ?string,
 };
 
 class NotificationsModal extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-
-    // eslint-disable-next-line react/destructuring-assignment
-    textIn: this.props.ioTest ? this.props.ioTest.in : "",
-    // eslint-disable-next-line react/destructuring-assignment
-    textOut: this.props.ioTest ? this.props.ioTest.out : "",
-    textInError: null,
-    textOutError: null,
   };
 
   componentDidMount() {
@@ -66,7 +49,10 @@ class NotificationsModal extends React.Component<Props, State> {
   }
 
   loadNotifications() {
-    const { courseId, userId } = this.props;
+    const { profile } = this.props.context;
+    const userId = profile.id;
+    const { courseId } = this.props.match.params;
+
     if (courseId && userId) {
       notificationsService.get(userId, courseId).then(notifications => {
         this.setState({ notifications });
@@ -77,7 +63,7 @@ class NotificationsModal extends React.Component<Props, State> {
   renderNotifications() {
     const { classes, history } = this.props;
     const { notifications } = this.state; 
-    console.log('renderNotifications', this.props);
+
     return (notifications && !!notifications.length) ? notifications.map(notification => 
       <MenuItem
         onClick={() => history.push(notification.redirect)}
@@ -133,4 +119,4 @@ class NotificationsModal extends React.Component<Props, State> {
   }
 }
 
-export default withRouter(withStyles(styles)(NotificationsModal));
+export default withRouter(withState(withStyles(styles)(NotificationsModal)));

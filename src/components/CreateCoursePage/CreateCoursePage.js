@@ -51,15 +51,12 @@ class CreateCoursePage extends React.Component {
 
   render() {
     const { classes, history } = this.props;
-    const { profile } = this.props.context;
-
     return (
       <div>
         <TopBar
           handleDrawerOpen={this.handleDrawerOpen}
           open={this.state.open}
           title="Crear Curso"
-          userId={profile.id}
         />
         <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
         <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>
