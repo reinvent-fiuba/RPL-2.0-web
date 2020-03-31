@@ -34,6 +34,7 @@ type Props = {
   context: any,
   match: any,
   open: boolean,
+  refresh: boolean,
   handleClose: (event: Event) => any,
   onClick: (event: Event) => any,
 };
@@ -49,6 +50,13 @@ class NotificationsButton extends React.Component<Props, State> {
 
   componentDidMount() {
     this.loadNotifications();
+  }
+
+  componentDidUpdate(props) {
+    const { refresh } = this.props;
+    if (props.refresh !== refresh) {
+      this.loadNotifications();
+    }
   }
 
   loadNotifications() {

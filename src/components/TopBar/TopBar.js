@@ -60,7 +60,7 @@ class TopBar extends React.PureComponent {
   }
 
   render() {
-    const { open, title, handleDrawerOpen, context, classes } = this.props;
+    const { open, title, handleDrawerOpen, context, classes, refreshNotifications } = this.props;
     const { name, surname } = context && context.profile;
     const { isNotificationModalOpen } = this.state;
 
@@ -81,6 +81,7 @@ class TopBar extends React.PureComponent {
           </Typography>
           <NotificationsButton
             open={isNotificationModalOpen}
+            refresh={refreshNotifications}
             handleClose={e => this.handleCloseNotificationModal(e)}
             notificationRef={this.notificationRef}
             onClick={() => this.setState({ isNotificationModalOpen: !isNotificationModalOpen })}
