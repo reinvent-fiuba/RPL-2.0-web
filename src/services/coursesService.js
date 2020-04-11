@@ -45,3 +45,21 @@ exports.getAllStudentsByCourseId = (courseId: number): Promise<Array<Student>> =
     url: `http://${producer.base_url}/api/courses/${courseId}/users?roleName=student`,
     method: "GET",
   });
+
+const patchCourseUser = (courseId: Number, userId: number, courseUserDetails: any) =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/users/${userId}`,
+    body: JSON.stringify(courseUserDetails),
+    method: "PATCH",
+  });
+
+exports.acceptStudent = (courseId: number, userId: number) =>
+  patchCourseUser(courseId, userId, {
+    accepted: true,
+  });
+
+exports.deleteStudent = (courseId: Number, userId: number) =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/users/${userId}`,
+    method: "DELETE",
+  });

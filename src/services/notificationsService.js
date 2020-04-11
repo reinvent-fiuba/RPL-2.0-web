@@ -21,7 +21,8 @@ exports.get = (userId: number, courseId: number): Promise<Array<Notification>> =
         redirect: `/courses/${courseId}/students`,
         type: "students",
       };
-    }).then(pendingStudentsNotification => {
+    })
+    .then(pendingStudentsNotification => {
       return pendingStudentsNotification ? [pendingStudentsNotification] : [];
     });
 };

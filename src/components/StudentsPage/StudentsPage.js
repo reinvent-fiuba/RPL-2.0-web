@@ -1,8 +1,5 @@
 // @flow
 import React from "react";
-import { Link } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
 import Avatar from "@material-ui/core/Avatar";
 import TableBody from "@material-ui/core/TableBody";
@@ -12,8 +9,9 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
-import AddIcon from "@material-ui/icons/Add";
-import Fab from "@material-ui/core/Fab";
+import CheckIcon from "@material-ui/icons/Check";
+import DeleteIcon from "@material-ui/icons/Delete";
+import IconButton from "@material-ui/core/IconButton";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
@@ -82,6 +80,9 @@ const styles = theme => ({
   tableAvatarColumn: {
     width: theme.spacing(5),
   },
+  tableIconsColumn: {
+    width: theme.spacing(20),
+  },
   avatar: {
     width: theme.spacing(4),
     height: theme.spacing(4),
@@ -111,6 +112,7 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   students: Array<Activity>,
+  refreshStudentsNotification: boolean,
 };
 
 class StudentsPage extends React.Component<Props, State> {
@@ -118,9 +120,14 @@ class StudentsPage extends React.Component<Props, State> {
     error: { open: false, message: null },
     isSideBarOpen: false,
     students: [],
+    refreshStudentsNotification: false,
   };
 
   componentDidMount() {
+    this.loadStudents();
+  }
+
+  loadStudents() {
     const { match } = this.props;
     coursesService
       .getAllStudentsByCourseId(match.params.courseId)
@@ -141,8 +148,28 @@ class StudentsPage extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
+  handleAcceptStudent(courseId: number, userId: number, event: any) {
+    coursesService
+      .acceptStudent(courseId, userId)
+      .then(() => this.loadStudents())
+      .then(() =>
+        this.setState({ refreshStudentsNotification: !this.state.refreshStudentsNotification })
+      );
+  }
+
+  handleDeleteStudent(courseId: Number, userId: number, event: any) {
+    coursesService
+      .deleteStudent(courseId, userId)
+      .then(() => this.loadStudents())
+      .then(() =>
+        this.setState({ refreshStudentsNotification: !this.state.refreshStudentsNotification })
+      );
+  }
+
   // eslint-disable-next-line class-methods-use-this
   renderStudents(students: Array<Student>, classes: any) {
+    const { match } = this.props;
+    const { courseId } = match.params;
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table className={classes.table} aria-label="simple table">
@@ -162,6 +189,7 @@ class StudentsPage extends React.Component<Props, State> {
               <TableCell key={6} align="right">
                 Activo
               </TableCell>
+              <TableCell key={7} className={classes.tableIconsColumn} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -192,6 +220,21 @@ class StudentsPage extends React.Component<Props, State> {
                     }`}
                   />
                 </TableCell>
+                <TableCell key={7} align="right">
+                  <IconButton
+                    style={student.accepted ? { display: "none" } : {}}
+                    component="span"
+                    onClick={event => this.handleAcceptStudent(courseId, student.id, event)}
+                  >
+                    <CheckIcon />
+                  </IconButton>
+                  <IconButton
+                    component="span"
+                    onClick={event => this.handleDeleteStudent(courseId, student.id, event)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -203,7 +246,7 @@ class StudentsPage extends React.Component<Props, State> {
   render() {
     const { classes, match } = this.props;
 
-    const { students, isSideBarOpen, error } = this.state;
+    const { students, isSideBarOpen, refreshStudentsNotification, error } = this.state;
 
     return (
       <div>
@@ -212,6 +255,7 @@ class StudentsPage extends React.Component<Props, State> {
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
           open={isSideBarOpen}
           title="Inscriptos"
+          refreshNotifications={refreshStudentsNotification}
         />
         <SideBar
           handleDrawerClose={e => this.handleSwitchDrawer(e)}
