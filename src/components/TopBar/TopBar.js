@@ -50,9 +50,7 @@ const styles = theme => ({
 
 class TopBar extends React.PureComponent {
   state = {
-    error: { open: false, message: null },
     isNotificationModalOpen: false,
-    notificationRef: null,
   };
 
   handleCloseNotificationModal(){
@@ -83,7 +81,6 @@ class TopBar extends React.PureComponent {
             open={isNotificationModalOpen}
             refresh={refreshNotifications}
             handleClose={e => this.handleCloseNotificationModal(e)}
-            notificationRef={this.notificationRef}
             onClick={() => this.setState({ isNotificationModalOpen: !isNotificationModalOpen })}
           />
           <Typography variant="body1" className={classes.user}>

@@ -169,7 +169,7 @@ class StudentsPage extends React.Component<Props, State> {
   // eslint-disable-next-line class-methods-use-this
   renderStudents(students: Array<Student>, classes: any) {
     const { match } = this.props;
-    const courseId = match.params.courseId;
+    const { courseId } = match.params;
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table className={classes.table} aria-label="simple table">

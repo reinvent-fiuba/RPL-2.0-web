@@ -1,22 +1,22 @@
 // @flow
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import NotificationsIcon from '@material-ui/icons/Notifications';
+import NotificationsIcon from "@material-ui/icons/Notifications";
 import { withStyles } from "@material-ui/core/styles";
-import ErrorNotification from "../../utils/ErrorNotification";
-import Popover from '@material-ui/core/Popover';
+import Popover from "@material-ui/core/Popover";
 import IconButton from "@material-ui/core/IconButton";
-import Badge from '@material-ui/core/Badge';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import { withRouter } from 'react-router-dom';
+import Badge from "@material-ui/core/Badge";
+import MenuItem from "@material-ui/core/MenuItem";
+import MenuList from "@material-ui/core/MenuList";
+import { withRouter } from "react-router-dom";
+import ErrorNotification from "../../utils/ErrorNotification";
 import { withState } from "../../utils/State";
 
-import notificationsService from '../../services/notificationsService';
+import notificationsService from "../../services/notificationsService";
 
 const styles = theme => ({
   menu: {
-    width: '250px',
+    width: "250px",
   },
   typography: {
     padding: theme.spacing(2),
@@ -24,7 +24,7 @@ const styles = theme => ({
     fontSize: 14,
   },
   notifications: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
 });
 
