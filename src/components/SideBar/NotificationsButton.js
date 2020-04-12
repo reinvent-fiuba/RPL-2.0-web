@@ -60,12 +60,16 @@ class NotificationsButton extends React.Component<Props, State> {
   }
 
   loadNotifications() {
-    const { profile } = this.props.context;
+    const { profile, permissions } = this.props.context;
     const userId = profile.id;
     const { courseId } = this.props.match.params;
 
     if (courseId && userId) {
-      notificationsService.get(userId, courseId).then(notifications => {
+      const options = {
+        studentsNotifications: permissions.includes("user_manage"),
+      };
+
+      notificationsService.get(userId, courseId, options).then(notifications => {
         this.setState({ notifications });
       });
     }

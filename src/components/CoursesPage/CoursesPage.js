@@ -143,7 +143,11 @@ class CoursesPage extends React.Component<Props, State> {
 
   handleClickGoToCourse(e: Event, courseId: number) {
     e.preventDefault();
-    this.props.history.push(`/courses/${courseId}/activities`);
+    // TODO: This should be moved so it is execute for all routes with a courseId
+    coursesService.getPermissions(courseId).then(permissions => {
+      this.props.context.set("permissions", permissions);
+      this.props.history.push(`/courses/${courseId}/activities`);
+    });
   }
 
   handleClickEnrollToCourse(e: Event, courseId: number) {

@@ -65,6 +65,7 @@ type Props = {
   match: any,
   classes: any,
   history: any,
+  context: any,
 };
 
 type State = {
@@ -148,7 +149,7 @@ class ActivitiesPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, match } = this.props;
+    const { classes, match, context } = this.props;
 
     const {
       activities,
@@ -197,16 +198,19 @@ class ActivitiesPage extends React.Component<Props, State> {
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
 
-          {/* //TODO: SOLO SI ES DOCENTE */}
-          <Fab
-            color="primary"
-            aria-label="add"
-            className={classes.rightButton}
-            component={Link}
-            to={`/courses/${match.params.courseId}/activity/create`}
-          >
-            <AddIcon />
-          </Fab>
+          {context.permissions.includes("activity_manage") ? (
+            <Fab
+              color="primary"
+              aria-label="add"
+              className={classes.rightButton}
+              component={Link}
+              to={`/courses/${match.params.courseId}/activity/create`}
+            >
+              <AddIcon />
+            </Fab>
+          ) : (
+            <div />
+          )}
 
           {activities &&
             Object.keys(activitiesByCategory).map(category => (
