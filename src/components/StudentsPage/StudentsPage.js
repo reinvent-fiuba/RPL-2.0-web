@@ -183,7 +183,7 @@ class StudentsPage extends React.Component<Props, State> {
     ];
 
     const { context } = this.props;
-    if (context.permissions.includes("user_manage")) {
+    if (context.permissions && context.permissions.includes("user_manage")) {
       const extraCells = [
         <TableCell key={6} align="right">
           Activo
@@ -220,12 +220,16 @@ class StudentsPage extends React.Component<Props, State> {
     ];
  
     const { context } = this.props;
-    if (context.permissions.includes("user_manage")) {
+    if (context.permissions && context.permissions.includes("user_manage")) {
       const extraCells = [
         <TableCell
           key={6}
           align="right"
-          style={context.permissions.includes("user_manage") ? {} : { display: "none" }}
+          style={
+            context.permissions && context.permissions.includes("user_manage")
+              ? {}
+              : { display: "none" }
+          }
         >
           <span
             className={`${classes.status} ${
@@ -236,7 +240,11 @@ class StudentsPage extends React.Component<Props, State> {
         <TableCell
           key={7}
           align="right"
-          style={context.permissions.includes("user_manage") ? {} : { display: "none" }}
+          style={
+            context.permissions && context.permissions.includes("user_manage")
+              ? {}
+              : { display: "none" }
+          }
         >
           <IconButton
             style={student.accepted ? { display: "none" } : {}}

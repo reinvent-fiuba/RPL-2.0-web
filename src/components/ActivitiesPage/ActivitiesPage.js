@@ -198,7 +198,7 @@ class ActivitiesPage extends React.Component<Props, State> {
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
 
-          {context.permissions.includes("activity_manage") ? (
+          {context.permissions && context.permissions.includes("activity_manage") ? (
             <Fab
               color="primary"
               aria-label="add"

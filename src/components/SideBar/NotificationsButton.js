@@ -66,7 +66,7 @@ class NotificationsButton extends React.Component<Props, State> {
 
     if (courseId && userId) {
       const options = {
-        studentsNotifications: permissions.includes("user_manage"),
+        studentsNotifications: permissions && permissions.includes("user_manage"),
       };
 
       notificationsService.get(userId, courseId, options).then(notifications => {

@@ -7,11 +7,7 @@ import SignupPage from "./components/SignupPage/SignupPage";
 import { StateProvider } from "./utils/State";
 import CoursesPage from "./components/CoursesPage/CoursesPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
-import CreateActivityPage from "./components/CreateActivityPage/CreateActivityPage";
-import AddActivityCorrectionTests from "./components/AddActivityCorrectionTests/AddActivityCorrectionTests.react";
-import SolveActivityPage from "./components/SolveActivityPage/SolveActivityPage";
-import ActivitiesPage from "./components/ActivitiesPage/ActivitiesPage";
-import StudentsPage from "./components/StudentsPage/StudentsPage";
+import CourseIndex from "./courseIndex";
 
 showdown.setFlavor("github");
 
@@ -24,23 +20,15 @@ const routing = (
         <Route path="/signup" component={SignupPage} />
         <Route exact path="/courses" component={CoursesPage} />
         <Route path="/courses/create" component={CreateCoursePage} />
-        <Route exact path="/courses/:courseId/activities" component={ActivitiesPage} />
-        <Route exact path="/courses/:courseId/students" component={StudentsPage} />
-        <Route path="/courses/:courseId/activity/create" component={CreateActivityPage} />
-        <Route
-          exact
-          path="/courses/:courseId/activities/:activityId/edit"
-          component={CreateActivityPage}
-        />
-        <Route
-          path="/courses/:courseId/activities/:activityId/edit/correction"
-          component={AddActivityCorrectionTests}
-        />
-        <Route
-          exact
-          path="/courses/:courseId/activities/:activityId"
-          component={SolveActivityPage}
-        />
+        <Route path="/courses/:courseId/" component={CourseIndex} />
+        {/* CourseIndex fetch permissions and render the following routes:
+              /courses/:courseId/students
+              /courses/:courseId/activity/create
+              /courses/:courseId/activities
+              /courses/:courseId/activities/:activityId
+              /courses/:courseId/activities/:activityId/edit
+              /courses/:courseId/activities/:activityId/edit/correction
+        */}
       </div>
     </BrowserRouter>
   </StateProvider>
