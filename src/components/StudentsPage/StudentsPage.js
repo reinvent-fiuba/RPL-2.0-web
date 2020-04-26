@@ -106,6 +106,7 @@ type Props = {
   match: any,
   classes: any,
   history: any,
+  context: any,
 };
 
 type State = {
@@ -166,78 +167,120 @@ class StudentsPage extends React.Component<Props, State> {
       );
   }
 
+  renderHeadRow(classes: any) {
+    const cells = [
+      <TableCell key={1} className={classes.tableAvatarColumn} />,
+      <TableCell key={2}>Alumno</TableCell>,
+      <TableCell key={3} align="right">
+        Email
+      </TableCell>,
+      <TableCell key={4} align="right">
+        Id
+      </TableCell>,
+      <TableCell key={5} align="right">
+        Rol
+      </TableCell>,
+    ];
+
+    const { context } = this.props;
+    if (context.permissions && context.permissions.includes("user_manage")) {
+      const extraCells = [
+        <TableCell key={6} align="right">
+          Activo
+        </TableCell>,
+        <TableCell key={7} className={classes.tableIconsColumn} />,
+      ];
+
+      cells.push(...extraCells);
+    }
+
+    return <TableRow key={0}>{cells}</TableRow>;
+  }
+
+  renderStudentRow(student: any, classes: any) {
+    const cells = [
+      <TableCell key={1} component="th" scope="row">
+        <Avatar className={classes.avatar}>
+          {student.name[0]}
+          {student.surname[0]}
+        </Avatar>
+      </TableCell>,
+      <TableCell key={2} component="th" scope="row">
+        {`${student.name} ${student.surname}`}
+      </TableCell>,
+      <TableCell key={3} align="right">
+        {student.email}
+      </TableCell>,
+      <TableCell key={4} align="right">
+        {student.student_id}
+      </TableCell>,
+      <TableCell key={5} align="right">
+        {student.role}
+      </TableCell>,
+    ];
+ 
+    const { context } = this.props;
+    if (context.permissions && context.permissions.includes("user_manage")) {
+      const extraCells = [
+        <TableCell
+          key={6}
+          align="right"
+          style={
+            context.permissions && context.permissions.includes("user_manage")
+              ? {}
+              : { display: "none" }
+          }
+        >
+          <span
+            className={`${classes.status} ${
+              student.accepted ? classes.activeStatus : classes.inactiveStatus
+            }`}
+          />
+        </TableCell>,
+        <TableCell
+          key={7}
+          align="right"
+          style={
+            context.permissions && context.permissions.includes("user_manage")
+              ? {}
+              : { display: "none" }
+          }
+        >
+          <IconButton
+            style={student.accepted ? { display: "none" } : {}}
+            component="span"
+            onClick={event => this.handleAcceptStudent(courseId, student.id, event)}
+          >
+            <CheckIcon />
+          </IconButton>
+          <IconButton
+            component="span"
+            onClick={event => this.handleDeleteStudent(courseId, student.id, event)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </TableCell>,
+      ];
+
+      cells.push(...extraCells);
+    }
+
+    return (
+      <TableRow hover key={student.student_id}>
+        {cells}
+      </TableRow>
+    );
+  }
+
   // eslint-disable-next-line class-methods-use-this
   renderStudents(students: Array<Student>, classes: any) {
-    const { match } = this.props;
+    const { match, context } = this.props;
     const { courseId } = match.params;
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow key={0}>
-              <TableCell key={1} className={classes.tableAvatarColumn} />
-              <TableCell key={2}>Alumno</TableCell>
-              <TableCell key={3} align="right">
-                Email
-              </TableCell>
-              <TableCell key={4} align="right">
-                Id
-              </TableCell>
-              <TableCell key={5} align="right">
-                Rol
-              </TableCell>
-              <TableCell key={6} align="right">
-                Activo
-              </TableCell>
-              <TableCell key={7} className={classes.tableIconsColumn} />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {students.map(student => (
-              <TableRow hover key={student.student_id}>
-                <TableCell key={1} component="th" scope="row">
-                  <Avatar className={classes.avatar}>
-                    {student.name[0]}
-                    {student.surname[0]}
-                  </Avatar>
-                </TableCell>
-                <TableCell key={2} component="th" scope="row">
-                  {`${student.name} ${student.surname}`}
-                </TableCell>
-                <TableCell key={3} align="right">
-                  {student.email}
-                </TableCell>
-                <TableCell key={4} align="right">
-                  {student.student_id}
-                </TableCell>
-                <TableCell key={5} align="right">
-                  {student.role}
-                </TableCell>
-                <TableCell key={6} align="right">
-                  <span
-                    className={`${classes.status} ${
-                      student.accepted ? classes.activeStatus : classes.inactiveStatus
-                    }`}
-                  />
-                </TableCell>
-                <TableCell key={7} align="right">
-                  <IconButton
-                    style={student.accepted ? { display: "none" } : {}}
-                    component="span"
-                    onClick={event => this.handleAcceptStudent(courseId, student.id, event)}
-                  >
-                    <CheckIcon />
-                  </IconButton>
-                  <IconButton
-                    component="span"
-                    onClick={event => this.handleDeleteStudent(courseId, student.id, event)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <TableHead>{this.renderHeadRow(classes)}</TableHead>
+          <TableBody>{students.map(student => this.renderStudentRow(student, classes))}</TableBody>
         </Table>
       </TableContainer>
     );

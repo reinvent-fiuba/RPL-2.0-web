@@ -28,6 +28,12 @@ exports.getAllByUser = (userId: number): Promise<Array<Course>> =>
     method: "GET",
   }).then(courses => courses.map(course => _.extend(course, { enrolled: true })));
 
+exports.getPermissions = (courseId: number): Promise<Array<String>> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/permissions`,
+    method: "GET",
+  });
+
 exports.enroll = (courseId: number) =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/enroll`,

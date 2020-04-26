@@ -4,9 +4,13 @@ import type { Notification } from "../types";
 const _ = require('lodash');
 const coursesService = require("./coursesService");
 
-exports.get = (userId: number, courseId: number): Promise<Array<Notification>> => {
-  return coursesService
-    .getAllStudentsByCourseId(courseId)
+exports.get = (userId: number, courseId: number, options: any): Promise<Array<Notification>> => {
+  const { studentsNotifications } = options;
+  const studentsNotificationPromise = studentsNotifications
+    ? coursesService.getAllStudentsByCourseId(courseId)
+    : Promise.resolve([]);
+
+  return studentsNotificationPromise
     .then(users => {
       const pendingStudents = _.filter(users, user => !user.accepted);
       if (pendingStudents.length === 0) {
