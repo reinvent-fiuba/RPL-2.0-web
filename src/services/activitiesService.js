@@ -55,7 +55,11 @@ exports.getActivityCategories = (courseId: number): Promise<Array<Category>> =>
     method: "GET",
   });
 
-exports.createActivityCategories = (courseId: number, name: string, description: string): Promise<Array<Category>> =>
+exports.createActivityCategories = (
+  courseId: number,
+  name: string,
+  description: string
+): Promise<Category> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,
     method: "POST",

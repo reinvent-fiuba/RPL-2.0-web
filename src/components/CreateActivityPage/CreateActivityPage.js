@@ -161,14 +161,9 @@ class CreateActivityPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    this.loadActivityCategories();
-  }
+    const { courseId, activityId } = this.props.match.params;
 
-  loadActivityCategories() {
-    const { courseId } = this.props.match.params;
-    return activitiesService.getActivityCategories(courseId).then(response => {
-      this.setState({ categories: response });
-    });
+    // if we are editing pre-load all the activity fields
     if (activityId !== undefined && activityId !== null) {
       activitiesService.getActivity(courseId, activityId).then(activity => {
         this.setState({
@@ -182,6 +177,15 @@ class CreateActivityPage extends React.Component<Props, State> {
         });
       });
     }
+
+    this.loadActivityCategories();
+  }
+
+  loadActivityCategories() {
+    const { courseId } = this.props.match.params;
+    activitiesService.getActivityCategories(courseId).then(response => {
+      this.setState({ categories: response });
+    });
   }
 
   handleSwitchDrawer() {
@@ -303,9 +307,9 @@ class CreateActivityPage extends React.Component<Props, State> {
     );
   }
 
-  handleCloseModal(e: Event) {
-    this.setState({ isCreateCategoryModalOpen: false });
+  handleCloseCategoryModal(newCategoryId: number) {
     this.loadActivityCategories();
+    this.setState({ isCreateCategoryModalOpen: false, categoryId: newCategoryId });
   }
 
   render() {
@@ -331,7 +335,7 @@ class CreateActivityPage extends React.Component<Props, State> {
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
         <CreateActivityCategoryModal
           open={isCreateCategoryModalOpen}
-          handleCloseModal={e => this.handleCloseModal(e)}
+          handleCloseModal={newCategoryId => this.handleCloseCategoryModal(newCategoryId)}
           courseId={courseId}
         />
         <TopBar
@@ -451,7 +455,8 @@ class CreateActivityPage extends React.Component<Props, State> {
                 onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                 selectedTab={mdEditorTab}
                 onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })}
+                  this.setState({ mdEditorTab: mdEditorTabChanged })
+                }
                 generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
               />
             </Grid>
