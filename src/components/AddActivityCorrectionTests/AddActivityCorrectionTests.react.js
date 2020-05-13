@@ -1,5 +1,8 @@
 // @flow
 import React from "react";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { withStyles } from "@material-ui/core/styles";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SideBar from "../SideBar/SideBar";
@@ -55,12 +58,14 @@ type Props = {
 type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
+  selectedTestMode: string,
 };
 
 class AddActivityCorrectionTests extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     isSideBarOpen: false,
+    selectedTestMode: "IO tests",
   };
 
   handleSwitchDrawer() {
@@ -71,7 +76,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     const { classes } = this.props;
     const { courseId, activityId } = this.props.match.params;
 
-    const { isSideBarOpen, error } = this.state;
+    const { isSideBarOpen, error, selectedTestMode } = this.state;
 
     return (
       <div>
@@ -88,7 +93,20 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <IOCorrectionTests courseId={courseId} activityId={activityId} />
+          <RadioGroup
+            aria-label="gender"
+            name="gender1"
+            value={selectedTestMode}
+            onChange={event => this.setState({ selectedTestMode: event.target.value })}
+          >
+            <FormControlLabel value="IO tests" control={<Radio />} label="IO tests" />
+            <FormControlLabel value="Unit tests" control={<Radio />} label="Unit tests" />
+            <FormControlLabel value="no tests" control={<Radio />} label="No tests" />
+          </RadioGroup>
+          {selectedTestMode === "IO tests" && (
+            <IOCorrectionTests courseId={courseId} activityId={activityId} />
+          )}
+          {selectedTestMode === "Unit tests" && <span>UNIT TESTS </span>}
         </main>
       </div>
     );
