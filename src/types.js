@@ -74,11 +74,18 @@ export type IOTestRunResult = {
   run_output: string,
 };
 
+export type UnitTestRunResult = {
+  id: number,
+  test_name: string,
+  passed: boolean,
+  error_messages: ?string,
+};
+
 export type Notification = {
   message: string,
-  redirect: string, 
+  redirect: string,
   type: string,
-}
+};
 
 export type SubmissionResult = {
   id: number,
@@ -96,5 +103,6 @@ export type SubmissionResult = {
   stderr: string,
   stdout: string,
   io_test_run_results: Array<IOTestRunResult>,
+  unit_test_run_results: Array<UnitTestRunResult>,
   submission_date: string,
 };

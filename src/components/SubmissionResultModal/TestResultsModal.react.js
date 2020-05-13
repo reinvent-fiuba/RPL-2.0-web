@@ -1,11 +1,13 @@
 // @flow
 import React from "react";
+import { Alert, AlertTitle } from "@material-ui/lab";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Divider from "@material-ui/core/Divider";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
 import ReactDiffViewer from "react-diff-viewer";
@@ -151,6 +153,12 @@ class SubmissionResultModal extends React.Component<Props, State> {
 
           {results && (
             <DialogContent dividers>
+              {results.io_test_run_results.length > 0 && (
+                <Typography variant="h5" color="black" component="p">
+                  Tests de entrada/salida:
+                </Typography>
+              )}
+
               {results.io_test_run_results &&
                 results.io_test_run_results.map((ioResult, idx) => {
                   return (
@@ -160,7 +168,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
                       tabIndex={-1}
                       component="div"
                     >
-                      <Typography variant="h2" color="textSecondary" component="p">
+                      <Typography variant="h6" color="textSecondary" component="p">
                         {`IO Test case: Nº${idx}`}
                       </Typography>
                       <ReactDiffViewer
@@ -175,17 +183,56 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   );
                 })}
 
-              <Typography variant="h4" color="textSecondary" component="p">
+              {results.unit_test_run_results.length > 0 && (
+                <Typography variant="h5" color="black" component="p">
+                  Tests unitarios:
+                </Typography>
+              )}
+              {results.unit_test_run_results &&
+                results.unit_test_run_results.map((unitTestResult, idx) => {
+                  const result = unitTestResult.passed ? "success" : "error";
+                  return (
+                    <DialogContentText
+                      key={idx}
+                      id="scroll-dialog-description"
+                      tabIndex={-1}
+                      component="div"
+                    >
+                      <Alert severity={result}>
+                        <AlertTitle>{unitTestResult.test_name}</AlertTitle>
+                        {unitTestResult.error_messages &&
+                          unitTestResult.error_messages.split("\n").map((line, key) => {
+                            if (
+                              key === 0 ||
+                              key === unitTestResult.error_messages.split("\n").length - 2
+                            ) {
+                              return <span>{line}</span>;
+                            }
+                            return (
+                              <span>
+                                <blockquote>{line}</blockquote>
+                              </span>
+                            );
+                          })}
+                      </Alert>
+                    </DialogContentText>
+                  );
+                })}
+              <br />
+              <Divider variant="middle" />
+              <br />
+              <Typography variant="h5" color="black" component="p">
                 MENSAJE DE ERROR:
               </Typography>
               <br />
               <Typography variant="subtitle1" color="textSecondary" component="p">
                 {results.exit_message}
               </Typography>
+              <br />
+              <Divider variant="middle" />
 
               <br />
-              <br />
-              <Typography variant="h4" color="textSecondary" component="p">
+              <Typography variant="h5" color="black" component="p">
                 STDERR:
               </Typography>
 
@@ -198,8 +245,10 @@ class SubmissionResultModal extends React.Component<Props, State> {
                 ))}
 
               <br />
+              <Divider variant="middle" />
+
               <br />
-              <Typography variant="h4" color="textSecondary" component="p">
+              <Typography variant="h5" color="black" component="p">
                 STDOUT:
               </Typography>
               <br />
