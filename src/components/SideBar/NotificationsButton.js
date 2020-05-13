@@ -81,7 +81,7 @@ class NotificationsButton extends React.Component<Props, State> {
 
     if (!notifications || !notifications.length) {
       return [
-        <MenuItem>
+        <MenuItem key={1}>
           <Typography className={classes.typography}>
             No tienes notificaciones pendientes
           </Typography>
@@ -89,8 +89,8 @@ class NotificationsButton extends React.Component<Props, State> {
       ];
     }
 
-    return notifications.map(notification => (
-      <MenuItem onClick={() => history.push(notification.redirect)}>
+    return notifications.map((notification, idx) => (
+      <MenuItem onClick={() => history.push(notification.redirect)} key={idx}>
         <Typography className={classes.typography}>{notification.message}</Typography>
       </MenuItem>
     ));

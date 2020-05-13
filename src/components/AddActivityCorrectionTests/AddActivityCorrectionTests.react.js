@@ -4,6 +4,7 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { withStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
@@ -93,6 +94,17 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
+          <Typography variant="h3" color="textPrimary" component="h1" className={classes.title}>
+            Elegí un modo de testeo de la actividad
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            color="textSecondary"
+            component="h1"
+            className={classes.title}
+          >
+            Solo se puede elegir 1 modo!
+          </Typography>
           <RadioGroup
             aria-label="gender"
             name="gender1"
@@ -103,6 +115,9 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
             <FormControlLabel value="Unit tests" control={<Radio />} label="Unit tests" />
             <FormControlLabel value="no tests" control={<Radio />} label="No tests" />
           </RadioGroup>
+          <br />
+          <br />
+          <br />
           {selectedTestMode === "IO tests" && (
             <IOCorrectionTests courseId={courseId} activityId={activityId} />
           )}
