@@ -1,24 +1,18 @@
 // @flow
 import React from "react";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import Button from "@material-ui/core/Button";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
-import Avatar from "@material-ui/core/Avatar";
-import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
-import DeleteIcon from "@material-ui/icons/Delete";
 import ErrorNotification from "../../utils/ErrorNotification";
-import activitiesService from "../../services/activitiesService";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
-import AddIOTestModal from "./AddIOTestModal.react";
+import IOTestsCorrection from "./IOTestsCorrection.react";
+import UnitTestsCorrection from "./UnitTestsCorrection.react";
 import { withState } from "../../utils/State";
-import type { Activity, IOTest } from "../../types";
+import type { Activity } from "../../types";
+import activitiesService from "../../services/activitiesService";
 
 const drawerWidth = 240;
 
@@ -68,20 +62,14 @@ type Props = {
 type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
-  activity: ?Activity,
-  isTestModalOpen: boolean,
-  selectedIOTest: ?IOTest,
-  selectedIdx: ?number,
+  selectedTestMode: string,
 };
 
 class AddActivityCorrectionTests extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     isSideBarOpen: false,
-    activity: null,
-    isTestModalOpen: false,
-    selectedIOTest: null,
-    selectedIdx: null,
+    selectedTestMode: "IO tests",
   };
 
   componentDidMount() {
@@ -89,9 +77,11 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     activitiesService
       .getActivity(courseId, activityId)
       .then(response => {
-        this.setState({ activity: response });
+        this.setState({
+          selectedTestMode: !response.is_iotested ? "Unit tests" : "IO tests",
+        });
       })
-      .catch(() => {
+      .catch(err => {
         console.log(err);
         this.setState({
           error: {
@@ -106,50 +96,11 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
-  handleClickIOTestItem(ioTest: IOTest, idx: number) {
-    this.setState({ selectedIOTest: ioTest, isTestModalOpen: true, selectedIdx: idx });
-  }
-
-  handleClickAddIOTest() {
-    this.setState({ isTestModalOpen: true });
-  }
-
-  handleCloseModal(e: Event) {
-    const { courseId, activityId } = this.props.match.params;
-    activitiesService.getActivity(courseId, activityId).then(response => {
-      this.setState({ activity: response, selectedIOTest: null, isTestModalOpen: false });
-    });
-  }
-
-  handleDeleteTest(ioTest: IOTest) {
-    const { courseId, activityId } = this.props.match.params;
-    activitiesService
-      .deleteIOTest(courseId, activityId, ioTest.id)
-      .then(response => {
-        this.setState({ activity: response, selectedIOTest: null, isTestModalOpen: false });
-      })
-      .catch(() => {
-        this.setState({
-          error: {
-            open: true,
-            message: "Hubo un error al Eliminar la actividad, Por favor reintenta",
-          },
-        });
-      });
-  }
-
   render() {
     const { classes } = this.props;
     const { courseId, activityId } = this.props.match.params;
 
-    const {
-      isSideBarOpen,
-      error,
-      activity,
-      selectedIOTest,
-      isTestModalOpen,
-      selectedIdx,
-    } = this.state;
+    const { isSideBarOpen, error, selectedTestMode } = this.state;
 
     return (
       <div>
@@ -166,62 +117,38 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <Typography variant="h4" color="textSecondary" component="h1" className={classes.title}>
-            Test de Entrada / Salida
+          <Typography variant="h3" color="textPrimary" component="h1" className={classes.title}>
+            Elegí un modo de testeo de la actividad
           </Typography>
-          <br />
-          <Typography variant="body1" color="textSecondary" component="p" className={classes.title}>
-            Agrega tests de entrada salida para que los alumnos puedan corroborar que el ejercicio
-            está bien hecho.
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.addTestCaseButton}
-            onClick={() => this.handleClickAddIOTest()}
+          <Typography
+            variant="subtitle1"
+            color="textSecondary"
+            component="h1"
+            className={classes.title}
           >
-            Agregar caso
-          </Button>
-          <div className={classes.list}>
-            <List>
-              {activity &&
-                activity.activity_iotests.map((ioTest, idx) => (
-                  <ListItem
-                    button
-                    key={ioTest.id}
-                    className={classes.listItem}
-                    onClick={() => this.handleClickIOTestItem(ioTest, idx)}
-                  >
-                    <ListItemAvatar>
-                      <Avatar>
-                        <DescriptionOutlinedIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary={`Test case ${idx + 1}`} />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => this.handleDeleteTest(ioTest)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-            </List>
-          </div>
+            Solo se puede elegir 1 modo!
+          </Typography>
+          <RadioGroup
+            aria-label="gender"
+            name="gender1"
+            value={selectedTestMode}
+            onChange={event => this.setState({ selectedTestMode: event.target.value })}
+          >
+            <FormControlLabel value="IO tests" control={<Radio />} label="IO tests" />
+            <FormControlLabel value="Unit tests" control={<Radio />} label="Unit tests" />
+            {/* <FormControlLabel value="no tests" control={<Radio />} label="No tests" /> */}
+          </RadioGroup>
+
+          <br />
+          <br />
+          <br />
+          {selectedTestMode === "IO tests" && (
+            <IOTestsCorrection courseId={courseId} activityId={activityId} />
+          )}
+          {selectedTestMode === "Unit tests" && (
+            <UnitTestsCorrection courseId={courseId} activityId={activityId} />
+          )}
         </main>
-        {isTestModalOpen && (
-          <AddIOTestModal
-            ioTest={selectedIOTest}
-            idx={selectedIdx}
-            open={isTestModalOpen}
-            handleCloseModal={e => this.handleCloseModal(e)}
-            courseId={courseId}
-            activityId={activityId}
-          />
-        )}
       </div>
     );
   }

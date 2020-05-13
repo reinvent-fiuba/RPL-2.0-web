@@ -15,6 +15,7 @@ export type Activity = {
   name: string,
   description: string,
   language: string,
+  is_iotested: boolean,
   active: boolean,
   initial_code: string,
   file_id: number,

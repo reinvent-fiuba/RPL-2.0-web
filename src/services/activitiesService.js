@@ -77,38 +77,3 @@ exports.getActivity = (courseId: number, activityId: number): Promise<Activity> 
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     method: "GET",
   });
-
-exports.createIOTest = (
-  courseId: number,
-  activityId: number,
-  textIn: string,
-  textOut: string
-): Promise<IOTest> =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests`,
-    body: JSON.stringify({ text_in: textIn, text_out: textOut }),
-    method: "POST",
-  });
-
-exports.updateIOTest = (
-  courseId: number,
-  activityId: number,
-  ioTestId: number,
-  textIn: string,
-  textOut: string
-): Promise<IOTest> =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests/${ioTestId}`,
-    body: JSON.stringify({ text_in: textIn, text_out: textOut }),
-    method: "PUT",
-  });
-
-exports.deleteIOTest = (
-  courseId: number,
-  activityId: number,
-  ioTestId: number
-): Promise<Activity> =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests/${ioTestId}`,
-    method: "DELETE",
-  });
