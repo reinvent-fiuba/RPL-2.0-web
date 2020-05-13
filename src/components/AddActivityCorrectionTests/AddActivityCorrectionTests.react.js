@@ -8,8 +8,11 @@ import Typography from "@material-ui/core/Typography";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
-import IOCorrectionTests from "./IOCorrectionTests.react";
+import IOTestsCorrection from "./IOTestsCorrection.react";
+import UnitTestsCorrection from "./UnitTestsCorrection.react";
 import { withState } from "../../utils/State";
+import type { Activity } from "../../types";
+import activitiesService from "../../services/activitiesService";
 
 const drawerWidth = 240;
 
@@ -69,6 +72,26 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     selectedTestMode: "IO tests",
   };
 
+  componentDidMount() {
+    const { courseId, activityId } = this.props.match.params;
+    activitiesService
+      .getActivity(courseId, activityId)
+      .then(response => {
+        this.setState({
+          selectedTestMode: !response.is_iotested ? "Unit tests" : "IO tests",
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al buscar la actividad, Por favor reintenta",
+          },
+        });
+      });
+  }
+
   handleSwitchDrawer() {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
@@ -113,15 +136,18 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           >
             <FormControlLabel value="IO tests" control={<Radio />} label="IO tests" />
             <FormControlLabel value="Unit tests" control={<Radio />} label="Unit tests" />
-            <FormControlLabel value="no tests" control={<Radio />} label="No tests" />
+            {/* <FormControlLabel value="no tests" control={<Radio />} label="No tests" /> */}
           </RadioGroup>
+
           <br />
           <br />
           <br />
           {selectedTestMode === "IO tests" && (
-            <IOCorrectionTests courseId={courseId} activityId={activityId} />
+            <IOTestsCorrection courseId={courseId} activityId={activityId} />
           )}
-          {selectedTestMode === "Unit tests" && <span>UNIT TESTS </span>}
+          {selectedTestMode === "Unit tests" && (
+            <UnitTestsCorrection courseId={courseId} activityId={activityId} />
+          )}
         </main>
       </div>
     );

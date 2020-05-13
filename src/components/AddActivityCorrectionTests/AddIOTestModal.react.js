@@ -9,7 +9,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { withStyles } from "@material-ui/core/styles";
 import ErrorNotification from "../../utils/ErrorNotification";
-import activitiesService from "../../services/activitiesService";
+import activityTestsService from "../../services/activityTestsService";
 import type { IOTest } from "../../types";
 
 const styles = () => ({
@@ -74,9 +74,9 @@ class AddIOTestModal extends React.Component<Props, State> {
     }
     let promise;
     if (!ioTest) {
-      promise = activitiesService.createIOTest(courseId, activityId, textIn, textOut);
+      promise = activityTestsService.createIOTest(courseId, activityId, textIn, textOut);
     } else {
-      promise = activitiesService.updateIOTest(courseId, activityId, ioTest.id, textIn, textOut);
+      promise = activityTestsService.updateIOTest(courseId, activityId, ioTest.id, textIn, textOut);
     }
 
     promise

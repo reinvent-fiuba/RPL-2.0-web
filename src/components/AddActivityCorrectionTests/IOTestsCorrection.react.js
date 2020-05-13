@@ -14,6 +14,7 @@ import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ErrorNotification from "../../utils/ErrorNotification";
 import activitiesService from "../../services/activitiesService";
+import activityTestsService from "../../services/activityTestsService";
 import AddIOTestModal from "./AddIOTestModal.react";
 import { withState } from "../../utils/State";
 import type { Activity, IOTest } from "../../types";
@@ -115,7 +116,7 @@ class IOCorrectionTests extends React.Component<Props, State> {
 
   handleDeleteTest(ioTest: IOTest) {
     const { courseId, activityId } = this.props;
-    activitiesService
+    activityTestsService
       .deleteIOTest(courseId, activityId, ioTest.id)
       .then(response => {
         this.setState({ activity: response, selectedIOTest: null, isTestModalOpen: false });
