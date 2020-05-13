@@ -24,7 +24,7 @@ const styles = () => ({
 });
 
 type Props = {
-  handleCloseModal: Event => void,
+  handleCloseModal: number => void,
   open: boolean,
   courseId: number,
   activityId: number,
@@ -53,16 +53,16 @@ class CreateActivityCategoryModal extends React.Component<Props, State> {
     }
 
     activitiesService
-      .createActivityCategories(courseId, name, description)
-      .then(() => {
-        handleCloseModal(e);
+      .createActivityCategories(courseId, name, description || "")
+      .then(category => {
+        handleCloseModal(category.id);
       })
       .catch(() => {
         // console.log(err);
         this.setState({
           error: {
             open: true,
-            message: "Hubo un error al crear el test, Por favor reintenta",
+            message: "Hubo un error al crear la categoría, Por favor reintenta",
           },
         });
       });
