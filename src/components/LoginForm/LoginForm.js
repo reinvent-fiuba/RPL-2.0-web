@@ -70,9 +70,13 @@ class LoginForm extends React.Component<Props, State> {
       .then(() => authenticationService.getProfile())
       .then(response => {
         this.props.context.set("profile", response);
-        this.props.history.push("/courses");
+
+        this.props.history.push(
+          this.props.history.location.state ? this.props.history.location.state.goTo : "/courses"
+        );
       })
-      .catch(() => {
+      .catch(err => {
+        console.log(err);
         this.setState({
           error: {
             open: true,
@@ -129,7 +133,7 @@ class LoginForm extends React.Component<Props, State> {
         </form>
         <Grid container>
           <Grid item xs>
-            <Link href="#" variant="body2">
+            <Link href="/login" variant="body2">
               Olvidé mi contraseña
             </Link>
           </Grid>
