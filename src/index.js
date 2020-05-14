@@ -8,6 +8,7 @@ import { StateProvider } from "./utils/State";
 import CoursesPage from "./components/CoursesPage/CoursesPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
 import CourseIndex from "./courseIndex";
+import PrivateRoute from "./PrivateRoute";
 
 showdown.setFlavor("github");
 
@@ -18,9 +19,9 @@ const routing = (
         <Route exact path="/" component={LoginPage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/signup" component={SignupPage} />
-        <Route exact path="/courses" component={CoursesPage} />
-        <Route path="/courses/create" component={CreateCoursePage} />
-        <Route path="/courses/:courseId/" component={CourseIndex} />
+        <PrivateRoute exact path="/courses" component={CoursesPage} />
+        <PrivateRoute path="/courses/create" component={CreateCoursePage} />
+        <PrivateRoute path="/courses/:courseId/" component={CourseIndex} />
         {/* CourseIndex fetch permissions and render the following routes:
               /courses/:courseId/students
               /courses/:courseId/activity/create
