@@ -46,6 +46,11 @@ class LoginForm extends React.Component<Props, State> {
     password: "",
   };
 
+  componentDidMount() {
+    // This is how our logout works JAJA
+    localStorage.removeItem("state");
+  }
+
   handleChange(event) {
     event.persist();
     // Close error message
