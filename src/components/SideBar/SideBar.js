@@ -12,6 +12,7 @@ import SchoolIcon from "@material-ui/icons/School";
 import PeopleIcon from "@material-ui/icons/People";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import SettingsIcon from "@material-ui/icons/Settings";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { Link } from "react-router-dom";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
@@ -41,6 +42,7 @@ const actionIcons = {
   Inscriptos: PeopleIcon,
   Perfil: AccountCircleIcon,
   Configuracion: SettingsIcon,
+  "Cerrar Sesión": ExitToAppIcon,
 };
 
 type Props = {
@@ -104,6 +106,13 @@ class SideBar extends React.PureComponent<Props> {
               </ListItem>
             );
           })}
+
+          <ListItem button key="Cerrar Sesión" component={Link} to="/login">
+            <ListItemIcon>
+              <ExitToAppIcon />
+            </ListItemIcon>
+            <ListItemText primary="Cerrar Sesión" />
+          </ListItem>
         </List>
       </Drawer>
     );
