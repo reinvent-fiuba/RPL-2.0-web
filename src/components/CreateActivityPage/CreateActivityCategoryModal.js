@@ -101,6 +101,7 @@ class CreateActivityCategoryModal extends React.Component<Props, State> {
                 label="Nombre"
                 name="name"
                 autoComplete="name"
+                autoFocus
                 onChange={e => this.handleChange(e)}
               />
               <TextField

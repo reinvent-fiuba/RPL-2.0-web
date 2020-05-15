@@ -5,6 +5,7 @@ import showdown from "showdown";
 import LoginPage from "./components/LoginPage/LoginPage";
 import SignupPage from "./components/SignupPage/SignupPage";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage.react";
+import ResetPasswordPage from "./components/ResetPasswordPage/ResetPasswordPage.react";
 import { StateProvider } from "./utils/State";
 import CoursesPage from "./components/CoursesPage/CoursesPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
@@ -21,6 +22,7 @@ const routing = (
         <Route path="/login" component={LoginPage} />
         <Route path="/signup" component={SignupPage} />
         <Route path="/forgotPassword" component={ForgotPasswordPage} />
+        <Route path="/user/changePassword" component={ResetPasswordPage} />
         <PrivateRoute exact path="/courses" component={CoursesPage} />
         <PrivateRoute path="/courses/create" component={CreateCoursePage} />
         <PrivateRoute path="/courses/:courseId/" component={CourseIndex} />

@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import queryString from "query-string";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
@@ -40,23 +41,55 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  email: string,
+  disableButton: boolean,
+  newPassword: string,
+  repeatPassword: string,
   success: boolean,
 };
 
-class ForgotPasswordForm extends React.Component<Props, State> {
+class ResetPasswordForm extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    email: "",
+    disableButton: false,
+    newPassword: "",
+    repeatPassword: "",
     success: false,
   };
 
+  componentDidMount() {
+    const { search } = this.props.history.location;
+
+    if (search === null || search === undefined) {
+      this.setState({
+        error: { open: true, message: "Hubo un error. Link inválido" },
+        disableButton: true,
+      });
+      return;
+    }
+
+    const { token } = queryString.parse(search);
+    if (token === null || token === undefined) {
+      this.setState({
+        error: { open: true, message: "Hubo un error. Por favor genera otro link" },
+        disableButton: true,
+      });
+    }
+  }
+
   handleClick(event) {
     event.preventDefault();
-    const { email } = this.state;
+    const { newPassword, repeatPassword } = this.state;
+    const { token } = queryString.parse(this.props.history.location.search);
+
+    if (newPassword !== repeatPassword) {
+      this.setState({
+        error: { open: true, message: "Las contraseñas no coinciden" },
+      });
+      return;
+    }
 
     authenticationService
-      .forgotPassword(email)
+      .resetPassword(token, newPassword)
       .then(response => {
         console.log(response);
         this.setState({ success: true });
@@ -74,25 +107,23 @@ class ForgotPasswordForm extends React.Component<Props, State> {
 
   render() {
     const { classes, history } = this.props;
-    const { error, success } = this.state;
+    const { error, disableButton, success, repeatPassword, newPassword } = this.state;
 
     return (
       <div>
-        {error.open && <ErrorNotification open={error.open} message={error.message} />}
+        {error.open && (
+          <ErrorNotification open={error.open} message={error.message} horizontalPosition="right" />
+        )}
 
         <Dialog
           open={success}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">Próximo paso</DialogTitle>
+          <DialogTitle id="alert-dialog-title">Éxito</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Revisá tu bandeja de entrada y seguí las instrucciones en el email. Puede tardar unos
-              minutos en llegar.
-            </DialogContentText>
-            <DialogContentText id="alert-dialog-description">
-              No te olvides de chequear en la carpeta de SPAM!
+              Podés volver a ingresar usando tu nueva contraseña
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -103,23 +134,51 @@ class ForgotPasswordForm extends React.Component<Props, State> {
         </Dialog>
 
         <Typography component="h1" variant="h5">
-          Olvidé mi contraseña
+          Resetear contraseña
         </Typography>
         <br />
         <Typography component="p" variant="body1">
-          Te enviaremos un link a tu email con el que vas a poder cambiar tu contraseña
+          {`Guardala bien! Podes ayudarte de `}
+          <a
+            href="https://www.google.com/search?q=password+manager&oq=password+manager&aqs=chrome..69i57j0l6j69i60.2543j0j7&sourceid=chrome&ie=UTF-8"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            gestores de contraseñas
+          </a>
         </Typography>
         <form noValidate className={classes.form}>
           <TextField
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="email"
-            name="email"
-            autoComplete="Email"
+            id="password"
+            label="Contraseña"
+            name="password"
             autoFocus
-            onChange={e => this.setState({ email: e.target.value })}
+            type="password"
+            onChange={e =>
+              this.setState({
+                newPassword: e.target.value,
+                disableButton: e.target.value !== repeatPassword,
+              })
+            }
+          />
+
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="repeat_password"
+            label="Repite la contraseña"
+            name="repeate_password"
+            type="password"
+            onChange={e =>
+              this.setState({
+                repeatPassword: e.target.value,
+                disableButton: e.target.value !== newPassword,
+              })
+            }
           />
           <Button
             type="submit"
@@ -128,8 +187,9 @@ class ForgotPasswordForm extends React.Component<Props, State> {
             color="primary"
             className={classes.submit}
             onClick={e => this.handleClick(e)}
+            disabled={disableButton}
           >
-            Enviar email
+            Confirmar
           </Button>
         </form>
         <Grid container>
@@ -149,4 +209,4 @@ class ForgotPasswordForm extends React.Component<Props, State> {
   }
 }
 
-export default withState(withStyles(styles)(ForgotPasswordForm));
+export default withState(withStyles(styles)(ResetPasswordForm));
