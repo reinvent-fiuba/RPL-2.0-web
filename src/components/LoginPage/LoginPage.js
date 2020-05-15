@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import LoginForm from "../LoginForm/LoginForm";
+import LoginForm from "./LoginForm";
 import HomePage from "../HomePage/HomePage";
 import { withState } from "../../utils/State";
 

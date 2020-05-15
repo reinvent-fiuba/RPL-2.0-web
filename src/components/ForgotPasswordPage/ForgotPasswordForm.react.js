@@ -2,6 +2,11 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
@@ -35,95 +40,86 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  username: string,
-  password: string,
+  email: string,
+  success: boolean,
 };
 
-class LoginForm extends React.Component<Props, State> {
+class ForgotPasswordForm extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    username: "",
-    password: "",
+    email: "",
+    success: false,
   };
-
-  componentDidMount() {
-    // This is how our logout works JAJA
-    localStorage.removeItem("state");
-  }
-
-  handleChange(event) {
-    event.persist();
-    // Close error message
-    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: "" } });
-  }
 
   handleClick(event) {
     event.preventDefault();
-    const { username, password } = this.state;
+    const { email } = this.state;
 
     authenticationService
-      .login({
-        usernameOrEmail: username,
-        password,
-      })
+      .forgotPassword(email)
       .then(response => {
-        this.props.context.set("token", {
-          accessToken: response.access_token,
-          tokenType: response.token_type,
-        });
-      })
-      .then(() => authenticationService.getProfile())
-      .then(response => {
-        this.props.context.set("profile", response);
-
-        this.props.history.push(
-          this.props.history.location.state ? this.props.history.location.state.goTo : "/courses"
-        );
+        console.log(response);
+        this.setState({ success: true });
       })
       .catch(err => {
         console.log(err);
         this.setState({
           error: {
             open: true,
-            message: "Hubo un error de login, revisa que los datos ingresados sean validos.",
+            message: "Hubo un error, revisa que los datos ingresados sean validos.",
           },
         });
       });
   }
 
   render() {
-    const { classes } = this.props;
-    const { error } = this.state;
+    const { classes, history } = this.props;
+    const { error, success } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
 
+        <Dialog
+          open={success}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Próximo paso</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Revisá tu bandeja de entrada y seguí las instrucciones en el email. Puede tardar unos
+              minutos en llegar.
+            </DialogContentText>
+            <DialogContentText id="alert-dialog-description">
+              No te olvides de chequear en la carpeta de SPAM!
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => history.push("/login")} color="primary">
+              Volver al inicio
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Typography component="h1" variant="h5">
-          Log In
+          Olvidé mi contraseña
+        </Typography>
+        <br />
+        <Typography component="p" variant="body1">
+          Te enviaremos un link a tu email con el que vas a poder cambiar tu contraseña
         </Typography>
         <form noValidate className={classes.form}>
           <TextField
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
+            id="email"
+            label="email"
+            name="email"
+            autoComplete="Email"
             autoFocus
-            onChange={e => this.handleChange(e)}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange={e => this.handleChange(e)}
+            onChange={e => this.setState({ email: e.target.value })}
           />
           <Button
             type="submit"
@@ -133,13 +129,13 @@ class LoginForm extends React.Component<Props, State> {
             className={classes.submit}
             onClick={e => this.handleClick(e)}
           >
-            Iniciar Sesión
+            Enviar token
           </Button>
         </form>
         <Grid container>
           <Grid item xs>
             <Link href="/login" variant="body2">
-              Olvidé mi contraseña
+              Ya me la acordé!
             </Link>
           </Grid>
           <Grid item>
@@ -153,4 +149,4 @@ class LoginForm extends React.Component<Props, State> {
   }
 }
 
-export default withState(withStyles(styles)(LoginForm));
+export default withState(withStyles(styles)(ForgotPasswordForm));

@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import HomePage from "../HomePage/HomePage";
-import SignupForm from "../SignupForm/SignupForm";
+import SignupForm from "./SignupForm";
 
 class SignupPage extends React.PureComponent<{ history: any }> {
   render() {

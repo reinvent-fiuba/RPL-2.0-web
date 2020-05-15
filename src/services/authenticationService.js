@@ -1,3 +1,4 @@
+// @flow
 const { request } = require("../utils/Request");
 
 const producer = {
@@ -22,4 +23,11 @@ exports.getProfile = () =>
   request({
     url: `http://${producer.base_url}/api/auth/profile`,
     method: "GET",
+  });
+
+exports.forgotPassword = (email: string): Promise<string> =>
+  request({
+    url: `http://${producer.base_url}/api/auth/forgotPassword`,
+    body: JSON.stringify({ email }),
+    method: "POST",
   });
