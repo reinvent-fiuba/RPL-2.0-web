@@ -1,3 +1,6 @@
+// @flow
+import type { Student } from "../types";
+
 const { request } = require("../utils/Request");
 
 const producer = {
@@ -22,4 +25,18 @@ exports.getProfile = () =>
   request({
     url: `http://${producer.base_url}/api/auth/profile`,
     method: "GET",
+  });
+
+exports.forgotPassword = (email: string): Promise<string> =>
+  request({
+    url: `http://${producer.base_url}/api/auth/forgotPassword`,
+    body: JSON.stringify({ email }),
+    method: "POST",
+  });
+
+exports.resetPassword = (token: string, password: string): Promise<Student> =>
+  request({
+    url: `http://${producer.base_url}/api/auth/resetPassword`,
+    body: JSON.stringify({ password_token: token, new_password: password }),
+    method: "POST",
   });

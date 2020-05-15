@@ -34,7 +34,7 @@ class ErrorNotifier extends React.Component {
   }
 
   render() {
-    const { classes, message } = this.props;
+    const { classes, message, horizontalPosition } = this.props;
 
     const { open } = this.state;
 
@@ -42,7 +42,7 @@ class ErrorNotifier extends React.Component {
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left",
+          horizontal: horizontalPosition || "left",
         }}
         open={open}
         autoHideDuration={6000}
@@ -51,12 +51,12 @@ class ErrorNotifier extends React.Component {
         <SnackbarContent
           // aria-describedby="client-snackbar"
           className={classes.error}
-          message={
+          message={(
             <span id="client-snackbar" className={classes.message}>
               <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
               {message}
             </span>
-          }
+          )}
           action={[
             <IconButton
               key="close"

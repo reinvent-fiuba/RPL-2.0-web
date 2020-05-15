@@ -1,5 +1,5 @@
 // @flow
-import type { Activity, Category, IOTest } from "../types";
+import type { Activity, Category } from "../types";
 
 const { request } = require("../utils/Request");
 
