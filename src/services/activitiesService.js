@@ -77,3 +77,20 @@ exports.getActivity = (courseId: number, activityId: number): Promise<Activity> 
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     method: "GET",
   });
+
+exports.deleteActivity = (courseId: number, activityId: number): Promise<Activity> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
+    method: "DELETE",
+  });
+
+exports.disableActivity = (
+  courseId: number,
+  activityId: number,
+  newStatus: boolean
+): Promise<Activity> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/disable`,
+    body: JSON.stringify({ active: newStatus }),
+    method: "PUT",
+  });

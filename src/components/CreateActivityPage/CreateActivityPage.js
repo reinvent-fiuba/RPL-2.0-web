@@ -203,76 +203,54 @@ class CreateActivityPage extends React.Component<Props, State> {
 
     const { name, points, language, categoryId, code, mdText, activity } = this.state;
 
+    let serviceToCall;
+    let errorMessage;
     // Crear actividad
     if (activity === null || activity === undefined) {
-      activitiesService
-        .createActivity({
-          courseId,
-          name,
-          points,
-          language,
-          activityCategoryId: categoryId,
-          initialCode: code,
-          supportingFile: code,
-          description: mdText,
-        })
-        .then(response => {
-          this.setState({ activity: response });
-          if (testActivityAsStudent) {
-            this.props.history.push(
-              `/courses/${courseId}/activities/${activity.id}?teacherTest=true`
-            );
-          } else {
-            this.props.history.push(
-              `/courses/${courseId}/activities/${response.id}/edit/correction`
-            );
-          }
-        })
-        .catch(() => {
-          this.setState({
-            error: {
-              open: true,
-              message:
-                "Hubo un error al crear la actividad, revisa que los datos ingresados sean validos.",
-            },
-          });
-        });
+      serviceToCall = activitiesService.createActivity({
+        courseId,
+        name,
+        points,
+        language,
+        activityCategoryId: categoryId,
+        initialCode: code,
+        supportingFile: code,
+        description: mdText,
+      });
+      errorMessage = "crear";
     } else {
-      // Editar actividad
-      activitiesService
-        .updateActivity({
-          courseId,
-          activityId,
-          name,
-          points,
-          language,
-          activityCategoryId: categoryId,
-          initialCode: code,
-          supportingFile: code,
-          description: mdText,
-        })
-        .then(response => {
-          this.setState({ activity: response });
-          if (testActivityAsStudent) {
-            this.props.history.push(
-              `/courses/${courseId}/activities/${activity.id}?teacherTest=true`
-            );
-          } else {
-            this.props.history.push(
-              `/courses/${courseId}/activities/${response.id}/edit/correction`
-            );
-          }
-        })
-        .catch(() => {
-          this.setState({
-            error: {
-              open: true,
-              message:
-                "Hubo un error al modificar la actividad, revisa que los datos ingresados sean validos.",
-            },
-          });
-        });
+      serviceToCall = activitiesService.updateActivity({
+        // Editar actividad
+        courseId,
+        activityId,
+        name,
+        points,
+        language,
+        activityCategoryId: categoryId,
+        initialCode: code,
+        supportingFile: code,
+        description: mdText,
+      });
+      errorMessage = "modificar";
     }
+
+    serviceToCall
+      .then(response => {
+        this.setState({ activity: response });
+        if (testActivityAsStudent) {
+          this.props.history.push(`/courses/${courseId}/activities/${response.id}`);
+        } else {
+          this.props.history.push(`/courses/${courseId}/activities/${response.id}/edit/correction`);
+        }
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: `Hubo un error al ${errorMessage} la actividad, revisa que los datos ingresados sean validos.`,
+          },
+        });
+      });
   }
 
   handleCancel() {
@@ -454,8 +432,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                 selectedTab={mdEditorTab}
                 onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })
-                }
+                  this.setState({ mdEditorTab: mdEditorTabChanged })}
                 generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
               />
             </Grid>

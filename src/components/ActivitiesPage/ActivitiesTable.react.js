@@ -46,7 +46,9 @@ function ActivitiesTable(props: Props) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow key={0}>
-            <TableCell key={1}>Nombre</TableCell>
+            <TableCell key={1} width={500}>
+              Nombre
+            </TableCell>
             <TableCell key={2} align="right">
               Última actividad
             </TableCell>
