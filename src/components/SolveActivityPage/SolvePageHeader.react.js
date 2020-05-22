@@ -3,6 +3,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
+import { withState } from "../../utils/State";
 
 const styles = theme => ({
   secondHeader: {
@@ -29,14 +30,8 @@ type Props = {
   classes: any,
 };
 
-// A custom hook that builds on useLocation to parse
-// the query string for you.
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
-function getLeftTitle(query: URLSearchParams) {
-  if (query.get("teacherTest") !== null) {
+function getLeftTitle(permissions: Array<string>) {
+  if (permissions.includes("activity_manage")) {
     return (
       <Link to={`${useLocation().pathname}/edit`} component={Button}>
         Volver a modo editar
@@ -47,11 +42,9 @@ function getLeftTitle(query: URLSearchParams) {
 }
 
 function SolvePageHeader(props: Props) {
-  const query = useQuery();
-
   return (
     <div className={props.classes.secondHeader}>
-      {getLeftTitle(query)}
+      {getLeftTitle(props.context.permissions)}
       <h1 className={props.classes.secondHeaderTitle}>{props.activityName}</h1>
       <Button
         type="submit"
@@ -66,4 +59,4 @@ function SolvePageHeader(props: Props) {
   );
 }
 
-export default withStyles(styles)(SolvePageHeader);
+export default withState(withStyles(styles)(SolvePageHeader));

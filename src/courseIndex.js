@@ -5,6 +5,7 @@ import CreateActivityPage from "./components/CreateActivityPage/CreateActivityPa
 import AddActivityCorrectionTests from "./components/AddActivityCorrectionTests/AddActivityCorrectionTests.react";
 import SolveActivityPage from "./components/SolveActivityPage/SolveActivityPage";
 import ActivitiesPage from "./components/ActivitiesPage/ActivitiesPage";
+import ActivitiesTeacherPage from "./components/ActivitiesTeacherPage/ActivitiesTeacherPage";
 import StudentsPage from "./components/StudentsPage/StudentsPage";
 import coursesService from "./services/coursesService";
 
@@ -19,12 +20,17 @@ class CourseIndex extends React.PureComponent {
   }
 
   render() {
-    if (!this.props.context.permissions) {
+    const { permissions } = this.props.context;
+    if (!permissions) {
       return null;
     }
+    const activityPage = permissions.includes("activity_manage")
+      ? ActivitiesTeacherPage
+      : ActivitiesPage;
+
     return (
       <>
-        <Route exact path="/courses/:courseId/activities" component={ActivitiesPage} />
+        <Route exact path="/courses/:courseId/activities" component={activityPage} />
         <Route exact path="/courses/:courseId/students" component={StudentsPage} />
         <Route path="/courses/:courseId/activity/create" component={CreateActivityPage} />
         <Route

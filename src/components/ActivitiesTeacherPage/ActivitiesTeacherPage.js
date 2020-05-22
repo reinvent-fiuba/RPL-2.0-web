@@ -10,10 +10,7 @@ import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
 import ErrorNotification from "../../utils/ErrorNotification";
 import type { Activity } from "../../types";
-import "./ActivitiesPage.css";
-import SubmissionsSidePanel from "./SubmissionsSidePanel.react";
-import ActivitiesTable from "./ActivitiesTable.react";
-import SubmissionResultModal from "../SubmissionResultModal/TestResultsModal.react";
+import ActivitiesTeacherTable from "./ActivitiesTeacherTable.react";
 
 const _ = require("lodash");
 
@@ -72,22 +69,20 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   activities: Array<Activity>,
-  submissionsPanel: { isOpen: boolean, activityId: ?number },
-  isSelectedResult: boolean,
-  selectedSubmissionId: ?number,
 };
 
-class ActivitiesPage extends React.Component<Props, State> {
+class ActivitiesTeacherPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     isSideBarOpen: false,
     activities: [],
-    submissionsPanel: { isOpen: false, activityId: null },
-    isSelectedResult: false,
-    selectedSubmissionId: null,
   };
 
   componentDidMount() {
+    this.getAllActivities();
+  }
+
+  getAllActivities() {
     const { match } = this.props;
     activitiesService
       .getAllActivities(match.params.courseId)
@@ -108,83 +103,62 @@ class ActivitiesPage extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
-  // submissions sidepanel
-  setOpenPanel(activityId: number) {
-    this.setState({ submissionsPanel: { isOpen: true, activityId } });
-  }
-
-  // submissions sidepanel
-  setClosePanel() {
-    this.setState({ submissionsPanel: { isOpen: false, activityId: null } });
-  }
-
   handleClickOnActivityTitle(event: any, activityId: number) {
     const { history, match } = this.props;
-    // TODO: si es un docente que vaya a /edit
-    history.push(`/courses/${match.params.courseId}/activities/${activityId}`);
+    history.push(`/courses/${match.params.courseId}/activities/${activityId}/edit`);
   }
 
-  // click on submission in the right SidePanel
-  handleClickOnSubmission(submissionId: number, idx: number) {
-    this.setState(prevState => ({
-      submissionsPanel: { isOpen: false, activityId: prevState.submissionsPanel.activityId },
-    }));
-    setTimeout(() => {
-      this.setState({
-        isSelectedResult: true,
-        selectedSubmissionId: submissionId,
-      });
-    }, 200);
-  }
-
-  handleCloseModal(e: Event) {
+  handleNotImplementedYet(e: Event, activityId: number) {
     e.preventDefault();
-    this.setState({ isSelectedResult: false });
-    setTimeout(() => {
-      this.setState(prevState => ({
-        submissionsPanel: { isOpen: true, activityId: prevState.submissionsPanel.activityId },
-        selectedSubmissionId: null,
-      }));
-    }, 200);
+    alert(`Not implemented... YET!  ${activityId}`);
+  }
+
+  handleDeleteActivity(activityId: number) {
+    const { match } = this.props;
+    activitiesService
+      .deleteActivity(match.params.courseId, activityId)
+      .then(() => {
+        this.getAllActivities();
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al eliminar la actividad, Por favor reintenta",
+          },
+        });
+      });
+  }
+
+  handleDisableActivity(activityId: number, newStatus: boolean) {
+    const { match } = this.props;
+    activitiesService
+      .disableActivity(match.params.courseId, activityId, newStatus)
+      .then(() => {
+        this.getAllActivities();
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al ocultar la actividad, Por favor reintenta",
+          },
+        });
+      });
   }
 
   render() {
     const { classes, match, context } = this.props;
 
-    const {
-      activities,
-      isSideBarOpen,
-      error,
-      submissionsPanel,
-      isSelectedResult,
-      selectedSubmissionId,
-    } = this.state;
+    const { activities, isSideBarOpen, error } = this.state;
 
-    const activeActivities = _.filter(activities, activity => activity.active && !activity.deleted);
-    const activitiesByCategory = _.groupBy(activeActivities, "category_name");
+    const nonDeletedActivities = _.filter(activities, activity => !activity.deleted);
+    const activitiesByCategory = _.groupBy(nonDeletedActivities, "category_name");
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-
-        {/* Se abre cuando alguien presiona el boton de VER ENTEGAS */}
-        <SubmissionsSidePanel
-          isOpen={submissionsPanel.isOpen}
-          activityId={submissionsPanel.activityId}
-          courseId={match.params.courseId}
-          backdropClicked={() => this.setClosePanel()}
-          onSelectSubmission={(submissionId, i) => this.handleClickOnSubmission(submissionId, i)}
-        />
-
-        {/* APARECE CUANDO SE QUIERE VER EL DETALLE DE UNA ENTEGA PASADA DESDE EL SIDE PANEL */}
-        {isSelectedResult && (
-          <SubmissionResultModal
-            open={isSelectedResult}
-            handleCloseModal={e => this.handleCloseModal(e)}
-            showWaitingDialog
-            activitySubmissionId={selectedSubmissionId}
-          />
-        )}
 
         <TopBar
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
@@ -213,13 +187,19 @@ class ActivitiesPage extends React.Component<Props, State> {
             <div />
           )}
 
-          {activeActivities &&
+          {nonDeletedActivities &&
             Object.keys(activitiesByCategory).map(category => (
               <div key={category} className={classes.tableContainerDiv}>
-                <ActivitiesTable
+                <ActivitiesTeacherTable
                   activities={activitiesByCategory[category]}
-                  setOpenPanel={activityId => this.setOpenPanel(activityId)}
-                  handleCellClick={(event, activityId) =>
+                  onClickActivityResults={(e, activityId) =>
+                    this.handleNotImplementedYet(e, activityId)
+                  }
+                  onClickDeleteActivity={activityId => this.handleDeleteActivity(activityId)}
+                  onClickDisableActivity={(activityId, newStatus) =>
+                    this.handleDisableActivity(activityId, newStatus)}
+                  onClickDownloadActivity={activityId => this.handleNotImplementedYet(activityId)}
+                  handleActivityRowClick={(event, activityId) =>
                     this.handleClickOnActivityTitle(event, activityId)
                   }
                 />
@@ -231,4 +211,4 @@ class ActivitiesPage extends React.Component<Props, State> {
   }
 }
 
-export default withState(withStyles(styles)(ActivitiesPage));
+export default withState(withStyles(styles)(ActivitiesTeacherPage));

@@ -63,7 +63,7 @@ class LoginForm extends React.Component<Props, State> {
 
     authenticationService
       .login({
-        usernameOrEmail: username,
+        username_or_email: username,
         password,
       })
       .then(response => {
