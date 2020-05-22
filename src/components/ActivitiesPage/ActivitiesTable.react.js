@@ -13,8 +13,6 @@ import { withStyles } from "@material-ui/core/styles";
 import "./ActivitiesPage.css";
 import getText from "../../utils/messages";
 
-const _ = require("lodash");
-
 const styles = () => ({
   table: {
     minWidth: 650,
@@ -25,6 +23,9 @@ const styles = () => ({
   tableTitle: {
     alignSelf: "start",
     paddingLeft: "15px",
+  },
+  tableRowEnabled: {
+    cursor: "pointer",
   },
 });
 
@@ -63,7 +64,7 @@ function ActivitiesTable(props: Props) {
         </TableHead>
         <TableBody>
           {activities.map(activity => (
-            <TableRow hover key={activity.id}>
+            <TableRow hover key={activity.id} className={classes.tableRowEnabled}>
               <TableCell
                 key={1}
                 component="th"
@@ -72,14 +73,26 @@ function ActivitiesTable(props: Props) {
               >
                 {activity.name}
               </TableCell>
-              <TableCell key={2} align="right">
+              <TableCell
+                key={2}
+                align="right"
+                onClick={event => handleCellClick(event, activity.id)}
+              >
                 {(activity.last_submission_date && activity.last_submission_date.split("T")[0]) ||
                   "-"}
               </TableCell>
-              <TableCell key={3} align="right">
+              <TableCell
+                key={3}
+                align="right"
+                onClick={event => handleCellClick(event, activity.id)}
+              >
                 {15}
               </TableCell>
-              <TableCell key={4} align="right">
+              <TableCell
+                key={4}
+                align="right"
+                onClick={event => handleCellClick(event, activity.id)}
+              >
                 {getText(activity.submission_status).toUpperCase() || "SIN EMPEZAR"}
               </TableCell>
               <TableCell key={5} align="right">

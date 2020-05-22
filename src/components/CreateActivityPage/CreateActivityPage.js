@@ -305,6 +305,7 @@ class CreateActivityPage extends React.Component<Props, State> {
       error,
       editor,
       isCreateCategoryModalOpen,
+      activity,
     } = this.state;
 
     return (
@@ -318,7 +319,9 @@ class CreateActivityPage extends React.Component<Props, State> {
         <TopBar
           handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={isSideBarOpen}
-          title="Crear Actividad"
+          title={
+            activity === null || activity === undefined ? "Crear Actividad" : "Editar Actividad"
+          }
         />
         <SideBar
           handleDrawerClose={() => this.handleSwitchDrawer()}
@@ -432,7 +435,8 @@ class CreateActivityPage extends React.Component<Props, State> {
                 onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                 selectedTab={mdEditorTab}
                 onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })}
+                  this.setState({ mdEditorTab: mdEditorTabChanged })
+                }
                 generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
               />
             </Grid>

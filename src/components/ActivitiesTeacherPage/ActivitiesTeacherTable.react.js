@@ -29,15 +29,18 @@ const styles = () => ({
     justifyContent: "center",
     alignItems: "center",
   },
-  tableRow: {
+  tableRowDisabled: {
     backgroundColor: "#d0c4c4",
+  },
+  tableRowEnabled: {
+    cursor: "pointer",
   },
 });
 
 type Props = {
   activities: Array<Activity>,
   classes: any,
-  onClickActivityResults: (activityId: number) => void,
+  onClickActivityResults: (e: Event, activityId: number) => void,
   onClickDeleteActivity: (activityId: number) => void,
   onClickDisableActivity: (activityId: number, newStatus: boolean) => void,
   onClickDownloadActivity: (activityId: number) => void,
@@ -89,7 +92,7 @@ function ActivitiesTeacherTable(props: Props) {
               hover={activity.active}
               key={activity.id}
               disabled
-              className={activity.active ? classes.null : classes.tableRow}
+              className={activity.active ? classes.tableRowEnabled : classes.tableRowDisabled}
             >
               <TableCell
                 key={1}
@@ -99,10 +102,18 @@ function ActivitiesTeacherTable(props: Props) {
               >
                 {activity.name}
               </TableCell>
-              <TableCell key={2} align="center">
+              <TableCell
+                key={2}
+                align="center"
+                onClick={event => handleActivityRowClick(event, activity.id)}
+              >
                 {activity.language}
               </TableCell>
-              <TableCell key={3} align="center">
+              <TableCell
+                key={3}
+                align="center"
+                onClick={event => handleActivityRowClick(event, activity.id)}
+              >
                 {15}
               </TableCell>
               <TableCell key={4} align="center">
@@ -111,7 +122,7 @@ function ActivitiesTeacherTable(props: Props) {
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => onClickActivityResults(activity.id)}
+                    onClick={e => onClickActivityResults(e, activity.id)}
                   >
                     Explorar
                   </Button>

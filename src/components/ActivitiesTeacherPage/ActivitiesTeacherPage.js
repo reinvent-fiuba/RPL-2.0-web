@@ -108,7 +108,8 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
     history.push(`/courses/${match.params.courseId}/activities/${activityId}/edit`);
   }
 
-  handleNotImplementedYet(activityId: number) {
+  handleNotImplementedYet(e: Event, activityId: number) {
+    e.preventDefault();
     alert(`Not implemented... YET!  ${activityId}`);
   }
 
@@ -191,14 +192,16 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
               <div key={category} className={classes.tableContainerDiv}>
                 <ActivitiesTeacherTable
                   activities={activitiesByCategory[category]}
-                  onClickActivityResults={activityId => this.handleNotImplementedYet(activityId)}
+                  onClickActivityResults={(e, activityId) =>
+                    this.handleNotImplementedYet(e, activityId)
+                  }
                   onClickDeleteActivity={activityId => this.handleDeleteActivity(activityId)}
                   onClickDisableActivity={(activityId, newStatus) =>
-                    this.handleDisableActivity(activityId, newStatus)
-                  }
+                    this.handleDisableActivity(activityId, newStatus)}
                   onClickDownloadActivity={activityId => this.handleNotImplementedYet(activityId)}
                   handleActivityRowClick={(event, activityId) =>
-                    this.handleClickOnActivityTitle(event, activityId)}
+                    this.handleClickOnActivityTitle(event, activityId)
+                  }
                 />
               </div>
             ))}
