@@ -40,3 +40,17 @@ exports.resetPassword = (token: string, password: string): Promise<Student> =>
     body: JSON.stringify({ password_token: token, new_password: password }),
     method: "POST",
   });
+
+exports.validateEmailToken = (token: string): Promise<Student> =>
+  request({
+    url: `http://${producer.base_url}/api/auth/validateEmail`,
+    body: JSON.stringify({ validate_email_token: token }),
+    method: "POST",
+  });
+
+exports.resendEmailToken = (user: string): Promise<Student> =>
+  request({
+    url: `http://${producer.base_url}/api/auth/resendValidationEmail`,
+    body: JSON.stringify({ username_or_email: user }),
+    method: "POST",
+  });
