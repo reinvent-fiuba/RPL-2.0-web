@@ -7,6 +7,7 @@ import SolveActivityPage from "./components/SolveActivityPage/SolveActivityPage"
 import ActivitiesPage from "./components/ActivitiesPage/ActivitiesPage";
 import ActivitiesTeacherPage from "./components/ActivitiesTeacherPage/ActivitiesTeacherPage";
 import StudentsPage from "./components/StudentsPage/StudentsPage";
+import DashboardPage from "./components/DashboardPage/DashboardPage";
 import coursesService from "./services/coursesService";
 
 class CourseIndex extends React.PureComponent {
@@ -31,6 +32,7 @@ class CourseIndex extends React.PureComponent {
     return (
       <>
         <Route exact path="/courses/:courseId/activities" component={activityPage} />
+        <Route exact path="/courses/:courseId/dashboard" component={DashboardPage} />
         <Route exact path="/courses/:courseId/students" component={StudentsPage} />
         <Route path="/courses/:courseId/activity/create" component={CreateActivityPage} />
         <Route
