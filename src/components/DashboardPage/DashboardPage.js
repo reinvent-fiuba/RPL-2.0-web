@@ -15,7 +15,8 @@ import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
-import submissionsService from "../../services/submissionService";
+import submissionsService from "../../services/submissionsService";
+import coursesService from "../../services/coursesService";
 import ativitiesService from "../../services/activitiesService";
 
 import { withState } from "../../utils/State";
@@ -109,13 +110,29 @@ class ActivitiesPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
+    this.loadScoreboad();
     this.loadStats();
+  }
+
+  loadScoreboad() {
+    const { courseId } = this.props.match.params;
+    return coursesService
+      .getScoreboard(courseId)
+      .then(scoreboard => this.setState({ scoreboard }))
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al buscar el scoreboard. Por favor reintenta",
+          },
+        });
+      });
   }
 
   loadStats() {
     let submissionsStats;
     const { courseId } = this.props.match.params;
-    submissionsService
+    return submissionsService
       .getStats(courseId)
       .then(response => {
         submissionsStats = response;
@@ -128,7 +145,7 @@ class ActivitiesPage extends React.Component<Props, State> {
         this.setState({
           error: {
             open: true,
-            message: "Hubo un error al buscar las stats, Por favor reintenta",
+            message: "Hubo un error al buscar las stats. Por favor reintenta",
           },
         });
       });
@@ -171,7 +188,7 @@ class ActivitiesPage extends React.Component<Props, State> {
         {student.score}
       </TableCell>,
       <TableCell key={5} align="right">
-        {student.activityCount}
+        {student.activities_count}
       </TableCell>,
     ];
 
@@ -205,11 +222,6 @@ class ActivitiesPage extends React.Component<Props, State> {
 
     const { isSideBarOpen, error, activitiesStats, submissionsStats } = this.state;
 
-    const students = [
-      { student_id: 1, name: 'Matías', surname: 'Cano', score: 100, activityCount: 5 },
-      { student_id: 2, name: 'Ale', surname: 'Levinas', score: 99, activityCount: 4 }
-    ];
-
     const dataActivities = {
       labels: Object.keys(activitiesStats && activitiesStats.count_by_status || {}),
       datasets: [{
@@ -237,23 +249,12 @@ class ActivitiesPage extends React.Component<Props, State> {
     };
     
     const dataScore = {
-      labels: [
-        'Obtenidos',
-        'Pendientes'
-      ],
+      labels: Object.keys(activitiesStats && activitiesStats.score || {}),
       datasets: [{
-        data: [30, 40],
-        backgroundColor: [
-        '#36A2EB',
-        '#FF6384',
-        ],
-        hoverBackgroundColor: [
-        '#36A2EB',
-        '#FF6384',
-        ]
+        data: Object.values(activitiesStats && activitiesStats.score || {}),
+        backgroundColor: palette('sequential', Object.keys(activitiesStats && activitiesStats.score || {}).length).map(hex => '#' + hex),
       }]
     };
-
 
     return (
       <div>
@@ -284,7 +285,7 @@ class ActivitiesPage extends React.Component<Props, State> {
               <Pie data={dataScore} />
             </Grid>
             <Grid className={classes.tableContainerDiv} item xs={12}>
-              {students && this.renderScoreBoard(students, classes)}
+              {this.state.scoreboard && this.renderScoreBoard(this.state.scoreboard, classes)}
             </Grid>
           </Grid>
         </main>

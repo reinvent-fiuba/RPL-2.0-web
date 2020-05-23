@@ -69,3 +69,9 @@ exports.deleteStudent = (courseId: Number, userId: number) =>
     url: `http://${producer.base_url}/api/courses/${courseId}/users/${userId}`,
     method: "DELETE",
   });
+
+exports.getScoreboard = (courseId: Number) =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/scoreboard`,
+    method: "GET",
+  });
