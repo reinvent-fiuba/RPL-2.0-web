@@ -143,7 +143,7 @@ class CoursesPage extends React.Component<Props, State> {
 
   handleClickGoToCourse(e: Event, courseId: number) {
     e.preventDefault();
-    this.props.history.push(`/courses/${courseId}/activities`);
+    this.props.history.push(`/courses/${courseId}/dashboard`);
   }
 
   handleClickEnrollToCourse(e: Event, courseId: number) {
@@ -151,7 +151,7 @@ class CoursesPage extends React.Component<Props, State> {
     coursesService
       .enroll(courseId)
       .then(() => {
-        this.props.history.push(`/courses/${courseId}/activities`);
+        this.props.history.push(`/courses/${courseId}/dashboard`);
       })
       .catch(() => {
         this.setState({
