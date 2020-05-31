@@ -94,3 +94,9 @@ exports.disableActivity = (
     body: JSON.stringify({ active: newStatus }),
     method: "PUT",
   });
+
+exports.getStats = courseId =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/stats`,
+    method: "GET",
+  });
