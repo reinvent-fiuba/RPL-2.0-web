@@ -193,15 +193,13 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
                 <ActivitiesTeacherTable
                   activities={activitiesByCategory[category]}
                   onClickActivityResults={(e, activityId) =>
-                    this.handleNotImplementedYet(e, activityId)
-                  }
+                    this.handleNotImplementedYet(e, activityId)}
                   onClickDeleteActivity={activityId => this.handleDeleteActivity(activityId)}
                   onClickDisableActivity={(activityId, newStatus) =>
-                    this.handleDisableActivity(activityId, newStatus)}
-                  onClickDownloadActivity={activityId => this.handleNotImplementedYet(activityId)}
-                  handleActivityRowClick={(event, activityId) =>
-                    this.handleClickOnActivityTitle(event, activityId)
+                    this.handleDisableActivity(activityId, newStatus)
                   }
+                  handleActivityRowClick={(event, activityId) =>
+                    this.handleClickOnActivityTitle(event, activityId)}
                 />
               </div>
             ))}
