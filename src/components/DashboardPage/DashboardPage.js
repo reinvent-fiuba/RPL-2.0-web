@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import palette from "google-palette";
-import { Line, Pie } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 import { withStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Table from "@material-ui/core/Table";
@@ -91,11 +91,19 @@ const styles = theme => ({
   },
 });
 
+const legendOpts = {
+  display: true,
+  fullWidth: false,
+  position: "left",
+  reverse: false,
+  labels: {
+    fontSize: 10,
+  },
+};
+
 type Props = {
   match: any,
   classes: any,
-  history: any,
-  context: any,
 };
 
 type State = {
@@ -155,6 +163,7 @@ class ActivitiesPage extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
+  // eslint-disable-next-line class-methods-use-this
   renderHeadRow(classes: any) {
     const cells = [
       <TableCell key={1}>#</TableCell>,
@@ -170,10 +179,11 @@ class ActivitiesPage extends React.Component<Props, State> {
     return <TableRow key={0}>{cells}</TableRow>;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   renderStudentRow(student: any, classes: any) {
     const cells = [
       <TableCell key={5} align="left">
-      {student.position}
+        {student.position}
       </TableCell>,
       <TableCell key={2} component="th" scope="row">
         <Avatar className={classes.avatar}>
@@ -201,8 +211,6 @@ class ActivitiesPage extends React.Component<Props, State> {
 
   // eslint-disable-next-line class-methods-use-this
   renderScoreBoard(students: Array<Student>, classes: any) {
-    const { match, context } = this.props;
-    const { courseId } = match.params;
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table className={classes.table} aria-label="simple table">
@@ -218,42 +226,47 @@ class ActivitiesPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, match, context } = this.props;
+    const { classes, match } = this.props;
 
-    const { isSideBarOpen, error, activitiesStats, submissionsStats } = this.state;
+    const { isSideBarOpen, error, activitiesStats, submissionsStats, scoreboard } = this.state;
 
     const dataActivities = {
-      labels: Object.keys(activitiesStats && activitiesStats.count_by_status || {}),
-      datasets: [{
-        data: Object.values(activitiesStats && activitiesStats.count_by_status || {}),
-        backgroundColor: palette('sequential', Object.keys(activitiesStats && activitiesStats.count_by_status || {}).length).map(hex => '#' + hex),
-      }]
-    };
-
-    const legendOpts = {
-      display: true,
-      fullWidth: false,
-      position: 'left',
-      reverse: false,
-      labels: {
-        fontSize: 10,
-      }
+      labels: Object.keys((activitiesStats && activitiesStats.count_by_status) || {}),
+      datasets: [
+        {
+          data: Object.values((activitiesStats && activitiesStats.count_by_status) || {}),
+          backgroundColor: palette(
+            "sequential",
+            Object.keys((activitiesStats && activitiesStats.count_by_status) || {}).length
+          ).map(hex => `#${hex}`),
+        },
+      ],
     };
 
     const dataSubmissions = {
-      labels: Object.keys(submissionsStats && submissionsStats.count_by_status || {}),
-      datasets: [{
-        data: Object.values(submissionsStats && submissionsStats.count_by_status || {}),
-        backgroundColor: palette('sequential', Object.keys(activitiesStats && activitiesStats.count_by_status || {}).length).map(hex => '#' + hex),
-      }]
+      labels: Object.keys((submissionsStats && submissionsStats.count_by_status) || {}),
+      datasets: [
+        {
+          data: Object.values((submissionsStats && submissionsStats.count_by_status) || {}),
+          backgroundColor: palette(
+            "sequential",
+            Object.keys((activitiesStats && activitiesStats.count_by_status) || {}).length
+          ).map(hex => `#${hex}`),
+        },
+      ],
     };
-    
+
     const dataScore = {
-      labels: Object.keys(activitiesStats && activitiesStats.score || {}),
-      datasets: [{
-        data: Object.values(activitiesStats && activitiesStats.score || {}),
-        backgroundColor: palette('sequential', Object.keys(activitiesStats && activitiesStats.score || {}).length).map(hex => '#' + hex),
-      }]
+      labels: Object.keys((activitiesStats && activitiesStats.score) || {}),
+      datasets: [
+        {
+          data: Object.values((activitiesStats && activitiesStats.score) || {}),
+          backgroundColor: palette(
+            "sequential",
+            Object.keys((activitiesStats && activitiesStats.score) || {}).length
+          ).map(hex => `#${hex}`),
+        },
+      ],
     };
 
     return (
@@ -285,7 +298,7 @@ class ActivitiesPage extends React.Component<Props, State> {
               <Pie data={dataScore} />
             </Grid>
             <Grid className={classes.tableContainerDiv} item xs={12}>
-              {this.state.scoreboard && this.renderScoreBoard(this.state.scoreboard, classes)}
+              {scoreboard && this.renderScoreBoard(scoreboard, classes)}
             </Grid>
           </Grid>
         </main>
