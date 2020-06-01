@@ -13,11 +13,15 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import submissionsService from "../../services/submissionsService";
 import coursesService from "../../services/coursesService";
 import ativitiesService from "../../services/activitiesService";
+import StudentStats from "./StudentStats";
+import TeacherStats from "./TeacherStats";
+
 
 import { withState } from "../../utils/State";
 
@@ -89,6 +93,11 @@ const styles = theme => ({
   plot: {
     height: "100%",
   },
+  calendarHeatmap: {
+    marginTop: theme.spacing(2),
+    width: "75%",
+    fontFamily: "sans-serif",
+  },
 });
 
 const legendOpts = {
@@ -104,6 +113,7 @@ const legendOpts = {
 type Props = {
   match: any,
   classes: any,
+  context: any,
 };
 
 type State = {
@@ -119,7 +129,6 @@ class ActivitiesPage extends React.Component<Props, State> {
 
   componentDidMount() {
     this.loadScoreboad();
-    this.loadStats();
   }
 
   loadScoreboad() {
@@ -132,28 +141,6 @@ class ActivitiesPage extends React.Component<Props, State> {
           error: {
             open: true,
             message: "Hubo un error al buscar el scoreboard. Por favor reintenta",
-          },
-        });
-      });
-  }
-
-  loadStats() {
-    let submissionsStats;
-    const { courseId } = this.props.match.params;
-    return submissionsService
-      .getStats(courseId)
-      .then(response => {
-        submissionsStats = response;
-        return ativitiesService.getStats(courseId);
-      })
-      .then(activitiesStats => {
-        this.setState({ activitiesStats, submissionsStats });
-      })
-      .catch(() => {
-        this.setState({
-          error: {
-            open: true,
-            message: "Hubo un error al buscar las stats. Por favor reintenta",
           },
         });
       });
@@ -226,48 +213,9 @@ class ActivitiesPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, match } = this.props;
-
-    const { isSideBarOpen, error, activitiesStats, submissionsStats, scoreboard } = this.state;
-
-    const dataActivities = {
-      labels: Object.keys((activitiesStats && activitiesStats.count_by_status) || {}),
-      datasets: [
-        {
-          data: Object.values((activitiesStats && activitiesStats.count_by_status) || {}),
-          backgroundColor: palette(
-            "sequential",
-            Object.keys((activitiesStats && activitiesStats.count_by_status) || {}).length
-          ).map(hex => `#${hex}`),
-        },
-      ],
-    };
-
-    const dataSubmissions = {
-      labels: Object.keys((submissionsStats && submissionsStats.count_by_status) || {}),
-      datasets: [
-        {
-          data: Object.values((submissionsStats && submissionsStats.count_by_status) || {}),
-          backgroundColor: palette(
-            "sequential",
-            Object.keys((activitiesStats && activitiesStats.count_by_status) || {}).length
-          ).map(hex => `#${hex}`),
-        },
-      ],
-    };
-
-    const dataScore = {
-      labels: Object.keys((activitiesStats && activitiesStats.score) || {}),
-      datasets: [
-        {
-          data: Object.values((activitiesStats && activitiesStats.score) || {}),
-          backgroundColor: palette(
-            "sequential",
-            Object.keys((activitiesStats && activitiesStats.score) || {}).length
-          ).map(hex => `#${hex}`),
-        },
-      ],
-    };
+    const { classes, match, context } = this.props;
+    const { permissions } = context;
+    const { isSideBarOpen, error, scoreboard } = this.state;
 
     return (
       <div>
@@ -284,19 +232,12 @@ class ActivitiesPage extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
+          {permissions.includes("user_manage") ? (
+            <TeacherStats courseId={match.params.courseId} />
+          ) : (
+            <StudentStats courseId={match.params.courseId} />
+          )}
           <Grid container xs={12} spacing={3} className={classes.plotContainerDiv}>
-            <Grid item xs={3}>
-              <Typography>Actividades</Typography>
-              <Pie data={dataActivities} legend={legendOpts} />
-            </Grid>
-            <Grid item xs={3}>
-              <Typography>Entregas</Typography>
-              <Pie data={dataSubmissions} />
-            </Grid>
-            <Grid item xs={3}>
-              <Typography>Puntos</Typography>
-              <Pie data={dataScore} />
-            </Grid>
             <Grid className={classes.tableContainerDiv} item xs={12}>
               {scoreboard && this.renderScoreBoard(scoreboard, classes)}
             </Grid>
