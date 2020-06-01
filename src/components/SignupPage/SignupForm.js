@@ -2,6 +2,11 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
@@ -39,6 +44,7 @@ type State = {
   surname: string,
   degree: string,
   university: string,
+  success: boolean,
 };
 
 class Signup extends React.Component<Props, State> {
@@ -51,6 +57,7 @@ class Signup extends React.Component<Props, State> {
     surname: "",
     degree: "",
     university: "",
+    success: false,
   };
 
   handleChange(event) {
@@ -73,8 +80,8 @@ class Signup extends React.Component<Props, State> {
         degree,
         university,
       })
-      .then(response => {
-        this.props.history.push("/login");
+      .then(() => {
+        this.setState({ success: true });
       })
       .catch(() => {
         this.setState({
@@ -87,12 +94,34 @@ class Signup extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
-    const { error } = this.state;
+    const { classes, history } = this.props;
+    const { error, success } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
+
+        <Dialog
+          open={success}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Valida tu email</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Revisá tu bandeja de entrada y seguí las instrucciones en el email. Puede tardar unos
+              minutos en llegar.
+            </DialogContentText>
+            <DialogContentText id="alert-dialog-description">
+              No te olvides de chequear en la carpeta de SPAM!
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => history.push("/login")} color="primary">
+              Volver al inicio
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <Typography component="h1" variant="h5">
           Sign Up

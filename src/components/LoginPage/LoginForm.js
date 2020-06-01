@@ -82,6 +82,10 @@ class LoginForm extends React.Component<Props, State> {
       })
       .catch(err => {
         console.log(err);
+        if (err.status === 401 && err.err.error === "email_not_validated_error") {
+          this.props.history.push(`/user/validateEmail?user=${username}`);
+          return;
+        }
         this.setState({
           error: {
             open: true,

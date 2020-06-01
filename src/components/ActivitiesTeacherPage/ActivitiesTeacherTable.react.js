@@ -35,6 +35,10 @@ const styles = () => ({
   tableRowEnabled: {
     cursor: "pointer",
   },
+  actionColumnButton: {
+    marginRight: "2%",
+    marginLeft: "2%",
+  },
 });
 
 type Props = {
@@ -43,7 +47,6 @@ type Props = {
   onClickActivityResults: (e: Event, activityId: number) => void,
   onClickDeleteActivity: (activityId: number) => void,
   onClickDisableActivity: (activityId: number, newStatus: boolean) => void,
-  onClickDownloadActivity: (activityId: number) => void,
   handleActivityRowClick: (e: Event, activityId: number) => void,
 };
 
@@ -53,7 +56,6 @@ function ActivitiesTeacherTable(props: Props) {
     onClickActivityResults,
     onClickDeleteActivity,
     onClickDisableActivity,
-    onClickDownloadActivity,
     handleActivityRowClick,
     classes,
   } = props;
@@ -133,6 +135,7 @@ function ActivitiesTeacherTable(props: Props) {
                   variant="outlined"
                   color="primary"
                   onClick={() => onClickDeleteActivity(activity.id)}
+                  className={classes.actionColumnButton}
                 >
                   Eliminar
                 </Button>
@@ -140,15 +143,9 @@ function ActivitiesTeacherTable(props: Props) {
                   variant={activity.active ? "outlined" : "contained"}
                   color="primary"
                   onClick={() => onClickDisableActivity(activity.id, !activity.active)}
+                  className={classes.actionColumnButton}
                 >
                   {activity.active ? "Ocultar" : "Habilitar"}
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => onClickDownloadActivity(activity.id)}
-                >
-                  Descargar
                 </Button>
               </TableCell>
             </TableRow>

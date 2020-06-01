@@ -6,6 +6,7 @@ import LoginPage from "./components/LoginPage/LoginPage";
 import SignupPage from "./components/SignupPage/SignupPage";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage.react";
 import ResetPasswordPage from "./components/ResetPasswordPage/ResetPasswordPage.react";
+import ValidateEmailPage from "./components/ValidateEmailPage/ValidateEmailPage.react";
 import { StateProvider } from "./utils/State";
 import CoursesPage from "./components/CoursesPage/CoursesPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
@@ -23,6 +24,7 @@ const routing = (
         <Route path="/signup" component={SignupPage} />
         <Route path="/forgotPassword" component={ForgotPasswordPage} />
         <Route path="/user/changePassword" component={ResetPasswordPage} />
+        <Route path="/user/validateEmail" component={ValidateEmailPage} />
         <PrivateRoute exact path="/courses" component={CoursesPage} />
         <PrivateRoute path="/courses/create" component={CreateCoursePage} />
         <PrivateRoute path="/courses/:courseId/" component={CourseIndex} />

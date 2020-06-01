@@ -20,8 +20,6 @@ import ErrorNotification from "../../utils/ErrorNotification";
 
 import type { Student } from "../../types";
 
-const _ = require("lodash");
-
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -112,7 +110,7 @@ type Props = {
 type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
-  students: Array<Activity>,
+  students: Array<Student>,
   refreshStudentsNotification: boolean,
 };
 
@@ -154,7 +152,9 @@ class StudentsPage extends React.Component<Props, State> {
       .acceptStudent(courseId, userId)
       .then(() => this.loadStudents())
       .then(() =>
-        this.setState({ refreshStudentsNotification: !this.state.refreshStudentsNotification })
+        this.setState(prevState => ({
+          refreshStudentsNotification: !prevState.refreshStudentsNotification,
+        }))
       );
   }
 
@@ -163,7 +163,9 @@ class StudentsPage extends React.Component<Props, State> {
       .deleteStudent(courseId, userId)
       .then(() => this.loadStudents())
       .then(() =>
-        this.setState({ refreshStudentsNotification: !this.state.refreshStudentsNotification })
+        this.setState(prevState => ({
+          refreshStudentsNotification: !prevState.refreshStudentsNotification,
+        }))
       );
   }
 
@@ -218,8 +220,9 @@ class StudentsPage extends React.Component<Props, State> {
         {student.role}
       </TableCell>,
     ];
- 
-    const { context } = this.props;
+
+    const { match, context } = this.props;
+    const { courseId } = match.params;
     if (context.permissions && context.permissions.includes("user_manage")) {
       const extraCells = [
         <TableCell
@@ -274,8 +277,6 @@ class StudentsPage extends React.Component<Props, State> {
 
   // eslint-disable-next-line class-methods-use-this
   renderStudents(students: Array<Student>, classes: any) {
-    const { match, context } = this.props;
-    const { courseId } = match.params;
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table className={classes.table} aria-label="simple table">
