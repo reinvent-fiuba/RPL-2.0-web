@@ -16,8 +16,6 @@ import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
 import authenticationService from "../../services/authenticationService";
 
-const _ = require("lodash");
-
 const styles = theme => ({
   avatar: {
     margin: theme.spacing(1),
@@ -161,8 +159,7 @@ class ResetPasswordForm extends React.Component<Props, State> {
               this.setState({
                 newPassword: e.target.value,
                 disableButton: e.target.value !== repeatPassword,
-              })
-            }
+              })}
           />
 
           <TextField
@@ -177,8 +174,7 @@ class ResetPasswordForm extends React.Component<Props, State> {
               this.setState({
                 repeatPassword: e.target.value,
                 disableButton: e.target.value !== newPassword,
-              })
-            }
+              })}
           />
           <Button
             type="submit"

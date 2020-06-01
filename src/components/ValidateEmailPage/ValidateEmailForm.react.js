@@ -130,7 +130,13 @@ class ValidateEmailForm extends React.Component<Props, State> {
           <ErrorNotification open={error.open} message={error.message} horizontalPosition="right" />
         )}
 
-        {resentEmail && <CustomSnackbar open={resentEmail} message="Se ha reenviado el Email" />}
+        {resentEmail && (
+          <CustomSnackbar
+            open={resentEmail}
+            message="Se ha reenviado el Email"
+            horizontalPosition="right"
+          />
+        )}
 
         {/* // Loging in without having validated the e-mail */}
         {!success && (

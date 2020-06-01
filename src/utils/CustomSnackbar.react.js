@@ -38,7 +38,7 @@ class CustomSnackbar extends React.Component {
   }
 
   render() {
-    const { classes, message } = this.props;
+    const { classes, message, horizontalPosition } = this.props;
 
     const { open } = this.state;
 
@@ -46,7 +46,7 @@ class CustomSnackbar extends React.Component {
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left",
+          horizontal: horizontalPosition || "left",
         }}
         open={open}
         autoHideDuration={2000}
