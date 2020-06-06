@@ -61,14 +61,6 @@ export type Course = {
   last_updated: string,
 };
 
-export type CreateCourseProps = {
-  name: string,
-  university: string,
-  universityCourseId: string,
-  semester: string,
-  description: string,
-};
-
 export type IOTestRunResult = {
   id: number,
   test_in: string,
