@@ -1,18 +1,29 @@
 // @flow
-import type { Course, CreateCourseProps } from "../types";
+import type { Course } from "../types";
 
-const _ = require('lodash');
+const _ = require("lodash");
 const { request } = require("../utils/Request");
-
 
 const producer = {
   base_url: process.env.API_BASE_URL || "localhost:8080",
 };
 
-exports.create = (courseDetails: CreateCourseProps) =>
+exports.create = (
+  name: string,
+  university: string,
+  universityCourseId: string,
+  semester: string,
+  description: string
+) =>
   request({
     url: `http://${producer.base_url}/api/courses`,
-    body: JSON.stringify(courseDetails),
+    body: JSON.stringify({
+      name,
+      university,
+      university_course_id: universityCourseId,
+      semester,
+      description,
+    }),
     method: "POST",
   });
 

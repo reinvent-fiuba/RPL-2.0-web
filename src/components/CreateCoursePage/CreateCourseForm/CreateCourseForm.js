@@ -72,13 +72,7 @@ class CreateCourseForm extends React.Component<Props, State> {
     event.preventDefault();
     const { name, university, universityCourseId, semester, description } = this.state;
     coursesService
-      .create({
-        name,
-        university,
-        universityCourseId,
-        semester,
-        description,
-      })
+      .create(name, university, universityCourseId, semester, description)
       .then(() => {
         this.props.history.push("/courses");
       })
