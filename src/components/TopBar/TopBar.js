@@ -13,6 +13,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
 import MenuIcon from "@material-ui/icons/Menu";
+import LockIcon from "@material-ui/icons/Lock";
 import { withState } from "../../utils/State";
 import NotificationsButton from "../SideBar/NotificationsButton";
 import { withRouter } from 'react-router-dom';
@@ -23,29 +24,32 @@ const styles = theme => ({
   appBar: {
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
+      duration: theme.transitions.duration.leavingScreen,
+    }),
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   menuButton: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   hide: {
-    display: "none"
+    display: "none",
   },
   title: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   user: {
-    marginRight: theme.spacing(2)
-  }
+    marginRight: theme.spacing(2),
+  },
+  adminIcon: {
+    marginRight: theme.spacing(2),
+  },
 });
 
 class TopBar extends React.PureComponent {
@@ -59,7 +63,7 @@ class TopBar extends React.PureComponent {
 
   render() {
     const { open, title, handleDrawerOpen, context, classes, refreshNotifications } = this.props;
-    const { name, surname } = context && context.profile;
+    const { name, surname, is_admin } = context && context.profile;
     const { isNotificationModalOpen } = this.state;
 
     return (
@@ -86,6 +90,7 @@ class TopBar extends React.PureComponent {
           <Typography variant="body1" className={classes.user}>
             {name} {surname}
           </Typography>
+          <div className={classes.adminIcon}>{is_admin ? <LockIcon /> : <div />}</div>
           <Avatar>
             {name[0]}
             {surname[0]}
