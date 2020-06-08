@@ -27,12 +27,6 @@ exports.getProfile = () =>
     method: "GET",
   });
 
-exports.findUsers = query =>
-  request({
-    url: `http://${producer.base_url}/api/users?query=${query}`,
-    method: "GET",
-  });
-
 exports.forgotPassword = (email: string): Promise<string> =>
   request({
     url: `http://${producer.base_url}/api/auth/forgotPassword`,

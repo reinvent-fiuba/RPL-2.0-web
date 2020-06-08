@@ -13,7 +13,7 @@ import { withStyles } from "@material-ui/core/styles";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
-import authenticationService from "../../services/authenticationService";
+import usersService from "../../services/usersService";
 import ErrorNotification from "../../utils/ErrorNotification";
 
 import type { Student } from "../../types";
@@ -103,8 +103,7 @@ class UsersPage extends React.Component<Props, State> {
   }
 
   loadUsers() {
-    const { match } = this.props;
-    authenticationService
+    usersService
       .findUsers("") // Search for all users, no query
       .then(response => {
         this.setState({ users: response });
