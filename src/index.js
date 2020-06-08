@@ -28,7 +28,7 @@ const routing = (
         <PrivateRoute exact path="/courses" component={CoursesPage} />
         <PrivateRoute path="/courses/create" component={CreateCoursePage} />
         <PrivateRoute path="/courses/:courseId/" component={CourseIndex} />
-        {/* CourseIndex fetch permissions and render the following routes:
+        {/* CourseIndex fetches permissions and render the following routes:
               /courses/:courseId/students
               /courses/:courseId/activity/create
               /courses/:courseId/activities

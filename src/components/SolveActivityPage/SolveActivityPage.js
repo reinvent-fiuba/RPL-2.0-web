@@ -8,7 +8,7 @@ import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
 import activitiesService from "../../services/activitiesService";
 import submissionsService from "../../services/submissionsService";
-import SimpleMonacoEditor from "./SimpleMonacoEditor.react";
+import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SolvePageHeader from "./SolvePageHeader.react";
@@ -50,6 +50,9 @@ const styles = theme => ({
     left: "50%",
     top: "50%",
   },
+  editor: {
+    height: "100%",
+  },
 });
 
 type Props = {
@@ -62,7 +65,7 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   activity: ?Activity,
-  code: string,
+  code: { [string]: string },
   editorWidth: string,
   submittedActivity: boolean,
   selectedSubmissionId: ?number,
@@ -74,7 +77,7 @@ class SolveActivityPage extends React.Component<Props, State> {
     isSideBarOpen: false,
     editorWidth: "100%",
     activity: null,
-    code: "",
+    code: { "main.c": "" },
     submittedActivity: false,
     selectedSubmissionId: null,
   };
@@ -82,8 +85,14 @@ class SolveActivityPage extends React.Component<Props, State> {
   componentDidMount() {
     activitiesService
       .getActivity(this.props.match.params.courseId, this.props.match.params.activityId)
-      .then(response => {
-        this.setState({ activity: response, code: response.initial_code });
+      .then(activityResponse => {
+        const filename: string =
+          activityResponse.language.toLowerCase() === "c" ? "main.c" : "assignment_main.py";
+
+        this.setState({
+          activity: activityResponse,
+          code: { [filename]: activityResponse.initial_code },
+        });
       })
       .catch(() => {
         this.setState({
@@ -103,7 +112,7 @@ class SolveActivityPage extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
-  onCodeChange(code: string) {
+  onCodeChange(code: { [string]: string }) {
     this.setState({ code });
   }
 
@@ -112,13 +121,10 @@ class SolveActivityPage extends React.Component<Props, State> {
     event.preventDefault();
     console.log("Submit");
     const { courseId, activityId } = this.props.match.params;
-    const { code, activity } = this.state;
-
-    const filename =
-      activity && activity.language.toLowerCase() === "c" ? "main.c" : "assignment_main.py";
+    const { code } = this.state;
 
     submissionsService
-      .createSubmission(courseId, activityId, code, filename)
+      .createSubmission(courseId, activityId, code)
       .then(response => {
         this.setState({
           submittedActivity: true,
@@ -141,7 +147,7 @@ class SolveActivityPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       activity,
       isSideBarOpen,
@@ -149,6 +155,7 @@ class SolveActivityPage extends React.Component<Props, State> {
       selectedSubmissionId,
       editorWidth,
       error,
+      code,
     } = this.state;
     return (
       <div>
@@ -171,17 +178,19 @@ class SolveActivityPage extends React.Component<Props, State> {
             <SolvePageHeader
               handleSubmitActivity={e => this.handleSubmitActivity(e)}
               activityName={activity.name}
+              history={history}
             />
             <SplitPane
               split="vertical"
               defaultSize="50%"
               onChange={width => this.handleDrag(width)}
             >
-              <SimpleMonacoEditor
+              <MultipleTabsEditor
+                className={classes.editor}
                 width={editorWidth}
-                initialCode={activity.initial_code}
+                initialCode={code}
                 language={activity.language.toLowerCase()}
-                onCodeChange={_.throttle(code => this.onCodeChange(code))}
+                onCodeChange={_.throttle(newCode => this.onCodeChange(newCode))}
               />
 
               <div>

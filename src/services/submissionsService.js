@@ -7,16 +7,13 @@ const producer = {
   base_url: process.env.API_BASE_URL || "localhost:8080",
 };
 
-exports.createSubmission = (
-  courseId: number,
-  activityId: number,
-  code: string,
-  filename: string
-) => {
+exports.createSubmission = (courseId: number, activityId: number, code: { [string]: string }) => {
   const formData = new FormData();
 
-  formData.append("file", new File([code], filename));
-  formData.append("description", "La descriptionnnnnn");
+  Object.keys(code).forEach(filename => {
+    formData.append("file", new File([code[filename]], filename));
+    formData.append("description", "La descriptionnnnnn");
+  });
 
   return request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
