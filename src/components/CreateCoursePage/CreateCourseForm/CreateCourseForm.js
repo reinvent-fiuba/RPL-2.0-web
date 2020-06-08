@@ -3,13 +3,12 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import { fade, withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { withState } from "../../../utils/State";
 import ErrorNotification from "../../../utils/ErrorNotification";
 import coursesService from "../../../services/coursesService";
 import authenticationService from "../../../services/authenticationService";
-
 
 const styles = theme => ({
   avatar: {
