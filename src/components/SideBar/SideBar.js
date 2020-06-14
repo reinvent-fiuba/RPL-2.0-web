@@ -7,6 +7,7 @@ import { withStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import RecentActorsIcon from "@material-ui/icons/RecentActors";
 import CodeIcon from "@material-ui/icons/Code";
 import SchoolIcon from "@material-ui/icons/School";
 import PeopleIcon from "@material-ui/icons/People";
@@ -17,6 +18,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { Link } from "react-router-dom";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
+import { withState } from "../../utils/State";
 
 const drawerWidth = 240;
 
@@ -44,6 +46,7 @@ const actionIcons = {
   Inscriptos: PeopleIcon,
   Perfil: AccountCircleIcon,
   Configuracion: SettingsIcon,
+  Usuarios: RecentActorsIcon,
   "Cerrar Sesión": ExitToAppIcon,
 };
 
@@ -56,9 +59,13 @@ type Props = {
 
 class SideBar extends React.PureComponent<Props> {
   render() {
-    const { open, classes, courseId, handleDrawerClose } = this.props;
+    const { open, classes, courseId, context, handleDrawerClose } = this.props;
 
     const itemsLinks = { Cursos: "/courses" };
+
+    if (context.profile && context.profile.is_admin) {
+      itemsLinks.Usuarios = `/users`;
+    }
 
     if (courseId) {
       itemsLinks.Dashboard = `/courses/${courseId}/dashboard`;
@@ -122,4 +129,4 @@ class SideBar extends React.PureComponent<Props> {
   }
 }
 
-export default withStyles(styles)(SideBar);
+export default withState(withStyles(styles)(SideBar));

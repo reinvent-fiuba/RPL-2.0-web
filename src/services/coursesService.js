@@ -13,6 +13,7 @@ exports.create = (
   university: string,
   universityCourseId: string,
   semester: string,
+  courseAdminId: string,
   description: string
 ) =>
   request({
@@ -22,6 +23,7 @@ exports.create = (
       university,
       university_course_id: universityCourseId,
       semester,
+      course_admin_id: courseAdminId,
       description,
     }),
     method: "POST",

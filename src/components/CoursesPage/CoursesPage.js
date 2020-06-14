@@ -179,7 +179,7 @@ class CoursesPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, context } = this.props;
     const { otherCourses, myCourses, isSideBarOpen, error } = this.state;
 
     return (
@@ -197,14 +197,18 @@ class CoursesPage extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <Fab
-            color="primary"
-            aria-label="add"
-            className={classes.rightButton}
-            onClick={() => this.handleCreateCourseClick()}
-          >
-            <AddIcon />
-          </Fab>
+          {context.profile && context.profile.is_admin ? (
+            <Fab
+              color="primary"
+              aria-label="add"
+              className={classes.rightButton}
+              onClick={() => this.handleCreateCourseClick()}
+            >
+              <AddIcon />
+            </Fab>
+          ) : (
+            <div />
+          )}
           <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
             Mis Cursos
           </Typography>

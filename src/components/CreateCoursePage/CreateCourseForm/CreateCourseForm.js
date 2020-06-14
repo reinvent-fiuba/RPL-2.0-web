@@ -4,9 +4,11 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core/styles";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { withState } from "../../../utils/State";
 import ErrorNotification from "../../../utils/ErrorNotification";
 import coursesService from "../../../services/coursesService";
+import authenticationService from "../../../services/authenticationService";
 
 const styles = theme => ({
   avatar: {
@@ -45,6 +47,7 @@ type State = {
   universityCourseId: string,
   semester: string,
   description: string,
+  courseAdminId: string,
 };
 
 class CreateCourseForm extends React.Component<Props, State> {
@@ -55,7 +58,13 @@ class CreateCourseForm extends React.Component<Props, State> {
     universityCourseId: "",
     semester: "",
     description: "",
+    courseAdminId: "",
+    users: [],
   };
+
+  componentDidMount() {
+    this.loadUsers("");
+  }
 
   handleChange(event) {
     event.persist();
@@ -70,9 +79,16 @@ class CreateCourseForm extends React.Component<Props, State> {
 
   handleCreateClick(event) {
     event.preventDefault();
-    const { name, university, universityCourseId, semester, description } = this.state;
+    const {
+      name,
+      university,
+      universityCourseId,
+      semester,
+      description,
+      courseAdminId,
+    } = this.state;
     coursesService
-      .create(name, university, universityCourseId, semester, description)
+      .create(name, university, universityCourseId, semester, courseAdminId, description)
       .then(() => {
         this.props.history.push("/courses");
       })
@@ -87,10 +103,16 @@ class CreateCourseForm extends React.Component<Props, State> {
       });
   }
 
+  loadUsers(query) {
+    authenticationService.findUsers(query).then(users => {
+      this.setState({ users });
+    });
+  }
+
   render() {
     const { classes } = this.props;
 
-    const { error } = this.state;
+    const { error, users } = this.state;
 
     return (
       <div>
@@ -136,6 +158,22 @@ class CreateCourseForm extends React.Component<Props, State> {
             name="semester"
             autoComplete="semester"
             onChange={e => this.handleChange(e)}
+          />
+          <Autocomplete
+            margin="normal"
+            options={users}
+            id="courseAdmin"
+            name="courseAdmin"
+            autoComplete="courseAdmin"
+            onChange={(event, newValue) => this.setState({ courseAdminId: newValue.id })}
+            getOptionLabel={user => `${user.name} ${user.surname} (${user.username})`}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label="Usuario administrador"
+                margin="normal"
+              />
+            )}
           />
           <TextField
             margin="normal"
