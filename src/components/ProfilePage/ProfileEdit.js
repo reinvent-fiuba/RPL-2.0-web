@@ -3,10 +3,11 @@ import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
+import SaveIcon from "@material-ui/icons/Save";
 import Fab from "@material-ui/core/Fab";
-import EditIcon from "@material-ui/icons/Edit";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
@@ -37,12 +38,6 @@ const styles = theme => ({
     }),
     marginLeft: drawerWidth,
   },
-  form: {
-    marginTop: theme.spacing(1),
-    marginLeft: theme.spacing(40),
-    marginRight: theme.spacing(40),
-    padding: `0px ${theme.spacing(4)}px`,
-  },
   avatar: {
     margin: "auto",
     width: theme.spacing(15),
@@ -60,6 +55,10 @@ const styles = theme => ({
     width: "100%",
     height: "100%",
   },
+  form: {
+    marginTop: theme.spacing(1),
+    padding: `0px ${theme.spacing(4)}px`,
+  },
   rightButton: {
     display: "flex",
     marginLeft: "auto",
@@ -68,7 +67,7 @@ const styles = theme => ({
   },
 });
 
-class ProfileView extends React.Component {
+class ProfileEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -76,16 +75,16 @@ class ProfileView extends React.Component {
 
   render() {
     const { profile, classes } = this.props;
-    console.log(this.props);
+
     return (
       <div>
         <Fab
           color="primary"
           aria-label="add"
           className={classes.rightButton}
-          onClick={() => this.props.onClickEdit()}
+          onClick={() => this.props.onClickSave()}
         >
-          <EditIcon />
+          <SaveIcon />
         </Fab>
         <Grid container spacing={8}>
           <Grid align="center" justify="center" direction="column" container spacing={2} xs={4}>
@@ -103,12 +102,74 @@ class ProfileView extends React.Component {
           </Grid>
           <Grid item xs={8}>
             <Paper className={classes.paperContainer}>
-              <Typography className={classes.property} variant="h6">{`Nombre: ${profile.name}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Apellido: ${profile.surname}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Id de Universidad: ${profile.student_id}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Email: ${profile.email}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Universidad: ${profile.university}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Carrera: ${profile.degree}`}</Typography>
+              <form className={classes.form}>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="name"
+                  label="Name"
+                  name="Name"
+                  autoComplete="name"
+                  autoFocus
+                  onChange={e => this.handleChange(e)}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="surname"
+                  label="Surname"
+                  name="Surname"
+                  autoComplete="surname"
+                  autoFocus
+                  onChange={e => this.handleChange(e)}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="studentId"
+                  label="Student Id"
+                  name="Student Id"
+                  autoComplete="studentId"
+                  autoFocus
+                  onChange={e => this.handleChange(e)}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email"
+                  name="Email"
+                  autoComplete="email"
+                  autoFocus
+                  onChange={e => this.handleChange(e)}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="degree"
+                  label="Degree"
+                  name="Degree"
+                  autoComplete="degree"
+                  autoFocus
+                  onChange={e => this.handleChange(e)}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="university"
+                  label="University"
+                  name="University"
+                  autoComplete="university"
+                  autoFocus
+                  onChange={e => this.handleChange(e)}
+                />
+              </form>
             </Paper>
           </Grid>
         </Grid>
@@ -117,4 +178,4 @@ class ProfileView extends React.Component {
   }
 }
 
-export default withState(withStyles(styles)(ProfileView));
+export default withState(withStyles(styles)(ProfileEdit));
