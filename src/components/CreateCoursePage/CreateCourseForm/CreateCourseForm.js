@@ -8,7 +8,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { withState } from "../../../utils/State";
 import ErrorNotification from "../../../utils/ErrorNotification";
 import coursesService from "../../../services/coursesService";
-import authenticationService from "../../../services/authenticationService";
+import usersService from "../../../services/usersService";
 
 const styles = theme => ({
   avatar: {
@@ -104,7 +104,7 @@ class CreateCourseForm extends React.Component<Props, State> {
   }
 
   loadUsers(query) {
-    authenticationService.findUsers(query).then(users => {
+    usersService.findUsers(query).then(users => {
       this.setState({ users });
     });
   }

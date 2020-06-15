@@ -12,9 +12,10 @@ import coursesService from "./services/coursesService";
 
 class CourseIndex extends React.PureComponent {
   componentDidMount() {
-    if (!this.props.context.permissions) {
+    const courseId = parseInt(this.props.match.params.courseId);
+    if (!isNaN(courseId) && !this.props.context.permissions) {
       // TODO: Review permissions by course, in order to support different permissions for different courses
-      coursesService.getPermissions(this.props.match.params.courseId).then(permissions => {
+      coursesService.getPermissions(courseId).then(permissions => {
         this.props.context.set("permissions", permissions);
       });
     }
