@@ -1,12 +1,11 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import EditIcon from "@material-ui/icons/Edit";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import authenticationServer from "../../services/authenticationService";
 import ProfileView from "./ProfileView";
+import ProfileEdit from "./ProfileEdit";
 
 const drawerWidth = 240;
 
@@ -60,6 +59,8 @@ class ProfilePage extends React.Component {
     this.state = {};
     this.handleDrawerClose = this.handleDrawerClose.bind(this);
     this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
+    this.handleClickEdit = this.handleClickEdit.bind(this);
+    this.handleClickSave = this.handleClickSave.bind(this);
   }
 
   componentDidMount() {
@@ -90,9 +91,19 @@ class ProfilePage extends React.Component {
     this.setState({ open: false });
   }
 
+  handleClickEdit() {
+    this.setState({ editMode: true });
+  }
+
+  handleClickSave(profileData) {
+    authenticationServer.updateProfile(profileData).then(response => {
+      this.setState({ profile: response, editMode: false });
+    });
+  }
+
   render() {
     const { classes, context, history } = this.props;
-
+    const { editMode } = this.state;
     const profile = this.state.profile || context.profile;
 
     return (
@@ -100,21 +111,17 @@ class ProfilePage extends React.Component {
         <TopBar
           handleDrawerOpen={this.handleDrawerOpen}
           open={this.state.open}
-          title="Crear Curso"
+          title="Perfil de Usuario"
         />
         <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
         <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <div className={classes.form}>
-            <Fab
-              color="primary"
-              aria-label="add"
-              className={classes.rightButton}
-              onClick={() => this.handleCreateCourseClick()}
-            >
-              <EditIcon />
-            </Fab>
-            <ProfileView profile={profile}/>
+            {editMode ? (
+              <ProfileEdit onClickSave={this.handleClickSave} profile={profile} />
+            ) : (
+              <ProfileView onClickEdit={this.handleClickEdit} profile={profile} />
+            )}
           </div>
         </main>
       </div>
