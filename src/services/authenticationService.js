@@ -27,6 +27,13 @@ exports.getProfile = () =>
     method: "GET",
   });
 
+exports.updateProfile = profileData =>
+  request({
+    url: `http://${producer.base_url}/api/auth/profile`,
+    body: JSON.stringify(profileData),
+    method: "PATCH",
+  });
+
 exports.forgotPassword = (email: string): Promise<string> =>
   request({
     url: `http://${producer.base_url}/api/auth/forgotPassword`,

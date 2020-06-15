@@ -95,8 +95,8 @@ class ProfilePage extends React.Component {
     this.setState({ editMode: true });
   }
 
-  handleClickSave() {
-    authenticationServer.getProfile().then(response => {
+  handleClickSave(profileData) {
+    authenticationServer.updateProfile(profileData).then(response => {
       this.setState({ profile: response, editMode: false });
     });
   }
@@ -111,7 +111,7 @@ class ProfilePage extends React.Component {
         <TopBar
           handleDrawerOpen={this.handleDrawerOpen}
           open={this.state.open}
-          title="Crear Curso"
+          title="Perfil de Usuario"
         />
         <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
         <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>

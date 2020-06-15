@@ -70,7 +70,21 @@ const styles = theme => ({
 class ProfileEdit extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    const { profile } = this.props;
+    this.state = {
+      name: profile.name,
+      surname: profile.surname,
+      studentId: profile.student_id,
+      email: profile.email,
+      degree: profile.degree,
+      university: profile.university
+    };
+  }
+
+  handleChange(event) {
+    event.persist();
+    // Close error message
+    this.setState({ [event.target.id]: event.target.value });
   }
 
   render() {
@@ -82,7 +96,14 @@ class ProfileEdit extends React.Component {
           color="primary"
           aria-label="add"
           className={classes.rightButton}
-          onClick={() => this.props.onClickSave()}
+          onClick={() => this.props.onClickSave({
+              name: this.state.name,
+              surname: this.state.surname,
+              student_id: this.state.studentId,
+              email: this.state.email,
+              degree: this.state.degree,
+              university: this.state.university,
+            })}
         >
           <SaveIcon />
         </Fab>
@@ -112,6 +133,7 @@ class ProfileEdit extends React.Component {
                   name="Name"
                   autoComplete="name"
                   autoFocus
+                  value={this.state.name}
                   onChange={e => this.handleChange(e)}
                 />
                 <TextField
@@ -123,6 +145,7 @@ class ProfileEdit extends React.Component {
                   name="Surname"
                   autoComplete="surname"
                   autoFocus
+                  value={this.state.surname}
                   onChange={e => this.handleChange(e)}
                 />
                 <TextField
@@ -134,6 +157,7 @@ class ProfileEdit extends React.Component {
                   name="Student Id"
                   autoComplete="studentId"
                   autoFocus
+                  value={this.state.studentId}
                   onChange={e => this.handleChange(e)}
                 />
                 <TextField
@@ -145,6 +169,7 @@ class ProfileEdit extends React.Component {
                   name="Email"
                   autoComplete="email"
                   autoFocus
+                  value={this.state.email}
                   onChange={e => this.handleChange(e)}
                 />
                 <TextField
@@ -156,6 +181,7 @@ class ProfileEdit extends React.Component {
                   name="Degree"
                   autoComplete="degree"
                   autoFocus
+                  value={this.state.degree}
                   onChange={e => this.handleChange(e)}
                 />
                 <TextField
@@ -167,6 +193,7 @@ class ProfileEdit extends React.Component {
                   name="University"
                   autoComplete="university"
                   autoFocus
+                  value={this.state.university}
                   onChange={e => this.handleChange(e)}
                 />
               </form>
