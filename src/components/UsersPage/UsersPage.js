@@ -112,7 +112,7 @@ class UsersPage extends React.Component<Props, State> {
         this.setState({
           error: {
             open: true,
-            message: "Hubo un error al obtener las actividades, Por favor reintenta",
+            message: "Hubo un error al obtener a los alumnos, Por favor reintenta",
           },
         });
       });

@@ -73,6 +73,11 @@ class SideBar extends React.PureComponent<Props> {
       itemsLinks.Inscriptos = `/courses/${courseId}/students`;
     }
 
+    const configurationLinks = {
+      Perfil: "/profile",
+      Configuracion: "/courses", // TODO: Replace by configuration page or remove
+    };
+
     return (
       <Drawer
         className={classes.drawer}
@@ -105,10 +110,10 @@ class SideBar extends React.PureComponent<Props> {
         </List>
         <Divider />
         <List>
-          {["Perfil", "Configuracion"].map(text => {
+          {Object.keys(configurationLinks).map(text => {
             const Icon = actionIcons[text];
             return (
-              <ListItem button key={text}>
+              <ListItem button key={text} component={Link} to={configurationLinks[text]}>
                 <ListItemIcon>
                   <Icon />
                 </ListItemIcon>

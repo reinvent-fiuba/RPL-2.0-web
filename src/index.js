@@ -9,6 +9,7 @@ import ResetPasswordPage from "./components/ResetPasswordPage/ResetPasswordPage.
 import ValidateEmailPage from "./components/ValidateEmailPage/ValidateEmailPage.react";
 import { StateProvider } from "./utils/State";
 import CoursesPage from "./components/CoursesPage/CoursesPage";
+import ProfilePage from "./components/ProfilePage/ProfilePage";
 import UsersPage from "./components/UsersPage/UsersPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
 import CourseIndex from "./courseIndex";
@@ -28,6 +29,7 @@ const routing = (
         <Route path="/user/validateEmail" component={ValidateEmailPage} />
         <PrivateRoute exact path="/users" component={UsersPage} />
         <PrivateRoute exact path="/courses" component={CoursesPage} />
+        <PrivateRoute exact path="/profile" component={ProfilePage} />
         <PrivateRoute path="/courses/create" component={CreateCoursePage} />
         <PrivateRoute path="/courses/:courseId/" component={CourseIndex} />
         {/* CourseIndex fetch permissions and render the following routes:
