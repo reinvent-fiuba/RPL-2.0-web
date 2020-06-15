@@ -1,14 +1,11 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import EditIcon from "@material-ui/icons/Edit";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 
 const drawerWidth = 240;
@@ -76,7 +73,6 @@ class ProfileView extends React.Component {
 
   render() {
     const { profile, classes } = this.props;
-    console.log(this.props);
     return (
       <div>
         <Fab

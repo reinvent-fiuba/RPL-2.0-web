@@ -3,13 +3,10 @@ import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import Fab from "@material-ui/core/Fab";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 
 const drawerWidth = 240;
