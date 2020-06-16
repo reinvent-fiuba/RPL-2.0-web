@@ -105,6 +105,12 @@ const styles = theme => ({
     marginLeft: "auto",
     marginTop: theme.spacing(3),
   },
+  saveButton: {
+    flex: "0 1 auto",
+    marginRight: theme.spacing(2),
+    marginLeft: "auto",
+    marginTop: theme.spacing(3),
+  },
   createButton: {
     display: "flex",
     marginLeft: "auto",
@@ -204,63 +210,57 @@ class CreateActivityPage extends React.Component<Props, State> {
     return Object.keys(code).includes(mainFileByLanguage[language]);
   }
 
-  handleCreateClick(event, testActivityAsStudent = false) {
-    event.preventDefault();
+  saveActivity() {
     const { courseId, activityId } = this.props.match.params;
-
     const { name, points, language, categoryId, code, mdText, activity } = this.state;
+    const serviceToCall = !activity
+      ? activitiesService.createActivity
+      : activitiesService.updateActivity;
 
     if (!CreateActivityPage.activityHasMainFile(language, code)) {
       this.setState({ isAddMainFileModalActive: true });
       return;
     }
 
-    let serviceToCall;
-    let errorMessage;
-    // Crear actividad
-    if (activity === null || activity === undefined) {
-      serviceToCall = activitiesService.createActivity(
-        courseId,
-        name,
-        points,
-        language,
-        categoryId,
-        code,
-        mdText
-      );
-      errorMessage = "crear";
-    } else {
-      serviceToCall = activitiesService.updateActivity(
-        // Editar actividad
-        courseId,
-        activityId,
-        name,
-        points,
-        language,
-        categoryId,
-        code,
-        mdText
-      );
-      errorMessage = "modificar";
-    }
+    const body = {
+      courseId,
+      name,
+      points,
+      language,
+      categoryId,
+      code,
+      mdText,
+      ...(!activity ? {} : { activityId })
+    };
 
-    serviceToCall
+    serviceToCall(body)
       .then(response => {
-        this.setState({ activity: response });
-        if (testActivityAsStudent) {
-          this.props.history.push(`/courses/${courseId}/activities/${response.id}`);
-        } else {
-          this.props.history.push(`/courses/${courseId}/activities/${response.id}/edit/correction`);
-        }
+        this.setState({ activity: response })
+        return response;
       })
       .catch(() => {
         this.setState({
           error: {
             open: true,
-            message: `Hubo un error al ${errorMessage} la actividad, revisa que los datos ingresados sean validos.`,
+            message: `Hubo un error al guardar la actividad, revisa que los datos ingresados sean validos.`,
           },
         });
       });
+  }
+
+  handleCreateClick(event) {
+    event.preventDefault();
+
+    return this.saveActivity();
+  }
+
+  handleGotToTestClick(event) {
+    event.preventDefault();
+    const { courseId } = this.props.match.params;
+
+    return this.saveActivity().then(response => {
+      this.props.history.push(`/courses/${courseId}/activities/${response.id}/edit/correction`);
+    });
   }
 
   handleCancel() {
@@ -435,16 +435,6 @@ class CreateActivityPage extends React.Component<Props, State> {
                 {this.renderCategoriesDropdown()}
               </Select>
             </FormControl>
-
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              className={classes.studentPreviewButton}
-              onClick={e => this.handleGoToStudentPreview(e)}
-            >
-              Guardar y Probar
-            </Button>
           </form>
 
           <Grid container spacing={3} className={classes.grid}>
@@ -501,8 +491,19 @@ class CreateActivityPage extends React.Component<Props, State> {
                 type="submit"
                 variant="contained"
                 color="primary"
-                className={classes.createButton}
+                className={classes.saveButton}
                 onClick={e => this.handleCreateClick(e)}
+              >
+                Guardar
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={classes.createButton}
+                onClick={e => this.handleGotToTestClick(e)}
               >
                 Guardar y Agregar Pruebas
               </Button>
