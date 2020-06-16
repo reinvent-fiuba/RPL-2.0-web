@@ -164,14 +164,10 @@ class IOCorrectionTests extends React.Component<Props, State> {
         {successSave && <CustomSnackbar open={successSave} message="El test se guardó con éxito" />}
 
         <div className={classes.titleButton}>
-          <Typography variant="h4" color="textSecondary" component="h1" className={classes.title}>
-            Tests Unitarios
-          </Typography>
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            className={classes.studentPreviewButton}
             onClick={() => this.handleSaveUnitTest()}
           >
             Guardar
@@ -206,6 +202,15 @@ class IOCorrectionTests extends React.Component<Props, State> {
             value={unitTestCode}
             onChange={codeChanged =>
               this.setState({ unitTestCode: codeChanged, successSave: false })}
+            editorDidMount={mountedEditor => {
+              mountedEditor.changeViewZones(changeAccessor => {
+                changeAccessor.addZone({
+                  afterLineNumber: 0,
+                  heightInLines: 1,
+                  domNode: document.createElement("span"),
+                });
+              });
+            }}
           />
         )}
       </div>

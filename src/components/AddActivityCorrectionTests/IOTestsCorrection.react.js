@@ -140,11 +140,6 @@ class IOCorrectionTests extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-
-        <Typography variant="h4" color="textSecondary" component="h1" className={classes.title}>
-          Test de Entrada / Salida
-        </Typography>
-        <br />
         <Typography variant="body1" color="textSecondary" component="p" className={classes.title}>
           Agrega tests de entrada salida para que los alumnos puedan corroborar que el ejercicio
           está bien hecho.

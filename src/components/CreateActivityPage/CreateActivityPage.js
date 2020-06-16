@@ -379,9 +379,6 @@ class CreateActivityPage extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
-            Crear Actividad
-          </Typography>
           <form className={classes.form}>
             <TextField
               margin="normal"
