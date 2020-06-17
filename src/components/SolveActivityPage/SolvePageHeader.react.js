@@ -1,6 +1,7 @@
+/* eslint-disable react/destructuring-assignment */
 // @flow
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { withState } from "../../utils/State";
@@ -28,14 +29,15 @@ type Props = {
   handleSubmitActivity: Event => void,
   activityName: string,
   classes: any,
+  history: any,
 };
 
-function getLeftTitle(permissions: Array<string>) {
+function getLeftTitle(history: any, permissions: Array<string>) {
   if (permissions.includes("activity_manage")) {
     return (
-      <Link to={`${useLocation().pathname}/edit`} component={Button}>
+      <Button onClick={() => history.push(`${history.location.pathname}/edit`)}>
         Volver a modo editar
-      </Link>
+      </Button>
     );
   }
   return <div> </div>;
@@ -44,7 +46,7 @@ function getLeftTitle(permissions: Array<string>) {
 function SolvePageHeader(props: Props) {
   return (
     <div className={props.classes.secondHeader}>
-      {getLeftTitle(props.context.permissions)}
+      {getLeftTitle(props.history, props.context.permissions)}
       <h1 className={props.classes.secondHeaderTitle}>{props.activityName}</h1>
       <Button
         type="submit"

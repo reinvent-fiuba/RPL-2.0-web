@@ -18,7 +18,7 @@ export type Activity = {
   is_iotested: boolean,
   active: boolean,
   deleted: boolean,
-  initial_code: string,
+  initial_code: { [string]: string },
   file_id: number,
   submission_status: string,
   last_submission_date: string,

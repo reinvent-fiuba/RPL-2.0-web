@@ -10,7 +10,6 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Grid from "@material-ui/core/Grid";
-import MonacoEditor from "react-monaco-editor";
 import ReactMde from "react-mde";
 import * as Showdown from "showdown";
 import ReactResizeDetector from "react-resize-detector";
@@ -20,6 +19,8 @@ import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
 import CreateActivityCategoryModal from "./CreateActivityCategoryModal";
 import activitiesService from "../../services/activitiesService";
+import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
+import AddMainFileModal from "./AddMainFileModal.react";
 import type { Activity, Category } from "../../types";
 
 // Styles
@@ -130,16 +131,18 @@ type State = {
   activity: ?Activity,
   categories: ?Array<Category>,
   language: string,
-  categoryId: ?number,
+  categoryId: number,
   name: string,
   points: string,
-  code: string,
+  code: { [string]: string },
   mdText: string,
   mdEditorTab: string,
   editor: any,
-  addingTests: boolean,
   isCreateCategoryModalOpen: boolean,
+  isAddMainFileModalActive: boolean,
 };
+
+const mainFileByLanguage = { c: "main.c", python: "assignment_main.py", java: "main.java" };
 
 class CreateActivityPage extends React.Component<Props, State> {
   state = {
@@ -148,15 +151,15 @@ class CreateActivityPage extends React.Component<Props, State> {
     activity: null,
     categories: [],
     language: "",
-    categoryId: null,
+    categoryId: -1,
     name: "",
     points: "",
-    code: "",
+    code: { "main.c": "" },
     mdText: "",
     mdEditorTab: "write",
     editor: null,
-    addingTests: false,
     isCreateCategoryModalOpen: false,
+    isAddMainFileModalActive: false,
   };
 
   componentDidMount() {
@@ -197,40 +200,47 @@ class CreateActivityPage extends React.Component<Props, State> {
     this.setState({ [event.target.id]: event.target.value });
   }
 
+  static activityHasMainFile(language: string, code: { [string]: string }) {
+    return Object.keys(code).includes(mainFileByLanguage[language]);
+  }
+
   handleCreateClick(event, testActivityAsStudent = false) {
     event.preventDefault();
     const { courseId, activityId } = this.props.match.params;
 
     const { name, points, language, categoryId, code, mdText, activity } = this.state;
 
+    if (!CreateActivityPage.activityHasMainFile(language, code)) {
+      this.setState({ isAddMainFileModalActive: true });
+      return;
+    }
+
     let serviceToCall;
     let errorMessage;
     // Crear actividad
     if (activity === null || activity === undefined) {
-      serviceToCall = activitiesService.createActivity({
+      serviceToCall = activitiesService.createActivity(
         courseId,
         name,
         points,
         language,
-        activityCategoryId: categoryId,
-        initialCode: code,
-        supportingFile: code,
-        description: mdText,
-      });
+        categoryId,
+        code,
+        mdText
+      );
       errorMessage = "crear";
     } else {
-      serviceToCall = activitiesService.updateActivity({
+      serviceToCall = activitiesService.updateActivity(
         // Editar actividad
         courseId,
         activityId,
         name,
         points,
         language,
-        activityCategoryId: categoryId,
-        initialCode: code,
-        supportingFile: code,
-        description: mdText,
-      });
+        categoryId,
+        code,
+        mdText
+      );
       errorMessage = "modificar";
     }
 
@@ -289,9 +299,40 @@ class CreateActivityPage extends React.Component<Props, State> {
     this.setState({ isCreateCategoryModalOpen: false, categoryId: newCategoryId });
   }
 
+  setLanguage(language: string, code: { [string]: string }) {
+    const newCode = code;
+
+    Object.keys(code).forEach(f => {
+      // Change mains
+      if (language === "c" && f === "assignment_main.py") {
+        newCode["main.c"] = code[f];
+        delete newCode[f];
+        return;
+      }
+
+      if (language === "python" && f === "main.c") {
+        newCode["assignment_main.py"] = code[f];
+        delete newCode[f];
+        return;
+      }
+
+      // Change filename extensions
+      if (language === "c" && f.includes(".py")) {
+        newCode[`${f.substring(0, f.lastIndexOf(".py"))}.c`] = code[f];
+        delete newCode[f];
+      }
+      if (language === "python" && f.includes(".c")) {
+        newCode[`${f.substring(0, f.lastIndexOf(".c"))}.py`] = code[f];
+        delete newCode[f];
+      }
+    });
+
+    this.setState({ language, code: newCode });
+  }
+
   render() {
-    const { classes } = this.props;
-    const { courseId } = this.props.match.params;
+    const { classes, match } = this.props;
+    const { courseId } = match.params;
 
     const {
       name,
@@ -306,11 +347,19 @@ class CreateActivityPage extends React.Component<Props, State> {
       editor,
       isCreateCategoryModalOpen,
       activity,
+      isAddMainFileModalActive,
     } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
+        <AddMainFileModal
+          open={isAddMainFileModalActive}
+          mainFileByLanguage={mainFileByLanguage}
+          language={language}
+          onClickHide={() => this.setState({ isAddMainFileModalActive: false })}
+        />
+
         <CreateActivityCategoryModal
           open={isCreateCategoryModalOpen}
           handleCloseModal={newCategoryId => this.handleCloseCategoryModal(newCategoryId)}
@@ -362,7 +411,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 id="language"
                 name="language"
                 value={language || ""}
-                onChange={event => this.setState({ language: event.target.value })}
+                onChange={event => this.setLanguage(event.target.value, code)}
               >
                 <MenuItem key={0} value="c">
                   C
@@ -380,7 +429,7 @@ class CreateActivityPage extends React.Component<Props, State> {
               <Select
                 labelId="category"
                 id="category"
-                value={categoryId || ""}
+                value={categoryId !== -1 ? categoryId : ""}
                 onChange={event => this.setState({ categoryId: event.target.value })}
               >
                 {this.renderCategoriesDropdown()}
@@ -405,15 +454,11 @@ class CreateActivityPage extends React.Component<Props, State> {
                 handleHeight
                 onResize={() => (editor ? editor.layout : () => {})}
               >
-                <MonacoEditor
-                  options={{
-                    renderFinalNewline: true,
-                  }}
+                <MultipleTabsEditor
+                  key={activity ? activity.id : null}
+                  initialCode={code}
                   language={language}
-                  theme="vs-dark"
-                  defaultValue=""
-                  value={code}
-                  onChange={codeChanged => this.setState({ code: codeChanged })}
+                  onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
                   editorDidMount={mountedEditor => {
                     mountedEditor.changeViewZones(changeAccessor => {
                       changeAccessor.addZone({
@@ -435,8 +480,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                 selectedTab={mdEditorTab}
                 onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })
-                }
+                  this.setState({ mdEditorTab: mdEditorTabChanged })}
                 generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
               />
             </Grid>
