@@ -68,6 +68,7 @@ type Props = {
   language: string,
   width: number | string,
   initialCode: { [string]: string },
+  editorDidMount: any,
 };
 
 type State = {
@@ -75,6 +76,8 @@ type State = {
   selectedEditor: string,
   fileNameModal: { text: ?string, isNewFileModalOpen: boolean },
 };
+
+const commentByLanguage = { c: "//", python: "#" };
 
 class MultipleTabsEditor extends React.Component<Props, State> {
   state = {
@@ -86,6 +89,17 @@ class MultipleTabsEditor extends React.Component<Props, State> {
   };
 
   componentDidMount() {}
+
+  // static getDerivedStateFromProps(newProps, actualState) {
+  //   if (actualState.code !== newProps.initialCode) {
+  //     return {
+  //       code: newProps.initialCode,
+  //       selectedEditor: Object.keys(newProps.initialCode)[0],
+  //       fileNameModal: { text: null, isNewFileModalOpen: false },
+  //     };
+  //   }
+  //   return null;
+  // }
 
   handleTabChange(selectedEditor, event, newSelectedTab) {
     if (newSelectedTab === undefined) {
@@ -114,6 +128,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
   }
 
   handleCloseFileNameModal(prevFileName: ?string, newFileName: string, code: { [string]: string }) {
+    const { language } = this.props;
     if (!newFileName || newFileName === "") {
       this.setState({ fileNameModal: { text: null, isNewFileModalOpen: false } });
       return;
@@ -124,7 +139,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
       newCode[newFileName] = newCode[prevFileName];
       delete newCode[prevFileName];
     } else {
-      newCode[newFileName] = `// file ${newFileName}`;
+      newCode[newFileName] = `${commentByLanguage[language]} file ${newFileName}`;
     }
     this.setState({
       code: newCode,
@@ -144,9 +159,13 @@ class MultipleTabsEditor extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, width } = this.props;
+    const { classes, width, editorDidMount } = this.props;
 
     const { code, fileNameModal, selectedEditor } = this.state;
+
+    if (!Object.keys(code).includes(selectedEditor)) {
+      this.setState({ selectedEditor: Object.keys(code)[0] });
+    }
 
     return (
       <div>
@@ -156,7 +175,8 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             existingFilenames={Object.keys(code)}
             open={fileNameModal.isNewFileModalOpen}
             handleCloseModal={(prevFileName, newFileName) =>
-              this.handleCloseFileNameModal(prevFileName, newFileName, code)}
+              this.handleCloseFileNameModal(prevFileName, newFileName, code)
+            }
           />
         )}
         <div className={classes.demo2}>
@@ -195,6 +215,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
           defaultValue=""
           value={code[selectedEditor]}
           onChange={codeChanged => this.handleCodeChange(code, codeChanged, selectedEditor)}
+          editorDidMount={editorDidMount}
         />
       </div>
     );

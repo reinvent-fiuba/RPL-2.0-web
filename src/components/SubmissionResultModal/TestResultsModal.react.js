@@ -26,6 +26,10 @@ const styles = () => ({
     marginLeft: "auto",
     marginRight: "auto",
   },
+  dialogTitle: {
+    display: "flex",
+    justifyContent: "center",
+  },
 });
 
 type Props = {
@@ -141,7 +145,9 @@ class SubmissionResultModal extends React.Component<Props, State> {
           fullWidth
           maxWidth={results ? "lg" : "xs"}
         >
-          <DialogTitle id="scroll-dialog-title">{title}</DialogTitle>
+          <DialogTitle id="scroll-dialog-title" className={classes.dialogTitle}>
+            {title}
+          </DialogTitle>
           {!results && showWaitingDialog && (
             <DialogContent dividers>
               <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
@@ -199,7 +205,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
                       component="div"
                     >
                       <Alert severity={result}>
-                        <AlertTitle>{unitTestResult.test_name}</AlertTitle>
+                        <AlertTitle>{unitTestResult.test_name.replace(/_/g, " ")}</AlertTitle>
                         {unitTestResult.error_messages &&
                           unitTestResult.error_messages.split("\n").map((line, key) => {
                             if (
@@ -219,16 +225,20 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   );
                 })}
               <br />
-              <Divider variant="middle" />
-              <br />
-              <Typography variant="h5" color="black" component="p">
-                MENSAJE DE ERROR:
-              </Typography>
-              <br />
-              <Typography variant="subtitle1" color="textSecondary" component="p">
-                {results.exit_message}
-              </Typography>
-              <br />
+              {results.submission_status.includes("ERROR") && (
+                <div>
+                  <Divider variant="middle" />
+                  <br />
+                  <Typography variant="h5" color="black" component="p">
+                    MENSAJE DE ERROR:
+                  </Typography>
+                  <br />
+                  <Typography variant="subtitle1" color="textSecondary" component="p">
+                    {results.exit_message}
+                  </Typography>
+                  <br />
+                </div>
+              )}
               <Divider variant="middle" />
 
               <br />

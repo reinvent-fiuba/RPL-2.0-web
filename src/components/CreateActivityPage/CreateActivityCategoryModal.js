@@ -2,7 +2,6 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -10,7 +9,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { withStyles } from "@material-ui/core/styles";
 import ErrorNotification from "../../utils/ErrorNotification";
 import activitiesService from "../../services/activitiesService";
-import type { IOTest } from "../../types";
 
 const styles = () => ({
   modal: {

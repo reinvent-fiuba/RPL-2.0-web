@@ -1,48 +1,70 @@
 // @flow
+// import { Archive } from "libarchive.js/main";
 import type { Activity, Category } from "../types";
 
 const { request } = require("../utils/Request");
+
+// Archive.init({
+//   workerUrl: "libarchive.js/dist/worker-bundle.js",
+// });
 
 const producer = {
   base_url: process.env.API_BASE_URL || "localhost:8080",
 };
 
-exports.createActivity = (activityDetails: any) => {
+exports.createActivity = (
+  courseId: number,
+  name: string,
+  points: string,
+  language: string,
+  activityCategoryId: number,
+  initialCode: { [string]: string },
+  description: string
+) => {
   const formData = new FormData();
+  formData.append("name", name);
+  formData.append("points", points);
+  formData.append("language", language);
+  formData.append("activityCategoryId", `${activityCategoryId}`);
+  formData.append("description", description);
+  formData.append("initialCode", "lalla");
 
-  Object.keys(activityDetails).forEach(property => {
-    if (!activityDetails[property]) {
-      return;
-    }
-    formData.append(property, activityDetails[property]);
+  Object.keys(initialCode).forEach(fileName => {
+    formData.append("startingFile", new File([initialCode[fileName]], fileName));
   });
 
-  formData.append("supportingFile", new File(["Hola Mundo!"], "supporting_file1.txt"));
-  formData.append("supportingFile", new File(["Hola Mundo2!"], "supporting_file2.txt"));
-
   return request({
-    url: `http://${producer.base_url}/api/courses/${activityDetails.courseId}/activities`,
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
     body: formData,
     method: "POST",
     headers: new Headers(),
   });
 };
 
-exports.updateActivity = (activityDetails: any) => {
+exports.updateActivity = (
+  courseId: number,
+  activityId: number,
+  name: string,
+  points: string,
+  language: string,
+  activityCategoryId: number,
+  initialCode: { [string]: string },
+  description: string
+) => {
   const formData = new FormData();
+  formData.append("name", name);
+  formData.append("points", points);
+  formData.append("language", language);
+  formData.append("activityCategoryId", `${activityCategoryId}`);
+  formData.append("description", description);
+  formData.append("initialCode", "lalla");
 
-  Object.keys(activityDetails).forEach(property => {
-    if (!activityDetails[property]) {
-      return;
-    }
-    formData.append(property, activityDetails[property]);
+  Object.keys(initialCode).forEach(fileName => {
+    formData.append("startingFile", new File([initialCode[fileName]], fileName));
   });
 
-  formData.append("supportingFile", new File(["Hola Mundo!"], "supporting_file1.txt"));
-  formData.append("supportingFile", new File(["Hola Mundo2!"], "supporting_file2.txt"));
-
   return request({
-    url: `http://${producer.base_url}/api/courses/${activityDetails.courseId}/activities/${activityDetails.activityId}`,
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     body: formData,
     method: "PUT",
     headers: new Headers(),
@@ -76,6 +98,16 @@ exports.getActivity = (courseId: number, activityId: number): Promise<Activity> 
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     method: "GET",
+  }).then(activity => {
+    return fetch(`http://localhost:8080/api/getExtractedFile/${activity.file_id}`).then(
+      response => {
+        return response.json().then(code => {
+          const completeActivity = activity;
+          completeActivity.initial_code = code;
+          return completeActivity;
+        });
+      }
+    );
   });
 
 exports.deleteActivity = (courseId: number, activityId: number): Promise<Activity> =>
@@ -95,7 +127,7 @@ exports.disableActivity = (
     method: "PUT",
   });
 
-exports.getStats = courseId =>
+exports.getStats = (courseId: number): Promise<any> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/stats`,
     method: "GET",
