@@ -6,14 +6,13 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpansionPanelActions from "@material-ui/core/ExpansionPanelActions";
+import Divider from "@material-ui/core/Divider";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import TextField from "@material-ui/core/TextField";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SideBar from "../SideBar/SideBar";
@@ -21,7 +20,6 @@ import TopBar from "../TopBar/TopBar";
 import IOTestsCorrection from "./IOTestsCorrection.react";
 import UnitTestsCorrection from "./UnitTestsCorrection.react";
 import { withState } from "../../utils/State";
-import type { Activity } from "../../types";
 import activitiesService from "../../services/activitiesService";
 
 const drawerWidth = 240;
@@ -103,6 +101,9 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     error: { open: false, message: null },
     isSideBarOpen: false,
     selectedTestMode: "IO tests",
+    selectTestStepExpanded: true,
+    configTestStepExpanded: false,
+    configFlagsStepExpanded: false,
   };
 
   componentDidMount() {
@@ -129,8 +130,22 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
+  handleClickNext(event, currentPanel, nextPanel) {
+    return this.setState(() => ({
+      [currentPanel]: false,
+      [nextPanel]: true,
+    }));
+  }
+
+  handleClickPanel(event, currentPanel) {
+    return this.setState(prevState => ({
+      [currentPanel]: !prevState[currentPanel],
+    }));
+  }
+
   render() {
     const { classes } = this.props;
+    const { selectTestStepExpanded, configTestStepExpanded, configFlagsStepExpanded } = this.state;
     const { courseId, activityId } = this.props.match.params;
 
     const { isSideBarOpen, error, selectedTestMode } = this.state;
@@ -141,7 +156,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
         <TopBar
           handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={isSideBarOpen}
-          title="Tests y Flags de compilacioón"
+          title="Tests y Flags de compilación"
         />
         <SideBar
           handleDrawerClose={() => this.handleSwitchDrawer()}
@@ -150,8 +165,14 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <ExpansionPanel expanded={selectTestStepExpanded}>
+            <ExpansionPanelSummary
+              expandIcon={(
+                <ExpandMoreIcon
+                  onClick={event => this.handleClickPanel(event, "selectTestStepExpanded")}
+                />
+              )}
+            >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 1: Seleccionar modo de testeo de la actividad
               </Typography>
@@ -176,9 +197,27 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 </RadioGroup>
               </div>
             </ExpansionPanelDetails>
+            <Divider />
+            <ExpansionPanelActions>
+              <Button
+                size="small"
+                color="primary"
+                onClick={event =>
+                  this.handleClickNext(event, "selectTestStepExpanded", "configTestStepExpanded")
+                }
+              >
+                Siguiente
+              </Button>
+            </ExpansionPanelActions>
           </ExpansionPanel>
-          <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <ExpansionPanel expanded={configTestStepExpanded}>
+            <ExpansionPanelSummary
+              expandIcon={(
+                <ExpandMoreIcon
+                  onClick={event => this.handleClickPanel(event, "configTestStepExpanded")}
+                />
+              )}
+            >
               <Typography variant="h6" color="textPrimary" component="h1">
                 {`Paso 2: Definir tests${selectedTestMode ? ` - ${selectedTestMode}` : ""}`}
               </Typography>
@@ -193,9 +232,35 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 )}
               </div>
             </ExpansionPanelDetails>
+            <Divider />
+            <ExpansionPanelActions>
+              <Button
+                size="small"
+                onClick={event =>
+                  this.handleClickNext(event, "configTestStepExpanded", "selectTestStepExpanded")
+                }
+              >
+                Anterior
+              </Button>
+              <Button
+                size="small"
+                color="primary"
+                onClick={event =>
+                  this.handleClickNext(event, "configTestStepExpanded", "configFlagsStepExpanded")
+                }
+              >
+                Siguiente
+              </Button>
+            </ExpansionPanelActions>
           </ExpansionPanel>
-          <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <ExpansionPanel expanded={configFlagsStepExpanded}>
+            <ExpansionPanelSummary
+              expandIcon={(
+                <ExpandMoreIcon
+                  onClick={event => this.handleClickPanel(event, "configFlagsStepExpanded")}
+                />
+              )}
+            >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 3: Definir flags de compilación
               </Typography>
@@ -226,6 +291,16 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 />
               </div>
             </ExpansionPanelDetails>
+            <ExpansionPanelActions>
+              <Button
+                size="small"
+                onClick={event =>
+                  this.handleClickNext(event, "configFlagsStepExpanded", "configTestStepExpanded")
+                }
+              >
+                Anterior
+              </Button>
+            </ExpansionPanelActions>
           </ExpansionPanel>
           <Grid container className={classes.buttons}>
             <Grid item>
