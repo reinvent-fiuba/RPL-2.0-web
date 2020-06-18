@@ -39,7 +39,7 @@ const styles = theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: 0,
+    margin: "auto",
     width: "75%",
   },
   contentShift: {
@@ -108,6 +108,17 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
   componentDidMount() {
     const { courseId, activityId } = this.props.match.params;
+    const { context } = this.props;
+
+    this.ioTestCorrection = React.createRef();
+    this.unitTestCorrection = React.createRef();
+
+    console.log(context);
+
+    if (context.testConfigState) {
+      this.setState(context.testConfigState, () => delete context.testConfigState);
+      return;
+    }
     activitiesService
       .getActivity(courseId, activityId)
       .then(response => {
@@ -130,17 +141,25 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
-  handleClickNext(event, currentPanel, nextPanel) {
+  handleClickNext(currentPanel, nextPanel) {
     return this.setState(() => ({
       [currentPanel]: false,
       [nextPanel]: true,
     }));
   }
 
-  handleClickPanel(event, currentPanel) {
+  handleClickPanel(currentPanel) {
     return this.setState(prevState => ({
       [currentPanel]: !prevState[currentPanel],
     }));
+  }
+
+  handlePreviewClick() {
+    const { courseId, activityId } = this.props.match.params;
+    this.props.context.set("testConfigState", this.state, true);
+    this.props.context.set("ioTestCorrectionConfigState", this.ioTestCorrection.state, true);
+    this.props.context.set("unitTestCorrectionConfigState", this.unitTestCorrection.state, true);
+    this.props.history.push(`/courses/${courseId}/activities/${activityId}`);
   }
 
   render() {
@@ -168,9 +187,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           <ExpansionPanel expanded={selectTestStepExpanded}>
             <ExpansionPanelSummary
               expandIcon={(
-                <ExpandMoreIcon
-                  onClick={event => this.handleClickPanel(event, "selectTestStepExpanded")}
-                />
+                <ExpandMoreIcon onClick={() => this.handleClickPanel("selectTestStepExpanded")} />
               )}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
@@ -202,8 +219,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
               <Button
                 size="small"
                 color="primary"
-                onClick={event =>
-                  this.handleClickNext(event, "selectTestStepExpanded", "configTestStepExpanded")
+                onClick={() =>
+                  this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")
                 }
               >
                 Siguiente
@@ -213,9 +230,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           <ExpansionPanel expanded={configTestStepExpanded}>
             <ExpansionPanelSummary
               expandIcon={(
-                <ExpandMoreIcon
-                  onClick={event => this.handleClickPanel(event, "configTestStepExpanded")}
-                />
+                <ExpandMoreIcon onClick={() => this.handleClickPanel("configTestStepExpanded")} />
               )}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
@@ -225,10 +240,18 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
             <ExpansionPanelDetails>
               <div>
                 {selectedTestMode === "IO tests" && (
-                  <IOTestsCorrection courseId={courseId} activityId={activityId} />
+                  <IOTestsCorrection
+                    ref={this.ioTestCorrection}
+                    courseId={courseId}
+                    activityId={activityId}
+                  />
                 )}
                 {selectedTestMode === "Unit tests" && (
-                  <UnitTestsCorrection courseId={courseId} activityId={activityId} />
+                  <UnitTestsCorrection
+                    ref={this.unitTestCorrection}
+                    courseId={courseId}
+                    activityId={activityId}
+                  />
                 )}
               </div>
             </ExpansionPanelDetails>
@@ -236,8 +259,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
             <ExpansionPanelActions>
               <Button
                 size="small"
-                onClick={event =>
-                  this.handleClickNext(event, "configTestStepExpanded", "selectTestStepExpanded")
+                onClick={() =>
+                  this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")
                 }
               >
                 Anterior
@@ -245,8 +268,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
               <Button
                 size="small"
                 color="primary"
-                onClick={event =>
-                  this.handleClickNext(event, "configTestStepExpanded", "configFlagsStepExpanded")
+                onClick={() =>
+                  this.handleClickNext("configTestStepExpanded", "configFlagsStepExpanded")
                 }
               >
                 Siguiente
@@ -256,9 +279,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           <ExpansionPanel expanded={configFlagsStepExpanded}>
             <ExpansionPanelSummary
               expandIcon={(
-                <ExpandMoreIcon
-                  onClick={event => this.handleClickPanel(event, "configFlagsStepExpanded")}
-                />
+                <ExpandMoreIcon onClick={() => this.handleClickPanel("configFlagsStepExpanded")} />
               )}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
@@ -294,8 +315,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
             <ExpansionPanelActions>
               <Button
                 size="small"
-                onClick={event =>
-                  this.handleClickNext(event, "configFlagsStepExpanded", "configTestStepExpanded")
+                onClick={() =>
+                  this.handleClickNext("configFlagsStepExpanded", "configTestStepExpanded")
                 }
               >
                 Anterior
@@ -309,7 +330,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 variant="contained"
                 color="primary"
                 className={classes.saveButton}
-                onClick={e => this.handleCreateClick(e)}
+                onClick={e => this.handlePreviewClick(e)}
               >
                 Previsualizar como alumno
               </Button>
