@@ -37,6 +37,7 @@ const styles = () => ({
     height: "500px",
     width: "100%",
     display: "flex",
+    paddingBottom: "70px",
   },
 });
 
