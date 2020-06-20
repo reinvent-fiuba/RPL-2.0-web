@@ -123,11 +123,11 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
       .getActivity(courseId, activityId)
       .then(response => {
         this.setState({
+          activty: response,
           selectedTestMode: !response.is_iotested ? "Unit tests" : "IO tests",
         });
       })
-      .catch(err => {
-        console.log(err);
+      .catch(() => {
         this.setState({
           error: {
             open: true,
@@ -154,8 +154,25 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     }));
   }
 
+  handlePublish() {
+    const { courseId, activityId } = this.props.match.params;
+    return activitiesService.updateActivity({
+        activityId,
+        courseId,
+        active: true,
+      })
+      .then(() => {
+        this.props.history.push(`/courses/${courseId}/activities`);
+      });
+  }
+
   handleSaveFlags() {
-    return ;
+    const { courseId, activityId } = this.props.match.params;
+    return activitiesService.updateActivity({
+      activityId,
+      courseId,
+      compilationFlags: this.state.flags
+    });
   }
 
   handleChange(event) {
@@ -358,7 +375,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 variant="contained"
                 color="primary"
                 className={classes.createButton}
-                onClick={e => this.handleGotToTestClick(e)}
+                onClick={() => this.handlePublish()}
               >
                 Publicar!
               </Button>

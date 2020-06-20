@@ -230,7 +230,7 @@ class CreateActivityPage extends React.Component<Props, State> {
       categoryId,
       code,
       mdText,
-      ...(!activity ? {} : { activityId })
+      ...(!activity ? {} : { activityId: activity.id }),
     };
 
     serviceToCall(body)
