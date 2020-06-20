@@ -12,8 +12,12 @@ const styles = theme => ({
   addFileButton: {
     marginLeft: 20,
   },
-  demo2: {
+  tabsContainer: {
     backgroundColor: "#1e1e1ef0",
+  },
+  tabsEditorContainer: {
+    width: "100%",
+    height: "100%",
   },
 });
 
@@ -68,6 +72,7 @@ type Props = {
   language: string,
   width: number | string,
   initialCode: { [string]: string },
+  readOnly: boolean,
   editorDidMount: any,
 };
 
@@ -90,18 +95,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
 
   componentDidMount() {}
 
-  // static getDerivedStateFromProps(newProps, actualState) {
-  //   if (actualState.code !== newProps.initialCode) {
-  //     return {
-  //       code: newProps.initialCode,
-  //       selectedEditor: Object.keys(newProps.initialCode)[0],
-  //       fileNameModal: { text: null, isNewFileModalOpen: false },
-  //     };
-  //   }
-  //   return null;
-  // }
-
-  handleTabChange(selectedEditor, event, newSelectedTab) {
+  handleTabChange(selectedEditor, event, newSelectedTab, readOnly) {
     if (newSelectedTab === undefined) {
       return;
     }
@@ -109,7 +103,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
       event.preventDefault();
       return;
     }
-    if (selectedEditor === newSelectedTab) {
+    if (selectedEditor === newSelectedTab && !readOnly) {
       this.setState({ fileNameModal: { text: selectedEditor, isNewFileModalOpen: true } });
       return;
     }
@@ -159,7 +153,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, width, editorDidMount } = this.props;
+    const { classes, width, height, editorDidMount, readOnly } = this.props;
 
     const { code, fileNameModal, selectedEditor } = this.state;
 
@@ -168,47 +162,41 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     }
 
     return (
-      <div>
+      <div className={classes.tabsEditorContainer}>
         {fileNameModal.isNewFileModalOpen && (
           <AddNewFileModal
             originalFileName={fileNameModal.text}
             existingFilenames={Object.keys(code)}
             open={fileNameModal.isNewFileModalOpen}
             handleCloseModal={(prevFileName, newFileName) =>
-              this.handleCloseFileNameModal(prevFileName, newFileName, code)
-            }
+              this.handleCloseFileNameModal(prevFileName, newFileName, code)}
           />
         )}
-        <div className={classes.demo2}>
+        <div className={classes.tabsContainer}>
           <StyledTabs
             value={selectedEditor}
-            onChange={(e, v) => this.handleTabChange(selectedEditor, e, v)}
+            onChange={(e, v) => this.handleTabChange(selectedEditor, e, v, readOnly)}
             aria-label="styled tabs example"
             variant="scrollable"
           >
             {Object.keys(code).map(fileName => {
-              return (
-                <StyledTab
-                  key={fileName}
-                  label={fileName}
-                  value={fileName}
-                  // selected={fileName === selectedEditor}
-                />
-              );
+              return <StyledTab key={fileName} label={fileName} value={fileName} />;
             })}
 
-            <NewFileButtonTab
-              icon={<AddCircleOutlineIcon />}
-              value="AddNewFile"
-              onClick={() => this.onClickAddNewFile()}
-            />
+            {!readOnly && (
+              <NewFileButtonTab
+                icon={<AddCircleOutlineIcon />}
+                value="AddNewFile"
+                onClick={() => this.onClickAddNewFile()}
+              />
+            )}
           </StyledTabs>
         </div>
         <MonacoEditor
-          height="1000px"
           width={width}
           options={{
             renderFinalNewline: true,
+            readOnly,
           }}
           language={this.getLanguageForMonaco()}
           theme="vs-dark"

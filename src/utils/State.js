@@ -9,6 +9,10 @@ export const StateProvider = props => {
       if (softSave) {
         return newState;
       }
+      if (key === "token") {
+        delete newState.profile;
+        delete newState.permissions;
+      }
       const localStorageState = JSON.parse(localStorage.getItem("state")) || {};
       localStorage.setItem("state", JSON.stringify(Object.assign(localStorageState, newState)));
       return newState;

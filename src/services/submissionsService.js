@@ -27,6 +27,16 @@ exports.getSubmissionResult = (submissionId: number): Promise<SubmissionResult> 
   request({
     url: `http://${producer.base_url}/api/submissions/${submissionId}/result`,
     method: "GET",
+  }).then(submission => {
+    return fetch(
+      `http://localhost:8080/api/getExtractedFile/${submission.submission_file_id}`
+    ).then(response => {
+      return response.json().then(code => {
+        const completeSubmission = submission;
+        completeSubmission.submited_code = code;
+        return completeSubmission;
+      });
+    });
   });
 
 exports.getAllSubmissions = (

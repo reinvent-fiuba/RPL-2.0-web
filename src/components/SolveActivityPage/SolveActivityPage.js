@@ -53,9 +53,7 @@ const styles = theme => ({
   },
   editor: {
     display: "flex",
-    "& .monaco-editor": {
-      height: "100vh",
-    },
+    height: "100%",
   },
 });
 
@@ -196,14 +194,15 @@ class SolveActivityPage extends React.Component<Props, State> {
               <div className={classes.editor}>
                 <ReactResizeDetector
                   handleWidth
-                  handleHeight
+                  handleHeight={false}
                   onResize={() => (editor ? editor.layout : () => {})}
                 >
                   <MultipleTabsEditor
                     width={editorWidth}
                     initialCode={code}
                     language={activity.language.toLowerCase()}
-                    onCodeChange={_.throttle(newCode => this.onCodeChange(newCode))}
+                    readOnly={false}
+                    onCodeChange={newCode => this.onCodeChange(newCode)}
                     editorDidMount={mountedEditor => {
                       mountedEditor.changeViewZones(changeAccessor => {
                         changeAccessor.addZone({

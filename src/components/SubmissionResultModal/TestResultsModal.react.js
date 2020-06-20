@@ -16,6 +16,9 @@ import type { SubmissionResult } from "../../types";
 import getText from "../../utils/messages";
 import submissionsService from "../../services/submissionsService";
 import ErrorNotification from "../../utils/ErrorNotification";
+import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
+
+const _ = require("lodash");
 
 const styles = () => ({
   modal: {
@@ -29,6 +32,11 @@ const styles = () => ({
   dialogTitle: {
     display: "flex",
     justifyContent: "center",
+  },
+  codeEditor: {
+    height: "500px",
+    width: "100%",
+    display: "flex",
   },
 });
 
@@ -59,9 +67,9 @@ class SubmissionResultModal extends React.Component<Props, State> {
     if (activitySubmissionId !== null) {
       submissionsService
         .getSubmissionResult(activitySubmissionId)
-        .then(response => {
+        .then(submissionResult => {
           clearInterval(getResultsTimerId);
-          this.setState({ getResultsTimerId: null, results: response });
+          this.setState({ getResultsTimerId: null, results: submissionResult });
         })
         .catch(({ err, status }) => {
           console.log(err);
@@ -87,9 +95,9 @@ class SubmissionResultModal extends React.Component<Props, State> {
 
     submissionsService
       .getSubmissionResult(submissionId)
-      .then(response => {
+      .then(submissionResult => {
         clearInterval(getResultsTimerId);
-        this.setState({ getResultsTimerId: null, results: response });
+        this.setState({ getResultsTimerId: null, results: submissionResult });
       })
       .catch(({ err, status }) => {
         console.log(err);
@@ -157,6 +165,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
             </DialogContent>
           )}
 
+          {/* IO test results (if any) */}
           {results && (
             <DialogContent dividers>
               {results.io_test_run_results.length > 0 && (
@@ -167,6 +176,18 @@ class SubmissionResultModal extends React.Component<Props, State> {
 
               {results.io_test_run_results &&
                 results.io_test_run_results.map((ioResult, idx) => {
+                  const result =
+                    ioResult.expected_output === ioResult.run_output ? "success" : "error";
+                  const allGoodStyle =
+                    result === "success"
+                      ? {
+                          variables: {
+                            light: {
+                              diffViewerBackground: "#fff",
+                            },
+                          },
+                        }
+                      : {};
                   return (
                     <DialogContentText
                       key={idx}
@@ -177,10 +198,18 @@ class SubmissionResultModal extends React.Component<Props, State> {
                       <Typography variant="h6" color="textSecondary" component="p">
                         {`IO Test case: Nº${idx}`}
                       </Typography>
+                      <Alert severity={result}>
+                        <AlertTitle>
+                          {ioResult.test_name || "Todavia no hay nombre en los tests de IO"}
+                        </AlertTitle>
+                      </Alert>
                       <ReactDiffViewer
+                        styles={allGoodStyle}
                         key={ioResult.id}
-                        oldValue={ioResult.expected_output}
-                        newValue={ioResult.run_output}
+                        leftTitle="Resultado de la corrida"
+                        oldValue={ioResult.run_output}
+                        rightTitle="Resultado esperado"
+                        newValue={ioResult.expected_output}
                         showDiffOnly={false}
                         splitView
                       />
@@ -189,6 +218,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   );
                 })}
 
+              {/* Unit test results (if any) */}
               {results.unit_test_run_results.length > 0 && (
                 <Typography variant="h5" color="black" component="p">
                   Tests unitarios:
@@ -237,6 +267,17 @@ class SubmissionResultModal extends React.Component<Props, State> {
                     {results.exit_message}
                   </Typography>
                   <br />
+                </div>
+              )}
+
+              {results.submited_code && (
+                <div className={classes.codeEditor}>
+                  <MultipleTabsEditor
+                    width="100%"
+                    initialCode={results.submited_code}
+                    language={results.activity_language}
+                    readOnly
+                  />
                 </div>
               )}
               <Divider variant="middle" />
