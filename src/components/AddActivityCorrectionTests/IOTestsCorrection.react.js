@@ -3,6 +3,8 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/Add";
+import Fab from "@material-ui/core/Fab";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -48,13 +50,16 @@ const styles = theme => ({
   divider: {
     margin: 20,
   },
-  list: {
+  listContainer: {
     margin: 20,
-    backgroundColor: "#f5f5f5",
     maxWidth: "500px",
   },
+  list: {
+    backgroundColor: "#f5f5f5",
+  },
   addTestCaseButton: {
-    margin: "20px 0 0 20px",
+    display: "flex",
+    marginLeft: "auto",
   },
 });
 
@@ -144,16 +149,8 @@ class IOCorrectionTests extends React.Component<Props, State> {
           Agrega tests de entrada salida para que los alumnos puedan corroborar que el ejercicio
           está bien hecho.
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.addTestCaseButton}
-          onClick={() => this.handleClickAddIOTest()}
-        >
-          Agregar caso
-        </Button>
-        <div className={classes.list}>
-          <List>
+        <div className={classes.listContainer}>
+          <List className={classes.list}>
             {activity &&
               activity.activity_iotests.map((ioTest, idx) => (
                 <ListItem
@@ -180,6 +177,16 @@ class IOCorrectionTests extends React.Component<Props, State> {
                 </ListItem>
               ))}
           </List>
+          <br />
+          <Fab
+            aria-label="add"
+            size="small"
+            color="primary"
+            className={classes.addTestCaseButton}
+            onClick={() => this.handleClickAddIOTest()}
+          >
+            <AddIcon />
+          </Fab>
           {isTestModalOpen && (
             <AddIOTestModal
               ioTest={selectedIOTest}

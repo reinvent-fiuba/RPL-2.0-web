@@ -1,8 +1,9 @@
 // @flow
 import React from "react";
-import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import SaveIcon from "@material-ui/icons/Save";
+import Fab from "@material-ui/core/Fab";
 import MonacoEditor from "react-monaco-editor";
 import ErrorNotification from "../../utils/ErrorNotification";
 import CustomSnackbar from "../../utils/CustomSnackbar.react";
@@ -74,7 +75,8 @@ const styles = theme => ({
     maxWidth: "500px",
   },
   addTestCaseButton: {
-    margin: "20px 0 0 20px",
+    display: "flex",
+    marginLeft: "auto",
   },
   titleButton: {
     display: "inline-flex",
@@ -162,18 +164,6 @@ class IOCorrectionTests extends React.Component<Props, State> {
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
         {successSave && <CustomSnackbar open={successSave} message="El test se guardó con éxito" />}
-
-        <div className={classes.titleButton}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            onClick={() => this.handleSaveUnitTest()}
-          >
-            Guardar
-          </Button>
-        </div>
-        <br />
         <Typography variant="body1" color="textSecondary" component="p" className={classes.title}>
           {`Utiliza las funciones que desarrollaron los alumnos para comprobar que funcionan
           correctamente. Documentación de la `}
@@ -188,6 +178,18 @@ class IOCorrectionTests extends React.Component<Props, State> {
         <Typography variant="body1" color="textSecondary" component="p" className={classes.title}>
           No te olvides de aclararles cómo tiene que ser la firma de la función!
         </Typography>
+        <br />
+
+        <Fab
+          aria-label="add"
+          size="small"
+          color="primary"
+          className={classes.addTestCaseButton}
+          onClick={() => this.handleSaveUnitTest()}
+        >
+          <SaveIcon />
+        </Fab>
+
         <br />
 
         {activity && (

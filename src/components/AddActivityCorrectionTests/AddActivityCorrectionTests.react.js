@@ -7,6 +7,8 @@ import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelActions from "@material-ui/core/ExpansionPanelActions";
+import SaveIcon from "@material-ui/icons/Save";
+import Fab from "@material-ui/core/Fab";
 import Divider from "@material-ui/core/Divider";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
@@ -82,6 +84,10 @@ const styles = theme => ({
     marginLeft: "auto",
     marginTop: theme.spacing(3),
   },
+  saveFlagsButton: {
+    display: "flex",
+    marginLeft: "auto",
+  },
 });
 
 type Props = {
@@ -104,21 +110,15 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     selectTestStepExpanded: true,
     configTestStepExpanded: false,
     configFlagsStepExpanded: false,
+    flags: "",
   };
 
   componentDidMount() {
     const { courseId, activityId } = this.props.match.params;
-    const { context } = this.props;
 
     this.ioTestCorrection = React.createRef();
     this.unitTestCorrection = React.createRef();
 
-    console.log(context);
-
-    if (context.testConfigState) {
-      this.setState(context.testConfigState, () => delete context.testConfigState);
-      return;
-    }
     activitiesService
       .getActivity(courseId, activityId)
       .then(response => {
@@ -154,11 +154,19 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     }));
   }
 
+  handleSaveFlags() {
+    return ;
+  }
+
+  handleChange(event) {
+    event.persist();
+    // Close error message
+    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: "" } });
+  }
+
   handlePreviewClick() {
     const { courseId, activityId } = this.props.match.params;
-    this.props.context.set("testConfigState", this.state, true);
-    this.props.context.set("ioTestCorrectionConfigState", this.ioTestCorrection.state, true);
-    this.props.context.set("unitTestCorrectionConfigState", this.unitTestCorrection.state, true);
+
     this.props.history.push(`/courses/${courseId}/activities/${activityId}`);
   }
 
@@ -288,6 +296,15 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <div className={classes.flagsField}>
+                <Fab
+                  aria-label="add"
+                  size="small"
+                  color="primary"
+                  className={classes.saveFlagsButton}
+                  onClick={() => this.handleSaveFlags()}
+                >
+                  <SaveIcon />
+                </Fab>
                 <Typography
                   variant="subtitle1"
                   color="textSecondary"
