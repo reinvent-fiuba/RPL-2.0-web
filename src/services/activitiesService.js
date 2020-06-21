@@ -27,7 +27,6 @@ exports.createActivity = (
   formData.append("language", language);
   formData.append("activityCategoryId", `${activityCategoryId}`);
   formData.append("description", description);
-  formData.append("initialCode", "lalla");
 
   Object.keys(initialCode).forEach(fileName => {
     formData.append("startingFile", new File([initialCode[fileName]], fileName));
@@ -57,11 +56,46 @@ exports.updateActivity = (
   formData.append("language", language);
   formData.append("activityCategoryId", `${activityCategoryId}`);
   formData.append("description", description);
-  formData.append("initialCode", "lalla");
 
   Object.keys(initialCode).forEach(fileName => {
     formData.append("startingFile", new File([initialCode[fileName]], fileName));
   });
+
+  return request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
+    body: formData,
+    method: "PUT",
+    headers: new Headers(),
+  });
+};
+
+exports.softUpdateActivity = ({
+  courseId,
+  activityId,
+  name,
+  points,
+  language,
+  activityCategoryId,
+  initialCode,
+  description,
+  active,
+  compilationFlags,
+}) => {
+  const formData = new FormData();
+  if (name) formData.append("name", name);
+  if (points) formData.append("points", points);
+  if (language) formData.append("language", language);
+  if (activityCategoryId) formData.append("activityCategoryId", `${activityCategoryId}`);
+  if (description) formData.append("description", description);
+  if (compilationFlags) formData.append("compilationFlags", compilationFlags);
+  if (active) formData.append("active", active);
+
+  console.log(initialCode);
+  if (initialCode) {
+    Object.keys(initialCode).forEach(fileName => {
+      formData.append("startingFile", new File([initialCode[fileName]], fileName));
+    });
+  }
 
   return request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,

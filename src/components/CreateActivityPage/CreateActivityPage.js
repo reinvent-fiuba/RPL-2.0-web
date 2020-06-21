@@ -179,7 +179,7 @@ class CreateActivityPage extends React.Component<Props, State> {
           language: activity.language,
           categoryId: activity.category_id,
           name: activity.name,
-          points: "15",
+          points: activity.points,
           code: activity.initial_code,
           mdText: activity.description,
         });
@@ -221,19 +221,19 @@ class CreateActivityPage extends React.Component<Props, State> {
       this.setState({ isAddMainFileModalActive: true });
       return;
     }
-
-    const body = {
+    console.log(activity);
+    const data = [
       courseId,
+      ...(!activity ? [] : [activity.id]),
       name,
       points,
       language,
       categoryId,
       code,
       mdText,
-      ...(!activity ? {} : { activityId: activity.id }),
-    };
+    ];
 
-    serviceToCall(body)
+    return serviceToCall(...data)
       .then(response => {
         this.setState({ activity: response })
         return response;

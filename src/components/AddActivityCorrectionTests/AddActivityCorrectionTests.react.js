@@ -124,6 +124,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
       .then(response => {
         this.setState({
           activty: response,
+          flags: response.compilation_flags,
           selectedTestMode: !response.is_iotested ? "Unit tests" : "IO tests",
         });
       })
@@ -156,7 +157,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
   handlePublish() {
     const { courseId, activityId } = this.props.match.params;
-    return activitiesService.updateActivity({
+    return activitiesService.softUpdateActivity({
         activityId,
         courseId,
         active: true,
@@ -168,7 +169,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
   handleSaveFlags() {
     const { courseId, activityId } = this.props.match.params;
-    return activitiesService.updateActivity({
+    return activitiesService.softUpdateActivity({
       activityId,
       courseId,
       compilationFlags: this.state.flags
@@ -335,12 +336,16 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                   required
                   fullWidth
                   multiline
+                  value={this.state.flags}
                   rows={5}
                   name="flags"
                   label="Flags de Compilación"
                   type="flags"
                   id="flags"
                   autoComplete="flags"
+                  inputProps={{
+                    style: { fontFamily: `"Lucida Console", Monaco, monospace` },
+                  }}
                   onChange={e => this.handleChange(e)}
                   variant="outlined"
                 />

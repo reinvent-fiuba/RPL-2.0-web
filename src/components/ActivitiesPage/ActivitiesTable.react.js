@@ -86,7 +86,7 @@ function ActivitiesTable(props: Props) {
                 align="right"
                 onClick={event => handleCellClick(event, activity.id)}
               >
-                {15}
+                {activity.points}
               </TableCell>
               <TableCell
                 key={4}
