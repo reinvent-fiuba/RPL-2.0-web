@@ -221,19 +221,19 @@ class CreateActivityPage extends React.Component<Props, State> {
       this.setState({ isAddMainFileModalActive: true });
       return;
     }
-    console.log(activity);
-    const data = [
+
+    const data = {
       courseId,
-      ...(!activity ? [] : [activity.id]),
       name,
       points,
       language,
       categoryId,
       code,
-      mdText,
-    ];
+      description: mdText,
+      ...(!activity ? {} : { activityId: activity.id }),
+    };
 
-    return serviceToCall(...data)
+    return serviceToCall(data)
       .then(response => {
         this.setState({ activity: response })
         return response;

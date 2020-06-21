@@ -157,7 +157,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
   handlePublish() {
     const { courseId, activityId } = this.props.match.params;
-    return activitiesService.softUpdateActivity({
+    return activitiesService.updateActivity({
         activityId,
         courseId,
         active: true,
@@ -169,7 +169,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
   handleSaveFlags() {
     const { courseId, activityId } = this.props.match.params;
-    return activitiesService.softUpdateActivity({
+    return activitiesService.updateActivity({
       activityId,
       courseId,
       compilationFlags: this.state.flags
