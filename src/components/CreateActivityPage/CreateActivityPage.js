@@ -439,12 +439,13 @@ class CreateActivityPage extends React.Component<Props, State> {
               <ReactResizeDetector
                 handleWidth
                 handleHeight
-                onResize={() => (editor ? editor.layout : () => {})}
+                onResize={_.throttle(() => (editor ? editor.layout : () => {}))}
               >
                 <MultipleTabsEditor
                   key={activity ? activity.id : null}
                   initialCode={code}
                   language={language}
+                  readOnly={false}
                   onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
                   editorDidMount={mountedEditor => {
                     mountedEditor.changeViewZones(changeAccessor => {

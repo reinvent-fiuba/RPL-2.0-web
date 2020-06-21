@@ -53,9 +53,7 @@ const styles = theme => ({
   },
   editor: {
     display: "flex",
-    "& .monaco-editor": {
-      height: "100vh",
-    },
+    height: "100%",
   },
 });
 
@@ -89,11 +87,9 @@ class SolveActivityPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    console.log("componentDidMount");
     activitiesService
       .getActivity(this.props.match.params.courseId, this.props.match.params.activityId)
       .then(activityResponse => {
-        console.log("get files and set state");
         this.setState({
           activity: activityResponse,
           code: activityResponse.initial_code,
@@ -125,7 +121,6 @@ class SolveActivityPage extends React.Component<Props, State> {
   handleSubmitActivity(event: any) {
     // TODO: si ?teacherTest=true que sea otro endpoint o algo para que en el backend se tome diferente
     event.preventDefault();
-    console.log("Submit");
     const { courseId, activityId } = this.props.match.params;
     const { code } = this.state;
 
@@ -164,7 +159,6 @@ class SolveActivityPage extends React.Component<Props, State> {
       code,
       editor,
     } = this.state;
-    console.log("Render", activity);
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -196,14 +190,15 @@ class SolveActivityPage extends React.Component<Props, State> {
               <div className={classes.editor}>
                 <ReactResizeDetector
                   handleWidth
-                  handleHeight
+                  handleHeight={false}
                   onResize={() => (editor ? editor.layout : () => {})}
                 >
                   <MultipleTabsEditor
                     width={editorWidth}
                     initialCode={code}
                     language={activity.language.toLowerCase()}
-                    onCodeChange={_.throttle(newCode => this.onCodeChange(newCode))}
+                    readOnly={false}
+                    onCodeChange={newCode => this.onCodeChange(newCode)}
                     editorDidMount={mountedEditor => {
                       mountedEditor.changeViewZones(changeAccessor => {
                         changeAccessor.addZone({
