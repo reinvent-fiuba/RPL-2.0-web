@@ -12,25 +12,29 @@ const producer = {
   base_url: process.env.API_BASE_URL || "localhost:8080",
 };
 
-exports.createActivity = (
-  courseId: number,
-  name: string,
-  points: string,
-  language: string,
-  activityCategoryId: number,
-  initialCode: { [string]: string },
-  description: string
-) => {
+exports.createActivity = ({
+  courseId,
+  name,
+  points,
+  language,
+  categoryId,
+  code,
+  description,
+  active,
+  compilationFlags,
+}) => {
   const formData = new FormData();
   formData.append("name", name);
   formData.append("points", points);
   formData.append("language", language);
-  formData.append("activityCategoryId", `${activityCategoryId}`);
+  formData.append("activityCategoryId", `${categoryId}`);
   formData.append("description", description);
-  formData.append("initialCode", "lalla");
+  // Optional arguments
+  if (compilationFlags !== undefined) formData.append("compilationFlags", compilationFlags);
+  if (active !== undefined) formData.append("active", active);
 
-  Object.keys(initialCode).forEach(fileName => {
-    formData.append("startingFile", new File([initialCode[fileName]], fileName));
+  Object.keys(code).forEach(fileName => {
+    formData.append("startingFile", new File([code[fileName]], fileName));
   });
 
   return request({
@@ -41,32 +45,37 @@ exports.createActivity = (
   });
 };
 
-exports.updateActivity = (
-  courseId: number,
-  activityId: number,
-  name: string,
-  points: string,
-  language: string,
-  activityCategoryId: number,
-  initialCode: { [string]: string },
-  description: string
-) => {
+exports.updateActivity = ({
+  courseId,
+  activityId,
+  name,
+  points,
+  language,
+  categoryId,
+  code,
+  description,
+  active,
+  compilationFlags,
+}) => {
   const formData = new FormData();
-  formData.append("name", name);
-  formData.append("points", points);
-  formData.append("language", language);
-  formData.append("activityCategoryId", `${activityCategoryId}`);
-  formData.append("description", description);
-  formData.append("initialCode", "lalla");
+  if (name !== undefined) formData.append("name", name);
+  if (points !== undefined) formData.append("points", points);
+  if (language !== undefined) formData.append("language", language);
+  if (categoryId !== undefined) formData.append("activityCategoryId", `${categoryId}`);
+  if (description !== undefined) formData.append("description", description);
+  if (compilationFlags !== undefined) formData.append("compilationFlags", compilationFlags);
+  if (active !== undefined) formData.append("active", active);
 
-  Object.keys(initialCode).forEach(fileName => {
-    formData.append("startingFile", new File([initialCode[fileName]], fileName));
-  });
+  if (code) {
+    Object.keys(code).forEach(fileName => {
+      formData.append("startingFile", new File([code[fileName]], fileName));
+    });
+  }
 
   return request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     body: formData,
-    method: "PUT",
+    method: "PATCH",
     headers: new Headers(),
   });
 };
@@ -120,12 +129,7 @@ exports.disableActivity = (
   courseId: number,
   activityId: number,
   newStatus: boolean
-): Promise<Activity> =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/disable`,
-    body: JSON.stringify({ active: newStatus }),
-    method: "PUT",
-  });
+): Promise<Activity> => this.updateActivity({ courseId, activityId, active: newStatus });
 
 exports.getStats = (courseId: number): Promise<any> =>
   request({

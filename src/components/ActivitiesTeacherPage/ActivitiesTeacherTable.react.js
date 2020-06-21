@@ -116,7 +116,7 @@ function ActivitiesTeacherTable(props: Props) {
                 align="center"
                 onClick={event => handleActivityRowClick(event, activity.id)}
               >
-                {15}
+                {activity.points}
               </TableCell>
               <TableCell key={4} align="center">
                 <div className={classes.submissionsColumn}>
