@@ -109,9 +109,9 @@ class CoursesPage extends React.Component<Props, State> {
     return (
       <Grid container spacing={1}>
         {_.chunk(courses, 4).map((row, idx) => (
-          <Grid container item xs={12} spacing={3} id={idx}>
+          <Grid container item xs={12} spacing={3} id={idx} key={idx}>
             {_.map(row, course => (
-              <Grid item xs={3} id={course.id}>
+              <Grid item xs={3} id={course.id} key={course.id}>
                 <CourseCard
                   courseId={course.id}
                   universityCourseId={course.university_course_id}

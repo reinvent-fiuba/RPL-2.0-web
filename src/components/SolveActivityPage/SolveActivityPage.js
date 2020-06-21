@@ -87,11 +87,9 @@ class SolveActivityPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    console.log("componentDidMount");
     activitiesService
       .getActivity(this.props.match.params.courseId, this.props.match.params.activityId)
       .then(activityResponse => {
-        console.log("get files and set state");
         this.setState({
           activity: activityResponse,
           code: activityResponse.initial_code,
@@ -123,7 +121,6 @@ class SolveActivityPage extends React.Component<Props, State> {
   handleSubmitActivity(event: any) {
     // TODO: si ?teacherTest=true que sea otro endpoint o algo para que en el backend se tome diferente
     event.preventDefault();
-    console.log("Submit");
     const { courseId, activityId } = this.props.match.params;
     const { code } = this.state;
 
@@ -162,7 +159,6 @@ class SolveActivityPage extends React.Component<Props, State> {
       code,
       editor,
     } = this.state;
-    console.log("Render", activity);
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}

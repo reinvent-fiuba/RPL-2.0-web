@@ -3,12 +3,9 @@ import React, { useState, useContext } from "react";
 export const State = React.createContext();
 
 export const StateProvider = props => {
-  const set = (key, value, softSave = false) => {
+  const set = (key, value) => {
     return setState(oldState => {
       const newState = { ...oldState, [key]: value };
-      if (softSave) {
-        return newState;
-      }
       if (key === "token") {
         delete newState.profile;
         delete newState.permissions;
