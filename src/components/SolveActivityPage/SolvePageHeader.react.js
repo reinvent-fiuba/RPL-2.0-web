@@ -36,7 +36,7 @@ function getLeftTitle(history: any, permissions: Array<string>) {
   if (permissions.includes("activity_manage")) {
     return (
       <Button onClick={() => history.push(`${history.location.pathname}/edit`)}>
-        Volver a modo editar
+        Volver a modo profesor
       </Button>
     );
   }
