@@ -10,12 +10,13 @@ const producer = {
 exports.createIOTest = (
   courseId: number,
   activityId: number,
+  testName: string,
   textIn: string,
   textOut: string
 ): Promise<IOTest> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests`,
-    body: JSON.stringify({ text_in: textIn, text_out: textOut }),
+    body: JSON.stringify({ name: testName, text_in: textIn, text_out: textOut }),
     method: "POST",
   });
 
@@ -23,12 +24,13 @@ exports.updateIOTest = (
   courseId: number,
   activityId: number,
   ioTestId: number,
+  testName: string,
   textIn: string,
   textOut: string
 ): Promise<IOTest> =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests/${ioTestId}`,
-    body: JSON.stringify({ text_in: textIn, text_out: textOut }),
+    body: JSON.stringify({ name: testName, text_in: textIn, text_out: textOut }),
     method: "PUT",
   });
 
