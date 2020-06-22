@@ -196,13 +196,8 @@ class SubmissionResultModal extends React.Component<Props, State> {
                       tabIndex={-1}
                       component="div"
                     >
-                      <Typography variant="h6" color="textSecondary" component="p">
-                        {`IO Test case: Nº${idx}`}
-                      </Typography>
                       <Alert severity={result}>
-                        <AlertTitle>
-                          {ioResult.test_name || "Todavia no hay nombre en los tests de IO"}
-                        </AlertTitle>
+                        <AlertTitle>{ioResult.name}</AlertTitle>
                       </Alert>
                       <ReactDiffViewer
                         styles={allGoodStyle}

@@ -36,8 +36,10 @@ type Props = {
 type State = {
   error: { open: boolean, message: ?string },
 
+  testName: ?string,
   textIn: ?string,
   textOut: ?string,
+  testNameError: ?string,
   textInError: ?string,
   textOutError: ?string,
 };
@@ -47,16 +49,25 @@ class AddIOTestModal extends React.Component<Props, State> {
     error: { open: false, message: null },
 
     // eslint-disable-next-line react/destructuring-assignment
+    testName: this.props.ioTest ? this.props.ioTest.name : "",
+    // eslint-disable-next-line react/destructuring-assignment
     textIn: this.props.ioTest ? this.props.ioTest.in : "",
     // eslint-disable-next-line react/destructuring-assignment
     textOut: this.props.ioTest ? this.props.ioTest.out : "",
+    testNameError: null,
     textInError: null,
     textOutError: null,
   };
 
   handleSubmit(e) {
     const { ioTest, courseId, activityId, handleCloseModal } = this.props;
-    const { textIn, textOut } = this.state;
+    const { testName, textIn, textOut } = this.state;
+
+    if (!testName) {
+      this.setState({ testNameError: "No puede estar en blanco" });
+    } else {
+      this.setState({ testNameError: null });
+    }
 
     if (!textIn) {
       this.setState({ textInError: "No puede estar en blanco" });
@@ -69,14 +80,21 @@ class AddIOTestModal extends React.Component<Props, State> {
       this.setState({ textOutError: null });
     }
 
-    if (!textIn || !textOut) {
+    if (!testName || !textIn || !textOut) {
       return;
     }
     let promise;
     if (!ioTest) {
-      promise = activityTestsService.createIOTest(courseId, activityId, textIn, textOut);
+      promise = activityTestsService.createIOTest(courseId, activityId, testName, textIn, textOut);
     } else {
-      promise = activityTestsService.updateIOTest(courseId, activityId, ioTest.id, textIn, textOut);
+      promise = activityTestsService.updateIOTest(
+        courseId,
+        activityId,
+        ioTest.id,
+        testName,
+        textIn,
+        textOut
+      );
     }
 
     promise
@@ -96,7 +114,15 @@ class AddIOTestModal extends React.Component<Props, State> {
 
   render() {
     const { classes, open, handleCloseModal, idx } = this.props;
-    const { textIn, textOut, error, textInError, textOutError } = this.state;
+    const {
+      testName,
+      textIn,
+      textOut,
+      error,
+      testNameError,
+      textInError,
+      textOutError,
+    } = this.state;
 
     const title = idx !== null && idx !== undefined ? `Test Case ${idx}` : "Nuevo test case";
 
@@ -116,6 +142,32 @@ class AddIOTestModal extends React.Component<Props, State> {
 
           <DialogContent dividers>
             <div>
+              <Typography
+                variant="h5"
+                color="textSecondary"
+                component="h1"
+                className={classes.title}
+              >
+                NOMBRE
+              </Typography>
+              <br />
+              <TextField
+                id="outlined-full-width"
+                placeholder="Nombre del test"
+                value={testName}
+                fullWidth
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="outlined"
+                onChange={e => this.setState({ testName: e.target.value })}
+                error={testNameError !== null}
+                helperText={testNameError}
+              />
+              <br />
+              <br />
+              <br />
               <Typography
                 variant="h5"
                 color="textSecondary"

@@ -2,6 +2,7 @@
 
 export type IOTest = {
   id: number,
+  name: string,
   in: string,
   out: string,
 };
@@ -63,6 +64,7 @@ export type Course = {
 
 export type IOTestRunResult = {
   id: number,
+  name: string,
   test_in: string,
   expected_output: string,
   run_output: string,

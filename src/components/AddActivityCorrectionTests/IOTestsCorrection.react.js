@@ -164,7 +164,7 @@ class IOCorrectionTests extends React.Component<Props, State> {
                       <DescriptionOutlinedIcon />
                     </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary={`Test case ${idx + 1}`} />
+                  <ListItemText primary={ioTest.name} />
                   <ListItemSecondaryAction>
                     <IconButton
                       edge="end"

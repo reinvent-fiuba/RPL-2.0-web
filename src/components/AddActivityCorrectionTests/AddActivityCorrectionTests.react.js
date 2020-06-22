@@ -157,7 +157,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
   handlePublish() {
     const { courseId, activityId } = this.props.match.params;
-    return activitiesService.updateActivity({
+    return activitiesService
+      .updateActivity({
         activityId,
         courseId,
         active: true,
@@ -172,7 +173,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     return activitiesService.updateActivity({
       activityId,
       courseId,
-      compilationFlags: this.state.flags
+      compilationFlags: this.state.flags,
     });
   }
 
@@ -212,9 +213,9 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           <div className={classes.drawerHeader} />
           <ExpansionPanel expanded={selectTestStepExpanded}>
             <ExpansionPanelSummary
-              expandIcon={(
+              expandIcon={
                 <ExpandMoreIcon onClick={() => this.handleClickPanel("selectTestStepExpanded")} />
-              )}
+              }
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 1: Seleccionar modo de testeo de la actividad
@@ -246,8 +247,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 size="small"
                 color="primary"
                 onClick={() =>
-                  this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")
-                }
+                  this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")}
               >
                 Siguiente
               </Button>
@@ -255,9 +255,9 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           </ExpansionPanel>
           <ExpansionPanel expanded={configTestStepExpanded}>
             <ExpansionPanelSummary
-              expandIcon={(
+              expandIcon={
                 <ExpandMoreIcon onClick={() => this.handleClickPanel("configTestStepExpanded")} />
-              )}
+              }
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 {`Paso 2: Definir tests${selectedTestMode ? ` - ${selectedTestMode}` : ""}`}
@@ -286,8 +286,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
               <Button
                 size="small"
                 onClick={() =>
-                  this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")
-                }
+                  this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")}
               >
                 Anterior
               </Button>
@@ -295,8 +294,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 size="small"
                 color="primary"
                 onClick={() =>
-                  this.handleClickNext("configTestStepExpanded", "configFlagsStepExpanded")
-                }
+                  this.handleClickNext("configTestStepExpanded", "configFlagsStepExpanded")}
               >
                 Siguiente
               </Button>
@@ -304,9 +302,9 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           </ExpansionPanel>
           <ExpansionPanel expanded={configFlagsStepExpanded}>
             <ExpansionPanelSummary
-              expandIcon={(
+              expandIcon={
                 <ExpandMoreIcon onClick={() => this.handleClickPanel("configFlagsStepExpanded")} />
-              )}
+              }
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 3: Definir flags de compilación
@@ -329,7 +327,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                   component="h1"
                   className={classes.title}
                 >
-                  A continuación se pueden definir los flags de compilación que se usaran para compilar los ejercicios.
+                  A continuación se pueden definir los flags de compilación que se usaran para
+                  compilar los ejercicios.
                 </Typography>
                 <TextField
                   margin="normal"
@@ -355,8 +354,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
               <Button
                 size="small"
                 onClick={() =>
-                  this.handleClickNext("configFlagsStepExpanded", "configTestStepExpanded")
-                }
+                  this.handleClickNext("configFlagsStepExpanded", "configTestStepExpanded")}
               >
                 Anterior
               </Button>
