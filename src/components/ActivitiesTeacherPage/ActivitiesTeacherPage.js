@@ -188,21 +188,24 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
           )}
 
           {nonDeletedActivities &&
-            Object.keys(activitiesByCategory).map(category => (
-              <div key={category} className={classes.tableContainerDiv}>
-                <ActivitiesTeacherTable
-                  activities={activitiesByCategory[category]}
-                  onClickActivityResults={(e, activityId) =>
-                    this.handleNotImplementedYet(e, activityId)}
-                  onClickDeleteActivity={activityId => this.handleDeleteActivity(activityId)}
-                  onClickDisableActivity={(activityId, newStatus) =>
-                    this.handleDisableActivity(activityId, newStatus)
-                  }
-                  handleActivityRowClick={(event, activityId) =>
-                    this.handleClickOnActivityTitle(event, activityId)}
-                />
-              </div>
-            ))}
+            Object.keys(activitiesByCategory)
+              .sort((a, b) => (a > b ? 1 : -1))
+              .map(category => (
+                <div key={category} className={classes.tableContainerDiv}>
+                  <ActivitiesTeacherTable
+                    activities={activitiesByCategory[category]}
+                    onClickActivityResults={(e, activityId) =>
+                      this.handleNotImplementedYet(e, activityId)
+                    }
+                    onClickDeleteActivity={activityId => this.handleDeleteActivity(activityId)}
+                    onClickDisableActivity={(activityId, newStatus) =>
+                      this.handleDisableActivity(activityId, newStatus)}
+                    handleActivityRowClick={(event, activityId) =>
+                      this.handleClickOnActivityTitle(event, activityId)
+                    }
+                  />
+                </div>
+              ))}
         </main>
       </div>
     );
