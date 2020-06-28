@@ -1,5 +1,9 @@
 const { getState } = require("./State");
 
+function logout() {
+  window.localStorage.removeItem("state");
+}
+
 exports.request = options => {
   const headers = new Headers({
     "Content-Type": "application/json",
@@ -18,6 +22,11 @@ exports.request = options => {
 
   return fetch(options.url, options).then(response => {
     if (response.status === 204) {
+      return Promise.resolve();
+    }
+    if (response.status === 401) {
+      logout();
+      window.location.assign(window.location);
       return Promise.resolve();
     }
     return response.json().then(json => {
