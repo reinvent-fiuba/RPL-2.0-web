@@ -89,67 +89,69 @@ function ActivitiesTeacherTable(props: Props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {activities.map(activity => (
-            <TableRow
-              hover={activity.active}
-              key={activity.id}
-              disabled
-              className={activity.active ? classes.tableRowEnabled : classes.tableRowDisabled}
-            >
-              <TableCell
-                key={1}
-                component="th"
-                scope="row"
-                onClick={event => handleActivityRowClick(event, activity.id)}
+          {activities
+            .sort((a, b) => (a.name > b.name ? 1 : -1))
+            .map(activity => (
+              <TableRow
+                hover={activity.active}
+                key={activity.id}
+                disabled
+                className={activity.active ? classes.tableRowEnabled : classes.tableRowDisabled}
               >
-                {activity.name}
-              </TableCell>
-              <TableCell
-                key={2}
-                align="center"
-                onClick={event => handleActivityRowClick(event, activity.id)}
-              >
-                {activity.language}
-              </TableCell>
-              <TableCell
-                key={3}
-                align="center"
-                onClick={event => handleActivityRowClick(event, activity.id)}
-              >
-                {activity.points}
-              </TableCell>
-              <TableCell key={4} align="center">
-                <div className={classes.submissionsColumn}>
-                  #TODO
+                <TableCell
+                  key={1}
+                  component="th"
+                  scope="row"
+                  onClick={event => handleActivityRowClick(event, activity.id)}
+                >
+                  {activity.name}
+                </TableCell>
+                <TableCell
+                  key={2}
+                  align="center"
+                  onClick={event => handleActivityRowClick(event, activity.id)}
+                >
+                  {activity.language}
+                </TableCell>
+                <TableCell
+                  key={3}
+                  align="center"
+                  onClick={event => handleActivityRowClick(event, activity.id)}
+                >
+                  {activity.points}
+                </TableCell>
+                <TableCell key={4} align="center">
+                  <div className={classes.submissionsColumn}>
+                    #TODO
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={e => onClickActivityResults(e, activity.id)}
+                    >
+                      Explorar
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell key={5} align="center">
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={e => onClickActivityResults(e, activity.id)}
+                    onClick={() => onClickDeleteActivity(activity.id)}
+                    className={classes.actionColumnButton}
                   >
-                    Explorar
+                    Eliminar
                   </Button>
-                </div>
-              </TableCell>
-              <TableCell key={5} align="center">
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => onClickDeleteActivity(activity.id)}
-                  className={classes.actionColumnButton}
-                >
-                  Eliminar
-                </Button>
-                <Button
-                  variant={activity.active ? "outlined" : "contained"}
-                  color="primary"
-                  onClick={() => onClickDisableActivity(activity.id, !activity.active)}
-                  className={classes.actionColumnButton}
-                >
-                  {activity.active ? "Ocultar" : "Habilitar"}
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+                  <Button
+                    variant={activity.active ? "outlined" : "contained"}
+                    color="primary"
+                    onClick={() => onClickDisableActivity(activity.id, !activity.active)}
+                    className={classes.actionColumnButton}
+                  >
+                    {activity.active ? "Ocultar" : "Habilitar"}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

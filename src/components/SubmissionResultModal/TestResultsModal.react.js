@@ -221,35 +221,37 @@ class SubmissionResultModal extends React.Component<Props, State> {
                 </Typography>
               )}
               {results.unit_test_run_results &&
-                results.unit_test_run_results.map((unitTestResult, idx) => {
-                  const result = unitTestResult.passed ? "success" : "error";
-                  return (
-                    <DialogContentText
-                      key={idx}
-                      id="scroll-dialog-description"
-                      tabIndex={-1}
-                      component="div"
-                    >
-                      <Alert severity={result}>
-                        <AlertTitle>{unitTestResult.test_name.replace(/_/g, " ")}</AlertTitle>
-                        {unitTestResult.error_messages &&
-                          unitTestResult.error_messages.split("\n").map((line, key) => {
-                            if (
-                              key === 0 ||
-                              key === unitTestResult.error_messages.split("\n").length - 2
-                            ) {
-                              return <span>{line}</span>;
-                            }
-                            return (
-                              <span>
-                                <blockquote>{line}</blockquote>
-                              </span>
-                            );
-                          })}
-                      </Alert>
-                    </DialogContentText>
-                  );
-                })}
+                results.unit_test_run_results
+                  .sort((a, b) => (a.test_name > b.test_name ? 1 : -1))
+                  .map((unitTestResult, idx) => {
+                    const result = unitTestResult.passed ? "success" : "error";
+                    return (
+                      <DialogContentText
+                        key={idx}
+                        id="scroll-dialog-description"
+                        tabIndex={-1}
+                        component="div"
+                      >
+                        <Alert severity={result}>
+                          <AlertTitle>{unitTestResult.test_name.replace(/_/g, " ")}</AlertTitle>
+                          {unitTestResult.error_messages &&
+                            unitTestResult.error_messages.split("\n").map((line, key) => {
+                              if (
+                                key === 0 ||
+                                key === unitTestResult.error_messages.split("\n").length - 2
+                              ) {
+                                return <span>{line}</span>;
+                              }
+                              return (
+                                <span>
+                                  <blockquote>{line}</blockquote>
+                                </span>
+                              );
+                            })}
+                        </Alert>
+                      </DialogContentText>
+                    );
+                  })}
               <br />
               {results.submission_status.includes("ERROR") && (
                 <div>

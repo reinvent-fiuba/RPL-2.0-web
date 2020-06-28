@@ -214,17 +214,19 @@ class ActivitiesPage extends React.Component<Props, State> {
           )}
 
           {activeActivities &&
-            Object.keys(activitiesByCategory).map(category => (
-              <div key={category} className={classes.tableContainerDiv}>
-                <ActivitiesTable
-                  activities={activitiesByCategory[category]}
-                  setOpenPanel={activityId => this.setOpenPanel(activityId)}
-                  handleCellClick={(event, activityId) =>
-                    this.handleClickOnActivityTitle(event, activityId)
-                  }
-                />
-              </div>
-            ))}
+            Object.keys(activitiesByCategory)
+              .sort((a, b) => (a > b ? 1 : -1))
+              .map(category => (
+                <div key={category} className={classes.tableContainerDiv}>
+                  <ActivitiesTable
+                    activities={activitiesByCategory[category]}
+                    setOpenPanel={activityId => this.setOpenPanel(activityId)}
+                    handleCellClick={(event, activityId) =>
+                      this.handleClickOnActivityTitle(event, activityId)
+                    }
+                  />
+                </div>
+              ))}
         </main>
       </div>
     );
