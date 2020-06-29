@@ -13,7 +13,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import submissionsService from "../../services/submissionsService";
@@ -26,6 +27,8 @@ import TeacherStats from "./TeacherStats";
 import { withState } from "../../utils/State";
 
 import ErrorNotification from "../../utils/ErrorNotification";
+import StudentCategoryStats from "./StudentCategoryStats";
+import CategoryStats from "./CategoryStats";
 
 const drawerWidth = 240;
 
@@ -57,7 +60,7 @@ const styles = theme => ({
     minWidth: 650,
   },
   tableContainer: {
-    width: "80%",
+    width: "75%",
   },
   tableContainerDiv: {
     display: "flex",
@@ -84,7 +87,6 @@ const styles = theme => ({
   plotContainerDiv: {
     alignItems: "center",
     justifyContent: "center",
-    padding: "0px 30px 30px 30px",
   },
   plotPaper: {
     width: "80%",
@@ -97,6 +99,13 @@ const styles = theme => ({
     marginTop: theme.spacing(2),
     width: "75%",
     fontFamily: "sans-serif",
+  },
+  dashboardContainer: {
+    width: "75%",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: `0 auto`,
+    marginBottom: theme.spacing(5),
   },
 });
 
@@ -125,6 +134,7 @@ class ActivitiesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     isSideBarOpen: false,
+    current: 0,
   };
 
   componentDidMount() {
@@ -212,10 +222,20 @@ class ActivitiesPage extends React.Component<Props, State> {
     );
   }
 
+  handleChange(event, newValue) {
+    this.setState({ current: newValue });
+  }
+
   render() {
     const { classes, match, context } = this.props;
     const { permissions } = context;
     const { isSideBarOpen, error, scoreboard } = this.state;
+
+    const teacherStats = [
+      <TeacherStats courseId={match.params.courseId} />,
+      <StudentCategoryStats className={classes.stats} courseId={match.params.courseId} />,
+      <CategoryStats className={classes.stats} courseId={match.params.courseId} />,
+    ];
 
     return (
       <div>
@@ -232,16 +252,30 @@ class ActivitiesPage extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          {permissions.includes("user_manage") ? (
-            <TeacherStats courseId={match.params.courseId} />
-          ) : (
-            <StudentStats courseId={match.params.courseId} />
-          )}
-          <Grid container xs={12} spacing={3} className={classes.plotContainerDiv}>
+          <div className={classes.dashboardContainer}>
+            <Paper className={classes.root}>
+              <Tabs
+                value={this.state.current}
+                onChange={(event, newValue) => this.handleChange(event, newValue)}
+                indicatorColor="primary"
+                textColor="primary"
+              >
+                <Tab label="General" />
+                <Tab label="Entregas por alumno y categoría" />
+                <Tab label="Entregas por categorías" />
+              </Tabs>
+            </Paper>
+            {permissions.includes("user_manage") ? (
+              teacherStats[this.state.current]
+            ) : (
+              <StudentStats courseId={match.params.courseId} />
+            )}
+          </div>
+          {/* <Grid container xs={12} spacing={3} className={classes.plotContainerDiv}>
             <Grid className={classes.tableContainerDiv} item xs={12}>
               {scoreboard && this.renderScoreBoard(scoreboard, classes)}
             </Grid>
-          </Grid>
+          </Grid> */}
         </main>
       </div>
     );

@@ -136,3 +136,15 @@ exports.getStats = (courseId: number): Promise<any> =>
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/stats`,
     method: "GET",
   });
+
+exports.getStudentCategoryStats = (courseId: number, categoryId: number, studentId: number) =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories/${categoryId}/stats?courseUserId=${studentId}`,
+    method: "GET",
+  });
+
+exports.getCategoryStats = (courseId: number, categoryId: number) =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories/${categoryId}/stats`,
+    method: "GET",
+  });

@@ -83,7 +83,6 @@ const styles = theme => ({
   },
   calendarHeatmap: {
     marginTop: theme.spacing(2),
-    width: "75%",
     fontFamily: "sans-serif",
   },
   container: {
@@ -122,60 +121,63 @@ class StudentStats extends React.Component<Props, State> {
     const { error } = this.state;
 
     return (
-      <Grid container xs={12} spacing={3} className={classes.plotContainerDiv}>
+      <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <Grid item xs={3}>
-          <Typography>Totales</Typography>
-          <div className={classes.calendarHeatmap}>
-            <CalendarHeatmap
-              startDate={new Date("2020-04-13")}
-              endDate={new Date("2020-08-10")}
-              showWeekdayLabels
-              values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 1 }, { date: "2020-08-01", count: 1 }]}
-              classForValue={(value) => {
-                if (!value) {
-                  return 'color-empty';
-                }
-                return `color-github-${value.count}`;
-              }}
-            />
-          </div>
+        <br />
+        <Grid container xs={12} spacing={3}>
+          <Grid item xs={4}>
+            <Typography>Totales</Typography>
+            <div className={classes.calendarHeatmap}>
+              <CalendarHeatmap
+                startDate={new Date("2020-04-13")}
+                endDate={new Date("2020-08-10")}
+                showWeekdayLabels
+                values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 1 }, { date: "2020-08-01", count: 1 }]}
+                classForValue={(value) => {
+                  if (!value) {
+                    return 'color-empty';
+                  }
+                  return `color-github-${value.count}`;
+                }}
+              />
+            </div>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography>Exitos</Typography>
+            <div className={classes.calendarHeatmap}>
+              <CalendarHeatmap
+                startDate={new Date("2020-04-13")}
+                endDate={new Date("2020-08-10")}
+                showWeekdayLabels
+                values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 4 }, { date: "2020-08-01", count: 5 }]}
+                classForValue={(value) => {
+                  if (!value) {
+                    return 'color-empty';
+                  }
+                  return `color-github-${value.count}`;
+                }}
+              />
+            </div>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography>Fallidas</Typography>
+            <div className={classes.calendarHeatmap}>
+              <CalendarHeatmap
+                startDate={new Date("2020-04-13")}
+                endDate={new Date("2020-08-10")}
+                showWeekdayLabels
+                values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 2 }, { date: "2020-08-01", count: 3 }]}
+                classForValue={(value) => {
+                  if (!value) {
+                    return 'color-empty';
+                  }
+                  return `color-github-${value.count}`;
+                }}
+              />
+            </div>
+          </Grid>
         </Grid>
-        <Grid item xs={3}>
-          <Typography>Exitos</Typography>
-          <div className={classes.calendarHeatmap}>
-            <CalendarHeatmap
-              startDate={new Date("2020-04-13")}
-              endDate={new Date("2020-08-10")}
-              showWeekdayLabels
-              values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 4 }, { date: "2020-08-01", count: 5 }]}
-              classForValue={(value) => {
-                if (!value) {
-                  return 'color-empty';
-                }
-                return `color-github-${value.count}`;
-              }}
-            />
-          </div>
-        </Grid>
-        <Grid item xs={3}>
-          <Typography>Fallidas</Typography>
-          <div className={classes.calendarHeatmap}>
-            <CalendarHeatmap
-              startDate={new Date("2020-04-13")}
-              endDate={new Date("2020-08-10")}
-              showWeekdayLabels
-              values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 2 }, { date: "2020-08-01", count: 3 }]}
-              classForValue={(value) => {
-                if (!value) {
-                  return 'color-empty';
-                }
-                return `color-github-${value.count}`;
-              }}
-            />
-          </div>
-        </Grid>
-      </Grid>
+      </div>
     );
   }
 }
