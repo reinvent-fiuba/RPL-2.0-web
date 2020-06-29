@@ -18,8 +18,6 @@ import submissionsService from "../../services/submissionsService";
 import ErrorNotification from "../../utils/ErrorNotification";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
 
-const _ = require("lodash");
-
 const styles = () => ({
   modal: {
     minHeight: "200px",
@@ -32,6 +30,20 @@ const styles = () => ({
   dialogTitle: {
     display: "flex",
     justifyContent: "center",
+    // justifyContent: "space-between",
+    alignItems: "center",
+    padding: "8px",
+  },
+  dialogTitleText: {
+    alignSelf: "center",
+    margin: "0px",
+  },
+  markAsDefinitiveButton: {
+    alignSelf: "flex-end",
+  },
+  dialogContent: {
+    display: "flex",
+    flexDirection: "column",
   },
   codeEditor: {
     height: "500px",
@@ -47,6 +59,9 @@ type Props = {
   classes: any,
   showWaitingDialog: boolean,
   activitySubmissionId: number,
+  courseId: number,
+  canMarkSubmissionAsFinal: boolean,
+  onMarkSubmissionAsFinal: number => void,
 };
 
 type State = {
@@ -114,6 +129,27 @@ class SubmissionResultModal extends React.Component<Props, State> {
       });
   }
 
+  onClickMarkAsFinalSolution(activityId: number, submissionId: number) {
+    const { courseId, onMarkSubmissionAsFinal } = this.props;
+    submissionsService
+      .putSolutionAsFinal(courseId, activityId, submissionId)
+      .then(() => {
+        onMarkSubmissionAsFinal(submissionId);
+      })
+      .catch(err => {
+        console.log(err);
+        if (status === 404) {
+          return;
+        }
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al marcar la solución como definitiva. Por favor reintenta",
+          },
+        });
+      });
+  }
+
   onCloseModal(e) {
     const { handleCloseModal } = this.props;
     const { getResultsTimerId } = this.state;
@@ -123,7 +159,13 @@ class SubmissionResultModal extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, open, handleCloseModal, showWaitingDialog } = this.props;
+    const {
+      classes,
+      open,
+      handleCloseModal,
+      showWaitingDialog,
+      canMarkSubmissionAsFinal,
+    } = this.props;
     const { results, error } = this.state;
 
     const title = results
@@ -154,8 +196,25 @@ class SubmissionResultModal extends React.Component<Props, State> {
           fullWidth
           maxWidth={results ? "lg" : "xs"}
         >
-          <DialogTitle id="scroll-dialog-title" className={classes.dialogTitle}>
-            {title}
+          <DialogTitle id="scroll-dialog-title" className={classes.dialogTitle} disableTypography>
+            {/* <div /> */}
+            <Typography
+              variant="h5"
+              color="textSecondary"
+              component="p"
+              className={classes.dialogTitleText}
+            >
+              {title}
+            </Typography>
+            {/* <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={classes.dialogTitleMarkAsDefinitiveButton}
+              // onClick={e => props.handleOpenPastSubmissionsSidePanel()}
+            >
+              Marcar como solucion definitiva
+            </Button> */}
           </DialogTitle>
           {!results && showWaitingDialog && (
             <DialogContent dividers>
@@ -166,9 +225,22 @@ class SubmissionResultModal extends React.Component<Props, State> {
             </DialogContent>
           )}
 
-          {/* IO test results (if any) */}
           {results && (
-            <DialogContent dividers>
+            <DialogContent dividers className={classes.dialogContent}>
+              {/* Mark as definitive (if success) */}
+              {results.submission_status === "SUCCESS" && canMarkSubmissionAsFinal && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className={classes.markAsDefinitiveButton}
+                  onClick={() => this.onClickMarkAsFinalSolution(results.activity_id, results.id)}
+                >
+                  Marcar como solucion definitiva
+                </Button>
+              )}
+
+              {/* IO test results (if any) */}
               {results.io_test_run_results.length > 0 && (
                 <Typography variant="h5" color="black" component="p">
                   Tests de entrada/salida:

@@ -85,6 +85,7 @@ export type Notification = {
 
 export type SubmissionResult = {
   id: number,
+  activity_id: number,
   submission_file_name: string,
   submission_file_type: string,
   submission_file_id: number,

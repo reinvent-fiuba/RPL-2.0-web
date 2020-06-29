@@ -10,8 +10,6 @@ import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
 import authenticationService from "../../services/authenticationService";
 
-const _ = require("lodash");
-
 const styles = theme => ({
   avatar: {
     margin: theme.spacing(1),

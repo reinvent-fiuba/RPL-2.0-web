@@ -26,6 +26,7 @@ type Props = {
   backdropClicked: void => void,
   isOpen: boolean,
   onSelectSubmission: (submissionId: number, idx: number) => void,
+  refresh: boolean,
 };
 
 type State = {
@@ -40,9 +41,12 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
   };
 
   componentDidUpdate(prevProps) {
-    const { courseId, activityId } = this.props;
+    const { courseId, activityId, refresh } = this.props;
 
-    if (activityId !== prevProps.activityId && activityId !== null) {
+    if (
+      (refresh && !prevProps.refresh) ||
+      (activityId !== prevProps.activityId && activityId !== null)
+    ) {
       submissionsService
         .getAllSubmissions(courseId, activityId)
         .then(response => {

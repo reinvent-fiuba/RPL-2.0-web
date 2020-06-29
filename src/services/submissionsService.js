@@ -47,3 +47,25 @@ exports.getAllSubmissions = (
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
     method: "GET",
   });
+
+exports.getStats = (courseId: number): Promise<> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/submissions/stats`,
+    method: "GET",
+  });
+
+exports.getFinalSolution = (courseId: number, activityId: number): Promise<SubmissionResult> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/finalSubmission`,
+    method: "GET",
+  });
+
+exports.putSolutionAsFinal = (
+  courseId: number,
+  activityId: number,
+  submissionId: number
+): Promise<SubmissionResult> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions/${submissionId}/final`,
+    method: "PUT",
+  });
