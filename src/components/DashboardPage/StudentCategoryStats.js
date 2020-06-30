@@ -51,12 +51,6 @@ const styles = theme => ({
     }),
     marginLeft: drawerWidth,
   },
-  table: {
-    // minWidth: 650,
-  },
-  tableContainer: {
-    // width: "80%",
-  },
   tableContainerDiv: {
     display: "flex",
     alignItems: "center",

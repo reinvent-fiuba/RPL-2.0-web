@@ -7,6 +7,14 @@ import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import CalendarHeatmap from "react-calendar-heatmap";
 import submissionsService from "../../services/submissionsService";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableBody from "@material-ui/core/TableBody";
+import Table from "@material-ui/core/Table";
+import TableCell from "@material-ui/core/TableCell";
+import Paper from "@material-ui/core/Paper";
+
 import ativitiesService from "../../services/activitiesService";
 
 import { withState } from "../../utils/State";
@@ -40,12 +48,6 @@ const styles = theme => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: drawerWidth,
-  },
-  table: {
-    minWidth: 650,
-  },
-  tableContainer: {
-    width: "80%",
   },
   tableContainerDiv: {
     display: "flex",
@@ -116,23 +118,103 @@ class StudentStats extends React.Component<Props, State> {
     error: { open: false, message: null },
   };
 
+  componentDidMount() {
+    const { courseId } = this.props;
+    let submissionsByDate;
+    return submissionsService.getSubmissionsByDate(courseId)
+      .then(response => {
+        submissionsByDate = response;
+        return submissionsService.getSubmissionsByStudent(courseId);
+      })
+      .then(submissionsByStudent => {
+        this.setState({
+          submissionsByDate,
+          submissionsByStudent,
+          defaultSubmissionsByStudent: submissionsByStudent,
+          defaultData: true,
+        });
+      });
+  }
+
+  handleDateClick(value) {
+    const { courseId } = this.props;
+
+    if (!value) {
+      return this.setState({
+        submissionsByStudent: this.state.defaultSubmissionsByStudent,
+        defaultData: true,
+      });
+    }
+
+    const { date } = value;
+
+    return submissionsService.getSubmissionsByStudent(courseId, date).then(submissionsByStudent => {
+      return this.setState({ submissionsByStudent, defaultData: false });
+    });
+  }
+
+  renderStudentsTable() {
+    const { classes } = this.props;
+    const { submissionsByStudent } = this.state;
+
+    return (
+      <TableContainer component={Paper} className={classes.tableContainer}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow key={0}>
+              <TableCell key={1}>#</TableCell>
+              <TableCell key={2}>Nombre</TableCell>
+              <TableCell key={3}>Apellido</TableCell>
+              <TableCell key={4}>Usuario</TableCell>
+              <TableCell key={5}>Envios exitosos</TableCell>
+              <TableCell key={6}>Envios totales</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {submissionsByStudent.map((student, i) => (
+              <TableRow>
+                <TableCell key={1}>{i}</TableCell>
+                <TableCell key={2}>{student.name}</TableCell>
+                <TableCell key={3}>{student.surname}</TableCell>
+                <TableCell key={4}>{student.username}</TableCell>
+                <TableCell key={5}>{student.success_submissions}</TableCell>
+                <TableCell key={6}>{student.total_submissions}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
+
   render() {
     const { classes } = this.props;
     const { error } = this.state;
 
+    if (!this.state.submissionsByDate) {
+      return <div></div>;
+    }
+
+    const data = Object.entries(this.state.submissionsByDate).map(([date, count]) => ({
+      date,
+      count,
+    }));
+    console.log('data', data);
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
         <br />
-        <Grid container xs={12} spacing={3}>
+        <Grid container xs={12}>
+          <Grid item xs={4} />
           <Grid item xs={4}>
             <Typography>Totales</Typography>
             <div className={classes.calendarHeatmap}>
               <CalendarHeatmap
                 startDate={new Date("2020-04-13")}
                 endDate={new Date("2020-08-10")}
+                onClick={value => this.handleDateClick(value)}
                 showWeekdayLabels
-                values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 1 }, { date: "2020-08-01", count: 1 }]}
+                values={data}
                 classForValue={(value) => {
                   if (!value) {
                     return 'color-empty';
@@ -142,39 +224,9 @@ class StudentStats extends React.Component<Props, State> {
               />
             </div>
           </Grid>
-          <Grid item xs={4}>
-            <Typography>Exitos</Typography>
-            <div className={classes.calendarHeatmap}>
-              <CalendarHeatmap
-                startDate={new Date("2020-04-13")}
-                endDate={new Date("2020-08-10")}
-                showWeekdayLabels
-                values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 4 }, { date: "2020-08-01", count: 5 }]}
-                classForValue={(value) => {
-                  if (!value) {
-                    return 'color-empty';
-                  }
-                  return `color-github-${value.count}`;
-                }}
-              />
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography>Fallidas</Typography>
-            <div className={classes.calendarHeatmap}>
-              <CalendarHeatmap
-                startDate={new Date("2020-04-13")}
-                endDate={new Date("2020-08-10")}
-                showWeekdayLabels
-                values={[{ date: "2020-05-13", count: 1 }, { date: "2020-07-20", count: 2 }, { date: "2020-08-01", count: 3 }]}
-                classForValue={(value) => {
-                  if (!value) {
-                    return 'color-empty';
-                  }
-                  return `color-github-${value.count}`;
-                }}
-              />
-            </div>
+          <Grid item xs={4} />
+          <Grid item xs={12}>
+            {this.renderStudentsTable()}
           </Grid>
         </Grid>
       </div>
