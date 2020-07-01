@@ -221,7 +221,7 @@ class SolveActivityPage extends React.Component<Props, State> {
             showWaitingDialog
             activitySubmissionId={pastSubmissionsPanel.selectedSubmissionId}
             courseId={this.props.match.params.courseId}
-            canMarkSubmissionAsFinal={finalSolutionId === null}
+            activityFinalSubmissionId={finalSolutionId}
             onMarkSubmissionAsFinal={submissionId => this.handleMarkSubmissionAsFinal(submissionId)}
           />
         )}
@@ -291,7 +291,7 @@ class SolveActivityPage extends React.Component<Props, State> {
             open={submittedActivity}
             handleCloseModal={e => this.handleCloseModal(e)}
             showWaitingDialog
-            canMarkSubmissionAsFinal={finalSolutionId === null}
+            activityFinalSubmissionId={finalSolutionId}
           />
         )}
       </div>

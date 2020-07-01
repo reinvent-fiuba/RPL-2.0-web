@@ -223,8 +223,7 @@ class ActivitiesPage extends React.Component<Props, State> {
                     activities={activitiesByCategory[category]}
                     setOpenPanel={activityId => this.setOpenPanel(activityId)}
                     handleCellClick={(event, activityId) =>
-                      this.handleClickOnActivityTitle(event, activityId)
-                    }
+                      this.handleClickOnActivityTitle(event, activityId)}
                   />
                 </div>
               ))}

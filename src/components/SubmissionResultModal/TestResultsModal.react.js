@@ -12,6 +12,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
 import ReactDiffViewer from "react-diff-viewer";
 import Typography from "@material-ui/core/Typography";
+import SubmissionResultStatusIcon from "../../utils/icons";
 import type { SubmissionResult } from "../../types";
 import getText from "../../utils/messages";
 import submissionsService from "../../services/submissionsService";
@@ -36,7 +37,7 @@ const styles = () => ({
   },
   dialogTitleText: {
     alignSelf: "center",
-    margin: "0px",
+    marginRight: "10px",
   },
   markAsDefinitiveButton: {
     alignSelf: "flex-end",
@@ -60,7 +61,7 @@ type Props = {
   showWaitingDialog: boolean,
   activitySubmissionId: number,
   courseId: number,
-  canMarkSubmissionAsFinal: boolean,
+  activityFinalSubmissionId: ?number,
   onMarkSubmissionAsFinal: number => void,
 };
 
@@ -164,7 +165,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
       open,
       handleCloseModal,
       showWaitingDialog,
-      canMarkSubmissionAsFinal,
+      activityFinalSubmissionId,
     } = this.props;
     const { results, error } = this.state;
 
@@ -197,7 +198,6 @@ class SubmissionResultModal extends React.Component<Props, State> {
           maxWidth={results ? "lg" : "xs"}
         >
           <DialogTitle id="scroll-dialog-title" className={classes.dialogTitle} disableTypography>
-            {/* <div /> */}
             <Typography
               variant="h5"
               color="textSecondary"
@@ -206,15 +206,12 @@ class SubmissionResultModal extends React.Component<Props, State> {
             >
               {title}
             </Typography>
-            {/* <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              className={classes.dialogTitleMarkAsDefinitiveButton}
-              // onClick={e => props.handleOpenPastSubmissionsSidePanel()}
-            >
-              Marcar como solucion definitiva
-            </Button> */}
+            {results && (
+              <SubmissionResultStatusIcon
+                isFinalSolution={results.is_final_solution}
+                submissionStatus={results.submission_status}
+              />
+            )}
           </DialogTitle>
           {!results && showWaitingDialog && (
             <DialogContent dividers>
@@ -228,7 +225,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
           {results && (
             <DialogContent dividers className={classes.dialogContent}>
               {/* Mark as definitive (if success) */}
-              {results.submission_status === "SUCCESS" && canMarkSubmissionAsFinal && (
+              {results.submission_status === "SUCCESS" && activityFinalSubmissionId === null && (
                 <Button
                   type="submit"
                   variant="contained"

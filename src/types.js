@@ -103,4 +103,5 @@ export type SubmissionResult = {
   unit_test_run_results: Array<UnitTestRunResult>,
   submission_date: string,
   submited_code: string,
+  is_final_solution: boolean,
 };
