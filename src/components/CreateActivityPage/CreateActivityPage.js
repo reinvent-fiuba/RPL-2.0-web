@@ -235,7 +235,7 @@ class CreateActivityPage extends React.Component<Props, State> {
 
     return serviceToCall(data)
       .then(response => {
-        this.setState({ activity: response })
+        this.setState({ activity: response });
         return response;
       })
       .catch(() => {
@@ -468,7 +468,8 @@ class CreateActivityPage extends React.Component<Props, State> {
                 onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                 selectedTab={mdEditorTab}
                 onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })}
+                  this.setState({ mdEditorTab: mdEditorTabChanged })
+                }
                 generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
               />
             </Grid>

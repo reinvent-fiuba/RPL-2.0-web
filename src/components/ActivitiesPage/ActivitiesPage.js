@@ -183,6 +183,7 @@ class ActivitiesPage extends React.Component<Props, State> {
             handleCloseModal={e => this.handleCloseModal(e)}
             showWaitingDialog
             activitySubmissionId={selectedSubmissionId}
+            courseId={match.params.courseId}
           />
         )}
 
@@ -222,8 +223,7 @@ class ActivitiesPage extends React.Component<Props, State> {
                     activities={activitiesByCategory[category]}
                     setOpenPanel={activityId => this.setOpenPanel(activityId)}
                     handleCellClick={(event, activityId) =>
-                      this.handleClickOnActivityTitle(event, activityId)
-                    }
+                      this.handleClickOnActivityTitle(event, activityId)}
                   />
                 </div>
               ))}

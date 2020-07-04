@@ -12,13 +12,13 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
 import ReactDiffViewer from "react-diff-viewer";
 import Typography from "@material-ui/core/Typography";
+import SubmissionResultStatusIcon from "../../utils/icons";
 import type { SubmissionResult } from "../../types";
 import getText from "../../utils/messages";
 import submissionsService from "../../services/submissionsService";
 import ErrorNotification from "../../utils/ErrorNotification";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
-
-const _ = require("lodash");
+import { withState } from "../../utils/State";
 
 const styles = () => ({
   modal: {
@@ -32,6 +32,20 @@ const styles = () => ({
   dialogTitle: {
     display: "flex",
     justifyContent: "center",
+    // justifyContent: "space-between",
+    alignItems: "center",
+    padding: "8px",
+  },
+  dialogTitleText: {
+    alignSelf: "center",
+    marginRight: "10px",
+  },
+  markAsDefinitiveButton: {
+    alignSelf: "flex-end",
+  },
+  dialogContent: {
+    display: "flex",
+    flexDirection: "column",
   },
   codeEditor: {
     height: "500px",
@@ -45,8 +59,12 @@ type Props = {
   handleCloseModal: Event => void,
   open: boolean,
   classes: any,
+  context: any,
   showWaitingDialog: boolean,
   activitySubmissionId: number,
+  courseId: number,
+  activityFinalSubmissionId: ?number,
+  onMarkSubmissionAsFinal: number => void,
 };
 
 type State = {
@@ -114,6 +132,27 @@ class SubmissionResultModal extends React.Component<Props, State> {
       });
   }
 
+  onClickMarkAsFinalSolution(activityId: number, submissionId: number) {
+    const { courseId, onMarkSubmissionAsFinal } = this.props;
+    submissionsService
+      .putSolutionAsFinal(courseId, activityId, submissionId)
+      .then(() => {
+        onMarkSubmissionAsFinal(submissionId);
+      })
+      .catch(err => {
+        console.log(err);
+        if (status === 404) {
+          return;
+        }
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al marcar la solución como definitiva. Por favor reintenta",
+          },
+        });
+      });
+  }
+
   onCloseModal(e) {
     const { handleCloseModal } = this.props;
     const { getResultsTimerId } = this.state;
@@ -123,7 +162,14 @@ class SubmissionResultModal extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, open, handleCloseModal, showWaitingDialog } = this.props;
+    const {
+      classes,
+      open,
+      handleCloseModal,
+      showWaitingDialog,
+      activityFinalSubmissionId,
+      context,
+    } = this.props;
     const { results, error } = this.state;
 
     const title = results
@@ -154,8 +200,21 @@ class SubmissionResultModal extends React.Component<Props, State> {
           fullWidth
           maxWidth={results ? "lg" : "xs"}
         >
-          <DialogTitle id="scroll-dialog-title" className={classes.dialogTitle}>
-            {title}
+          <DialogTitle id="scroll-dialog-title" className={classes.dialogTitle} disableTypography>
+            <Typography
+              variant="h5"
+              color="textSecondary"
+              component="p"
+              className={classes.dialogTitleText}
+            >
+              {title}
+            </Typography>
+            {results && (
+              <SubmissionResultStatusIcon
+                isFinalSolution={results.is_final_solution}
+                submissionStatus={results.submission_status}
+              />
+            )}
           </DialogTitle>
           {!results && showWaitingDialog && (
             <DialogContent dividers>
@@ -166,15 +225,28 @@ class SubmissionResultModal extends React.Component<Props, State> {
             </DialogContent>
           )}
 
-          {/* IO test results (if any) */}
           {results && (
-            <DialogContent dividers>
+            <DialogContent dividers className={classes.dialogContent}>
+              {/* Mark as definitive (if success) */}
+              {!context.permissions.includes("activity_manage") &&
+                results.submission_status === "SUCCESS" &&
+                activityFinalSubmissionId === null && (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.markAsDefinitiveButton}
+                    onClick={() => this.onClickMarkAsFinalSolution(results.activity_id, results.id)}
+                  >
+                    Marcar como solucion definitiva
+                  </Button>
+                )}
+              {/* IO test results (if any) */}
               {results.io_test_run_results.length > 0 && (
                 <Typography variant="h5" color="black" component="p">
                   Tests de entrada/salida:
                 </Typography>
               )}
-
               {results.io_test_run_results &&
                 results.io_test_run_results.map((ioResult, idx) => {
                   const result =
@@ -213,7 +285,6 @@ class SubmissionResultModal extends React.Component<Props, State> {
                     </DialogContentText>
                   );
                 })}
-
               {/* Unit test results (if any) */}
               {results.unit_test_run_results.length > 0 && (
                 <Typography variant="h5" color="black" component="p">
@@ -267,7 +338,6 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   <br />
                 </div>
               )}
-
               {results.submited_code && (
                 <div className={classes.codeEditor}>
                   <MultipleTabsEditor
@@ -279,12 +349,10 @@ class SubmissionResultModal extends React.Component<Props, State> {
                 </div>
               )}
               <Divider variant="middle" />
-
               <br />
               <Typography variant="h5" color="black" component="p">
                 STDERR:
               </Typography>
-
               <br />
               {results.stderr &&
                 results.stderr.split("\n").map((item, key) => (
@@ -292,16 +360,13 @@ class SubmissionResultModal extends React.Component<Props, State> {
                     {item}
                   </Typography>
                 ))}
-
               <br />
               <Divider variant="middle" />
-
               <br />
               <Typography variant="h5" color="black" component="p">
                 STDOUT:
               </Typography>
               <br />
-
               {results.stdout &&
                 results.stdout.split("\n").map((item, key) => (
                   <Typography
@@ -313,7 +378,6 @@ class SubmissionResultModal extends React.Component<Props, State> {
                     {item}
                   </Typography>
                 ))}
-
               <DialogActions>
                 <Button onClick={e => handleCloseModal(e)} color="primary">
                   Cerrar
@@ -327,4 +391,4 @@ class SubmissionResultModal extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(SubmissionResultModal);
+export default withState(withStyles(styles)(SubmissionResultModal));

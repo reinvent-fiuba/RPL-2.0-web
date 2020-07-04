@@ -85,6 +85,7 @@ export type Notification = {
 
 export type SubmissionResult = {
   id: number,
+  activity_id: number,
   submission_file_name: string,
   submission_file_type: string,
   submission_file_id: number,
@@ -101,5 +102,6 @@ export type SubmissionResult = {
   io_test_run_results: Array<IOTestRunResult>,
   unit_test_run_results: Array<UnitTestRunResult>,
   submission_date: string,
-  submited_code: string,
+  submited_code: { [string]: string },
+  is_final_solution: boolean,
 };

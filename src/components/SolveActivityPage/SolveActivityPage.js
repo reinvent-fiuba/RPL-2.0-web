@@ -13,6 +13,7 @@ import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SolvePageHeader from "./SolvePageHeader.react";
+import SubmissionsSidePanel from "../ActivitiesPage/SubmissionsSidePanel.react";
 import SubmissionResultModal from "../SubmissionResultModal/TestResultsModal.react";
 import "./SolveActivityPage.css";
 import type { Activity } from "../../types";
@@ -72,6 +73,8 @@ type State = {
   submittedActivity: boolean,
   selectedSubmissionId: ?number,
   editor: any,
+  pastSubmissionsPanel: { isOpen: boolean, selectedSubmissionId: ?number },
+  finalSolutionId: ?number,
 };
 
 class SolveActivityPage extends React.Component<Props, State> {
@@ -84,6 +87,8 @@ class SolveActivityPage extends React.Component<Props, State> {
     submittedActivity: false,
     selectedSubmissionId: null,
     editor: null,
+    pastSubmissionsPanel: { isOpen: false, selectedSubmissionId: null },
+    finalSolutionId: null,
   };
 
   componentDidMount() {
@@ -94,6 +99,17 @@ class SolveActivityPage extends React.Component<Props, State> {
           activity: activityResponse,
           code: activityResponse.initial_code,
         });
+        submissionsService
+          .getFinalSolution(this.props.match.params.courseId, this.props.match.params.activityId)
+          .then(finalSolution => {
+            this.setState({ finalSolutionId: finalSolution.id });
+          })
+          .catch(err => {
+            if (err.status === 404) {
+              return Promise.resolve(this.setState({ finalSolutionId: null }));
+            }
+            return Promise.reject(err);
+          });
       })
       .catch(err => {
         console.log(err);
@@ -119,7 +135,6 @@ class SolveActivityPage extends React.Component<Props, State> {
   }
 
   handleSubmitActivity(event: any) {
-    // TODO: si ?teacherTest=true que sea otro endpoint o algo para que en el backend se tome diferente
     event.preventDefault();
     const { courseId, activityId } = this.props.match.params;
     const { code } = this.state;
@@ -147,6 +162,25 @@ class SolveActivityPage extends React.Component<Props, State> {
     this.setState({ submittedActivity: false, selectedSubmissionId: null });
   }
 
+  setOpenSubmissionsPanel() {
+    const pastSubmissionsPanel = { isOpen: true, selectedSubmissionId: null };
+    this.setState({ pastSubmissionsPanel });
+  }
+
+  setCloseSubmissionsPanel() {
+    const pastSubmissionsPanel = { isOpen: false, selectedSubmissionId: null };
+    this.setState({ pastSubmissionsPanel });
+  }
+
+  handleClickOnPastSubmission(submissionId: number, idx: number) {
+    const pastSubmissionsPanel = { isOpen: false, selectedSubmissionId: submissionId };
+    this.setState({ pastSubmissionsPanel });
+  }
+
+  handleMarkSubmissionAsFinal(submissionId: number) {
+    this.setState({ finalSolutionId: submissionId });
+  }
+
   render() {
     const { classes, history } = this.props;
     const {
@@ -158,10 +192,40 @@ class SolveActivityPage extends React.Component<Props, State> {
       error,
       code,
       editor,
+      pastSubmissionsPanel,
+      finalSolutionId,
     } = this.state;
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
+
+        {/* Se abre cuando alguien presiona el boton de VER ENTEGAS */}
+        {activity && (
+          <SubmissionsSidePanel
+            refresh={pastSubmissionsPanel.isOpen}
+            isOpen={pastSubmissionsPanel.isOpen}
+            // alwaysUpdate
+            activityId={activity.id}
+            courseId={this.props.match.params.courseId}
+            backdropClicked={() => this.setCloseSubmissionsPanel()}
+            onSelectSubmission={(submissionId, i) =>
+              this.handleClickOnPastSubmission(submissionId, i)
+            }
+          />
+        )}
+
+        {/* APARECE CUANDO SE QUIERE VER EL DETALLE DE UNA ENTEGA PASADA DESDE EL SIDE PANEL */}
+        {pastSubmissionsPanel.selectedSubmissionId && (
+          <SubmissionResultModal
+            open={pastSubmissionsPanel.selectedSubmissionId}
+            handleCloseModal={e => this.setOpenSubmissionsPanel()}
+            showWaitingDialog
+            activitySubmissionId={pastSubmissionsPanel.selectedSubmissionId}
+            courseId={this.props.match.params.courseId}
+            activityFinalSubmissionId={finalSolutionId}
+            onMarkSubmissionAsFinal={submissionId => this.handleMarkSubmissionAsFinal(submissionId)}
+          />
+        )}
 
         <TopBar
           handleDrawerOpen={e => this.handleSwitchDrawer(e)}
@@ -179,8 +243,10 @@ class SolveActivityPage extends React.Component<Props, State> {
             <div className={classes.drawerHeader} />
             <SolvePageHeader
               handleSubmitActivity={e => this.handleSubmitActivity(e)}
+              handleOpenPastSubmissionsSidePanel={() => this.setOpenSubmissionsPanel()}
               activityName={activity.name}
               history={history}
+              canShowOtherSolutions={finalSolutionId !== null}
             />
             <SplitPane
               split="vertical"
@@ -222,9 +288,12 @@ class SolveActivityPage extends React.Component<Props, State> {
         {submittedActivity && (
           <SubmissionResultModal
             activitySubmissionId={selectedSubmissionId}
+            courseId={this.props.match.params.courseId}
             open={submittedActivity}
             handleCloseModal={e => this.handleCloseModal(e)}
             showWaitingDialog
+            activityFinalSubmissionId={finalSolutionId}
+            onMarkSubmissionAsFinal={submissionId => this.handleMarkSubmissionAsFinal(submissionId)}
           />
         )}
       </div>

@@ -10,8 +10,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Avatar from "@material-ui/core/Avatar";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import Typography from "@material-ui/core/Typography";
-import { ThumbUp, ThumbDown, ThumbsUpDown } from "@material-ui/icons";
-import { green, red, yellow } from "@material-ui/core/colors";
+import SubmissionResultStatusIcon from "../../utils/icons";
 import ErrorNotification from "../../utils/ErrorNotification";
 import type { SubmissionResult } from "../../types";
 import submissionsService from "../../services/submissionsService";
@@ -26,6 +25,7 @@ type Props = {
   backdropClicked: void => void,
   isOpen: boolean,
   onSelectSubmission: (submissionId: number, idx: number) => void,
+  refresh: boolean, // so that SolveActivityPage updates when selecting final submission
 };
 
 type State = {
@@ -40,9 +40,12 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
   };
 
   componentDidUpdate(prevProps) {
-    const { courseId, activityId } = this.props;
+    const { courseId, activityId, refresh } = this.props;
 
-    if (activityId !== prevProps.activityId && activityId !== null) {
+    if (
+      (refresh && !prevProps.refresh) ||
+      (activityId !== prevProps.activityId && activityId !== null)
+    ) {
       submissionsService
         .getAllSubmissions(courseId, activityId)
         .then(response => {
@@ -57,16 +60,6 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
           });
         });
     }
-  }
-
-  getSubmissionResultStatusIcon(submissionStatus: string): any {
-    if (submissionStatus === "SUCCESS") {
-      return <ThumbUp style={{ color: green[500] }} />;
-    }
-    if (submissionStatus === "FAILURE" || submissionStatus.includes("ERROR")) {
-      return <ThumbDown style={{ color: red[500] }} />;
-    }
-    return <ThumbsUpDown style={{ color: yellow[800] }} />;
   }
 
   render() {
@@ -112,7 +105,10 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
                             secondary={submission.submission_date.split("T")[1].split(".")[0]}
                           />
                           <ListItemSecondaryAction>
-                            {this.getSubmissionResultStatusIcon(submission.submission_status)}
+                            <SubmissionResultStatusIcon
+                              isFinalSolution={submission.is_final_solution}
+                              submissionStatus={submission.submission_status}
+                            />
                           </ListItemSecondaryAction>
                         </ListItem>
                       ))}

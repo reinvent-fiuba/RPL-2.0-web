@@ -4,6 +4,7 @@ import { withState } from "./utils/State";
 import CreateActivityPage from "./components/CreateActivityPage/CreateActivityPage";
 import AddActivityCorrectionTests from "./components/AddActivityCorrectionTests/AddActivityCorrectionTests.react";
 import SolveActivityPage from "./components/SolveActivityPage/SolveActivityPage";
+import FinalActivitiesPage from "./components/FinalActivitiesPage/FinalActivitiesPage";
 import ActivitiesPage from "./components/ActivitiesPage/ActivitiesPage";
 import ActivitiesTeacherPage from "./components/ActivitiesTeacherPage/ActivitiesTeacherPage";
 import StudentsPage from "./components/StudentsPage/StudentsPage";
@@ -49,6 +50,11 @@ class CourseIndex extends React.PureComponent {
           exact
           path="/courses/:courseId/activities/:activityId"
           component={SolveActivityPage}
+        />
+        <Route
+          exact
+          path="/courses/:courseId/activities/:activityId/definitives"
+          component={FinalActivitiesPage}
         />
       </>
     );
