@@ -179,8 +179,8 @@ class CategoryStats extends React.Component<Props, State> {
     const { classes } = this.props;
     const { activitiesStats } = this.state;
 
-    const { metadata, submission_stats } = activitiesStats;
-    const data = _.zipWith(submission_stats, metadata, (stat, meta) => ({
+    const { metadata, submissions_stats } = activitiesStats;
+    const data = _.zipWith(submissions_stats, metadata, (stat, meta) => ({
       ...stat,
       ...meta,
     }));
@@ -219,11 +219,16 @@ class CategoryStats extends React.Component<Props, State> {
     const { classes } = this.props;
     const { error, activitiesStats } = this.state;
 
+    const colors = palette("sequential", 2).map(hex => `#${hex}`);
+    const data = activitiesStats && activitiesStats.submissions_stats.map(activity => activity.total);
     const dataScore = {
       labels: activitiesStats && activitiesStats.metadata.map(activity => activity.name),
       datasets: [
         {
-          data: activitiesStats && activitiesStats.submission_stats.map(activity => activity.total),
+          backgroundColor: colors[0],
+          borderColor: colors[1],
+          borderWidth: 1,
+          data,
         },
       ],
     };
@@ -234,7 +239,7 @@ class CategoryStats extends React.Component<Props, State> {
           ticks: {
             beginAtZero: true,
             min: 0,
-            max: 3,
+            max: Math.max(...(data || [])) + 1,
           },
         },
       ],

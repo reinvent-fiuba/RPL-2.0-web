@@ -161,8 +161,8 @@ class StudentStats extends React.Component<Props, State> {
     const { classes } = this.props;
     const { submissionsByStudent } = this.state;
 
-    const { metadata, submission_stats } = submissionsByStudent;
-    const data = _.zipWith(submission_stats, metadata, (stat, meta) => ({
+    const { metadata, submissions_stats } = submissionsByStudent;
+    const data = _.zipWith(submissions_stats, metadata, (stat, meta) => ({
       ...stat,
       ...meta,
     }));
@@ -205,9 +205,9 @@ class StudentStats extends React.Component<Props, State> {
       return <div></div>;
     }
 
-    const {metadata, submission_stats} = submissionsByDate;
+    const {metadata, submissions_stats} = submissionsByDate;
 
-    const data = _.zipWith(submission_stats, metadata, (stat, meta) => ({
+    const data = _.zipWith(submissions_stats, metadata, (stat, meta) => ({
       count: stat.total,
       date: meta.date,
     }));
