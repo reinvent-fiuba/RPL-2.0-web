@@ -86,6 +86,7 @@
     "react-sliding-side-panel": "^1.0.9",
     "react-split-pane": "^0.1.89",
     "showdown": "^1.9.1",
-    "webpack-dotenv-plugin": "^2.1.0"
+    "webpack-dotenv-plugin": "^2.1.0",
+    "react-calendar-heatmap": "^1.8.1"
   }
 }

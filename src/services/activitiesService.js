@@ -130,9 +130,3 @@ exports.disableActivity = (
   activityId: number,
   newStatus: boolean
 ): Promise<Activity> => this.updateActivity({ courseId, activityId, active: newStatus });
-
-exports.getStats = (courseId: number): Promise<any> =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/stats`,
-    method: "GET",
-  });

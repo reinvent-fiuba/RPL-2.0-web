@@ -47,9 +47,3 @@ exports.getAllSubmissions = (
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
     method: "GET",
   });
-
-exports.getStats = (courseId: number): Promise<> =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/submissions/stats`,
-    method: "GET",
-  });
