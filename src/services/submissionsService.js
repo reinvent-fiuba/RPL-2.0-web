@@ -47,23 +47,3 @@ exports.getAllSubmissions = (
     url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
     method: "GET",
   });
-
-exports.getStats = (courseId: number): Promise<> =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/submissions/stats`,
-    method: "GET",
-  });
-
-exports.getSubmissionsByDate = (courseId: number): Promise<> => 
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/submissions/statsByDate`,
-    method: "GET",
-  });
-
-exports.getSubmissionsByStudent = (courseId: number, date: string): Promise<> => 
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/submissions/detailedStats${
-      date ? `?date=${date}` : ""
-    }`,
-    method: "GET",
-  });

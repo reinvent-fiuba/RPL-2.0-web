@@ -130,21 +130,3 @@ exports.disableActivity = (
   activityId: number,
   newStatus: boolean
 ): Promise<Activity> => this.updateActivity({ courseId, activityId, active: newStatus });
-
-exports.getStats = (courseId: number): Promise<any> =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/stats`,
-    method: "GET",
-  });
-
-exports.getStudentCategoryStats = (courseId: number, categoryId: number, studentId: number) =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories/${categoryId}/stats?courseUserId=${studentId}`,
-    method: "GET",
-  });
-
-exports.getCategoryStats = (courseId: number, categoryId: number) =>
-  request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories/${categoryId}/stats`,
-    method: "GET",
-  });
