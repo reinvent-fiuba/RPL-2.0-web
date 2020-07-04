@@ -1,7 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 // @flow
 import React from "react";
-import { useLocation } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { withState } from "../../utils/State";
@@ -38,14 +37,14 @@ type Props = {
   classes: any,
   history: any,
   canShowOtherSolutions: boolean,
+  onlyTitle: boolean,
 };
 
 function getLeftTitle(
   history: any,
   permissions: Array<string>,
   classes: any,
-  canShowOtherSolutions: boolean,
-  handleShowMoreSolutions: Event => void
+  canShowOtherSolutions: boolean
 ) {
   if (permissions.includes("activity_manage")) {
     return (
@@ -61,7 +60,7 @@ function getLeftTitle(
         variant="contained"
         color="primary"
         className={classes.topRightButtons}
-        onClick={e => handleShowMoreSolutions(e)}
+        onClick={() => history.push(`${history.location.pathname}/definitives`)}
       >
         Ver otras soluciones
       </Button>
@@ -73,35 +72,38 @@ function getLeftTitle(
 function SolvePageHeader(props: Props) {
   return (
     <div className={props.classes.secondHeader}>
-      <div className={props.classes.topLeftButtons}>
-        {getLeftTitle(
-          props.history,
-          props.context.permissions,
-          props.classes,
-          props.canShowOtherSolutions,
-          props.handleSubmitActivity
-        )}
-      </div>
+      {!props.onlyTitle && (
+        <div className={props.classes.topLeftButtons}>
+          {getLeftTitle(
+            props.history,
+            props.context.permissions,
+            props.classes,
+            props.canShowOtherSolutions
+          )}
+        </div>
+      )}
       <h1 className={props.classes.secondHeaderTitle}>{props.activityName}</h1>
-      <div className={props.classes.topRightButtons}>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          className={props.classes.mySubmissionsButton}
-          onClick={e => props.handleOpenPastSubmissionsSidePanel()}
-        >
-          Mis entregas
-        </Button>
-        <Button
-          type="submit"
-          variant="contained"
-          color="secondary"
-          onClick={e => props.handleSubmitActivity(e)}
-        >
-          Entregar
-        </Button>
-      </div>
+      {!props.onlyTitle && (
+        <div className={props.classes.topRightButtons}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className={props.classes.mySubmissionsButton}
+            onClick={e => props.handleOpenPastSubmissionsSidePanel()}
+          >
+            Mis entregas
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            onClick={e => props.handleSubmitActivity(e)}
+          >
+            Entregar
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

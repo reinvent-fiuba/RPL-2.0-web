@@ -102,6 +102,6 @@ export type SubmissionResult = {
   io_test_run_results: Array<IOTestRunResult>,
   unit_test_run_results: Array<UnitTestRunResult>,
   submission_date: string,
-  submited_code: string,
+  submited_code: { [string]: string },
   is_final_solution: boolean,
 };

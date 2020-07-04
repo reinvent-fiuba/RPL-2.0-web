@@ -18,6 +18,7 @@ import getText from "../../utils/messages";
 import submissionsService from "../../services/submissionsService";
 import ErrorNotification from "../../utils/ErrorNotification";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
+import { withState } from "../../utils/State";
 
 const styles = () => ({
   modal: {
@@ -58,6 +59,7 @@ type Props = {
   handleCloseModal: Event => void,
   open: boolean,
   classes: any,
+  context: any,
   showWaitingDialog: boolean,
   activitySubmissionId: number,
   courseId: number,
@@ -166,6 +168,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
       handleCloseModal,
       showWaitingDialog,
       activityFinalSubmissionId,
+      context,
     } = this.props;
     const { results, error } = this.state;
 
@@ -225,25 +228,25 @@ class SubmissionResultModal extends React.Component<Props, State> {
           {results && (
             <DialogContent dividers className={classes.dialogContent}>
               {/* Mark as definitive (if success) */}
-              {results.submission_status === "SUCCESS" && activityFinalSubmissionId === null && (
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className={classes.markAsDefinitiveButton}
-                  onClick={() => this.onClickMarkAsFinalSolution(results.activity_id, results.id)}
-                >
-                  Marcar como solucion definitiva
-                </Button>
-              )}
-
+              {!context.permissions.includes("activity_manage") &&
+                results.submission_status === "SUCCESS" &&
+                activityFinalSubmissionId === null && (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.markAsDefinitiveButton}
+                    onClick={() => this.onClickMarkAsFinalSolution(results.activity_id, results.id)}
+                  >
+                    Marcar como solucion definitiva
+                  </Button>
+                )}
               {/* IO test results (if any) */}
               {results.io_test_run_results.length > 0 && (
                 <Typography variant="h5" color="black" component="p">
                   Tests de entrada/salida:
                 </Typography>
               )}
-
               {results.io_test_run_results &&
                 results.io_test_run_results.map((ioResult, idx) => {
                   const result =
@@ -282,7 +285,6 @@ class SubmissionResultModal extends React.Component<Props, State> {
                     </DialogContentText>
                   );
                 })}
-
               {/* Unit test results (if any) */}
               {results.unit_test_run_results.length > 0 && (
                 <Typography variant="h5" color="black" component="p">
@@ -336,7 +338,6 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   <br />
                 </div>
               )}
-
               {results.submited_code && (
                 <div className={classes.codeEditor}>
                   <MultipleTabsEditor
@@ -348,12 +349,10 @@ class SubmissionResultModal extends React.Component<Props, State> {
                 </div>
               )}
               <Divider variant="middle" />
-
               <br />
               <Typography variant="h5" color="black" component="p">
                 STDERR:
               </Typography>
-
               <br />
               {results.stderr &&
                 results.stderr.split("\n").map((item, key) => (
@@ -361,16 +360,13 @@ class SubmissionResultModal extends React.Component<Props, State> {
                     {item}
                   </Typography>
                 ))}
-
               <br />
               <Divider variant="middle" />
-
               <br />
               <Typography variant="h5" color="black" component="p">
                 STDOUT:
               </Typography>
               <br />
-
               {results.stdout &&
                 results.stdout.split("\n").map((item, key) => (
                   <Typography
@@ -382,7 +378,6 @@ class SubmissionResultModal extends React.Component<Props, State> {
                     {item}
                   </Typography>
                 ))}
-
               <DialogActions>
                 <Button onClick={e => handleCloseModal(e)} color="primary">
                   Cerrar
@@ -396,4 +391,4 @@ class SubmissionResultModal extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(SubmissionResultModal);
+export default withState(withStyles(styles)(SubmissionResultModal));

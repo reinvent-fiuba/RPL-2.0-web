@@ -60,6 +60,39 @@ exports.getFinalSolution = (courseId: number, activityId: number): Promise<Submi
     method: "GET",
   });
 
+exports.getFinalSolutionWithFile = (
+  courseId: number,
+  activityId: number
+): Promise<SubmissionResult> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/finalSubmission`,
+    method: "GET",
+  }).then(submission => {
+    return fetch(
+      `http://localhost:8080/api/getExtractedFile/${submission.submission_file_id}`
+    ).then(response => {
+      return response.json().then(code => {
+        const completeSubmission = submission;
+        completeSubmission.submited_code = code;
+        return completeSubmission;
+      });
+    });
+  });
+
+exports.getAllFinalSolutionsFiles = (
+  courseId: number,
+  activityId: number
+): Promise<Array<{ [string]: string }>> =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/allFinalSubmissions`,
+    method: "GET",
+  }).then(response =>
+    request({
+      url: `http://localhost:8080/api/getExtractedFiles/${response.submission_file_ids}`,
+      method: "GET",
+    })
+  );
+
 exports.putSolutionAsFinal = (
   courseId: number,
   activityId: number,
