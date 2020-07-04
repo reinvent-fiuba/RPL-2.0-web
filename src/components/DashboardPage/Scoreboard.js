@@ -29,7 +29,6 @@ import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
 import StudentCategoryStats from "./StudentCategoryStats";
 import CategoryStats from "./CategoryStats";
-import Scoreboard from "./Scoreboard";
 
 const drawerWidth = 240;
 
@@ -57,12 +56,6 @@ const styles = theme => ({
     }),
     marginLeft: drawerWidth,
   },
-  table: {
-    minWidth: 650,
-  },
-  tableContainer: {
-    width: "75%",
-  },
   tableContainerDiv: {
     display: "flex",
     alignItems: "center",
@@ -80,45 +73,11 @@ const styles = theme => ({
   tableIconsColumn: {
     width: theme.spacing(20),
   },
-  avatar: {
-    width: theme.spacing(4),
-    height: theme.spacing(4),
-    fontSize: "0.75rem",
-  },
-  plotContainerDiv: {
+  filters: {
+    display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-  },
-  plotPaper: {
-    width: "80%",
-    height: "400px",
-  },
-  plot: {
-    height: "100%",
-  },
-  calendarHeatmap: {
-    marginTop: theme.spacing(2),
-    width: "75%",
-    fontFamily: "sans-serif",
-  },
-  dashboardContainer: {
-    width: "75%",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: `0 auto`,
-    marginBottom: theme.spacing(5),
   },
 });
-
-const legendOpts = {
-  display: true,
-  fullWidth: false,
-  position: "left",
-  reverse: false,
-  labels: {
-    fontSize: 10,
-  },
-};
 
 type Props = {
   match: any,
@@ -131,7 +90,7 @@ type State = {
   isSideBarOpen: boolean,
 };
 
-class ActivitiesPage extends React.Component<Props, State> {
+class Scoreboard extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     isSideBarOpen: false,
@@ -143,7 +102,7 @@ class ActivitiesPage extends React.Component<Props, State> {
   }
 
   loadScoreboad() {
-    const { courseId } = this.props.match.params;
+    const { courseId } = this.props;
     return coursesService
       .getScoreboard(courseId)
       .then(scoreboard => this.setState({ scoreboard }))
@@ -155,10 +114,6 @@ class ActivitiesPage extends React.Component<Props, State> {
           },
         });
       });
-  }
-
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -210,8 +165,8 @@ class ActivitiesPage extends React.Component<Props, State> {
   // eslint-disable-next-line class-methods-use-this
   renderScoreBoard(students: Array<Student>, classes: any) {
     return (
-      <TableContainer component={Paper} className={classes.tableContainer}>
-        <Table className={classes.table} aria-label="simple table">
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
           <TableHead>{this.renderHeadRow(classes)}</TableHead>
           <TableBody>
             {students.map((student, i) =>
@@ -223,66 +178,21 @@ class ActivitiesPage extends React.Component<Props, State> {
     );
   }
 
-  handleChange(event, newValue) {
-    this.setState({ current: newValue });
-  }
-
   render() {
     const { classes, match, context } = this.props;
-    const { permissions } = context;
-    const { isSideBarOpen, error, scoreboard } = this.state;
-
-    const teacherStats = [
-      <Scoreboard courseId={match.params.courseId} />,
-      <TeacherStats courseId={match.params.courseId} />,
-      <StudentCategoryStats className={classes.stats} courseId={match.params.courseId} />,
-      <CategoryStats className={classes.stats} courseId={match.params.courseId} />,
-    ];
+    const { scoreboard } = this.state;
 
     return (
       <div>
-        {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Dashboard"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={match.params.courseId}
-        />
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
-          <div className={classes.dashboardContainer}>
-            {permissions.includes("user_manage") ? (
-              <div>
-                <Paper className={classes.root}>
-                  <Tabs
-                    value={this.state.current}
-                    onChange={(event, newValue) => this.handleChange(event, newValue)}
-                    indicatorColor="primary"
-                    textColor="primary"
-                  >
-                    <Tab label="Scoreboard" />
-                    <Tab label="General" />
-                    <Tab label="Entregas por alumno y categoría" />
-                    <Tab label="Entregas por categorías" />
-                  </Tabs>
-                </Paper>
-                {teacherStats[this.state.current]}
-              </div>
-            ) : (
-              <div>
-                <StudentStats courseId={match.params.courseId} />
-                <Scoreboard courseId={match.params.courseId} />
-              </div>
-            )}
-          </div>
-        </main>
+        <br />
+        <Grid container className={classes.filters} xs={12}>
+          <Grid item xs={12}>
+            {scoreboard && this.renderScoreBoard(scoreboard, classes)}
+          </Grid>
+        </Grid>
       </div>
     );
   }
 }
 
-export default withState(withStyles(styles)(ActivitiesPage));
+export default withState(withStyles(styles)(Scoreboard));
