@@ -24,6 +24,8 @@ import "react-calendar-heatmap/dist/styles.css";
 
 import ErrorNotification from "../../utils/ErrorNotification";
 
+// TOOD Rename file
+
 const _ = require("lodash");
 
 const drawerWidth = 240;
@@ -222,7 +224,7 @@ class StudentStats extends React.Component<Props, State> {
             <Typography>Totales</Typography>
             <div className={classes.calendarHeatmap}>
               <CalendarHeatmap
-                startDate={new Date("2020-04-13")}
+                startDate={new Date("2020-04-13")} // TODO: Get semester start and end from backend
                 endDate={new Date("2020-08-10")}
                 onClick={value => this.handleDateClick(value)}
                 showWeekdayLabels
