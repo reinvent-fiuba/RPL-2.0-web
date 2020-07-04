@@ -14,6 +14,7 @@ import TableBody from "@material-ui/core/TableBody";
 import Table from "@material-ui/core/Table";
 import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
+import statsService from "../../services/statsService";
 
 import ativitiesService from "../../services/activitiesService";
 
@@ -22,6 +23,8 @@ import { withState } from "../../utils/State";
 import "react-calendar-heatmap/dist/styles.css";
 
 import ErrorNotification from "../../utils/ErrorNotification";
+
+const _ = require("lodash");
 
 const drawerWidth = 240;
 
@@ -121,10 +124,11 @@ class StudentStats extends React.Component<Props, State> {
   componentDidMount() {
     const { courseId } = this.props;
     let submissionsByDate;
-    return submissionsService.getSubmissionsByDate(courseId)
+    return statsService
+      .getSubmissionStatsByDate(courseId)
       .then(response => {
         submissionsByDate = response;
-        return submissionsService.getSubmissionsByStudent(courseId);
+        return statsService.getSubmissionStatsByStudent(courseId);
       })
       .then(submissionsByStudent => {
         this.setState({
@@ -148,7 +152,7 @@ class StudentStats extends React.Component<Props, State> {
 
     const { date } = value;
 
-    return submissionsService.getSubmissionsByStudent(courseId, date).then(submissionsByStudent => {
+    return statsService.getSubmissionStatsByStudent(courseId, date).then(submissionsByStudent => {
       return this.setState({ submissionsByStudent, defaultData: false });
     });
   }
@@ -156,6 +160,12 @@ class StudentStats extends React.Component<Props, State> {
   renderStudentsTable() {
     const { classes } = this.props;
     const { submissionsByStudent } = this.state;
+
+    const { metadata, submission_stats } = submissionsByStudent;
+    const data = _.zipWith(submission_stats, metadata, (stat, meta) => ({
+      ...stat,
+      ...meta,
+    }));
 
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
@@ -171,14 +181,14 @@ class StudentStats extends React.Component<Props, State> {
             </TableRow>
           </TableHead>
           <TableBody>
-            {submissionsByStudent.map((student, i) => (
+            {data.map((student, i) => (
               <TableRow>
                 <TableCell key={1}>{i}</TableCell>
                 <TableCell key={2}>{student.name}</TableCell>
                 <TableCell key={3}>{student.surname}</TableCell>
                 <TableCell key={4}>{student.username}</TableCell>
-                <TableCell key={5}>{student.success_submissions}</TableCell>
-                <TableCell key={6}>{student.total_submissions}</TableCell>
+                <TableCell key={5}>{student.success}</TableCell>
+                <TableCell key={6}>{student.total}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -189,17 +199,19 @@ class StudentStats extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.props;
-    const { error } = this.state;
+    const { error, submissionsByDate } = this.state;
 
-    if (!this.state.submissionsByDate) {
+    if (!submissionsByDate) {
       return <div></div>;
     }
 
-    const data = Object.entries(this.state.submissionsByDate).map(([date, count]) => ({
-      date,
-      count,
+    const {metadata, submission_stats} = submissionsByDate;
+
+    const data = _.zipWith(submission_stats, metadata, (stat, meta) => ({
+      count: stat.total,
+      date: meta.date,
     }));
-    console.log('data', data);
+
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}

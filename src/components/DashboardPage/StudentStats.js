@@ -5,7 +5,7 @@ import { Pie } from "react-chartjs-2";
 import { withStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import submissionsService from "../../services/submissionsService";
+import statsService from "../../services/statsService";
 import ativitiesService from "../../services/activitiesService";
 
 import { withState } from "../../utils/State";
@@ -121,11 +121,11 @@ class StudentStats extends React.Component<Props, State> {
   loadStats() {
     let submissionsStats;
     const { courseId } = this.props;
-    return submissionsService
-      .getStats(courseId)
+    return statsService
+      .getMySubmissionsStats(courseId)
       .then(response => {
         submissionsStats = response;
-        return ativitiesService.getStats(courseId);
+        return statsService.getMyActivitiesStats(courseId);
       })
       .then(activitiesStats => {
         this.setState({ activitiesStats, submissionsStats });
@@ -145,40 +145,43 @@ class StudentStats extends React.Component<Props, State> {
     const { error, activitiesStats, submissionsStats } = this.state;
 
     const dataActivities = {
-      labels: Object.keys((activitiesStats && activitiesStats.count_by_status) || {}),
+      labels: ["Empezada", "No empezada", "Resuelta"],
       datasets: [
         {
-          data: Object.values((activitiesStats && activitiesStats.count_by_status) || {}),
-          backgroundColor: palette(
-            "sequential",
-            Object.keys((activitiesStats && activitiesStats.count_by_status) || {}).length
-          ).map(hex => `#${hex}`),
+          data: activitiesStats && [
+            activitiesStats.started,
+            activitiesStats.not_started,
+            activitiesStats.solved,
+          ],
+          backgroundColor: palette("sequential", 3).map(hex => `#${hex}`),
         },
       ],
     };
 
     const dataSubmissions = {
-      labels: Object.keys((submissionsStats && submissionsStats.count_by_status) || {}),
+      labels: ["Resuelto", "Runtime Error", "Build Error", "Fallo"],
       datasets: [
         {
-          data: Object.values((submissionsStats && submissionsStats.count_by_status) || {}),
-          backgroundColor: palette(
-            "sequential",
-            Object.keys((activitiesStats && activitiesStats.count_by_status) || {}).length
-          ).map(hex => `#${hex}`),
+          data: submissionsStats && [
+            submissionsStats.success,
+            submissionsStats.runtime_error,
+            submissionsStats.build_error,
+            submissionsStats.failure,
+          ],
+          backgroundColor: palette("sequential", 4).map(hex => `#${hex}`),
         },
       ],
     };
 
     const dataScore = {
-      labels: Object.keys((activitiesStats && activitiesStats.score) || {}),
+      labels: ["Obtenidos", "Pendientes"],
       datasets: [
         {
-          data: Object.values((activitiesStats && activitiesStats.score) || {}),
-          backgroundColor: palette(
-            "sequential",
-            Object.keys((activitiesStats && activitiesStats.score) || {}).length
-          ).map(hex => `#${hex}`),
+          data: activitiesStats && [
+            activitiesStats.obtained_points,
+            activitiesStats.total_points - activitiesStats.obtained_points,
+          ],
+          backgroundColor: palette("sequential", 2).map(hex => `#${hex}`),
         },
       ],
     };

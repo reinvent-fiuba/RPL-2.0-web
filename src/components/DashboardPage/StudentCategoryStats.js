@@ -16,6 +16,7 @@ import Paper from "@material-ui/core/Paper";
 
 import coursesService from "../../services/coursesService";
 import activitiesService from "../../services/activitiesService";
+import statsService from "../../services/statsService";
 
 import "react-calendar-heatmap/dist/styles.css";
 
@@ -163,8 +164,8 @@ class StudentCategoryStats extends React.Component<Props, State> {
     if (!studentId || !categoryId) {
       return Promise.resolve();
     }
-    return activitiesService
-      .getStudentCategoryStats(courseId, categoryId, studentId)
+    return statsService
+      .getSubmissionStatsByActivity(courseId, categoryId, studentId)
       .then(response => {
         this.setState({ activitiesStats: response });
       });
@@ -173,6 +174,12 @@ class StudentCategoryStats extends React.Component<Props, State> {
   renderActivities() {
     const { classes } = this.props;
     const { activitiesStats } = this.state;
+
+    const { metadata, submission_stats } = activitiesStats;
+    const data = _.zipWith(submission_stats, metadata, (stat, meta) => ({
+      ...stat,
+      ...meta,
+    }));
 
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
@@ -188,17 +195,17 @@ class StudentCategoryStats extends React.Component<Props, State> {
             </TableRow>
           </TableHead>
           <TableBody>
-            {activitiesStats.map((activity, i) => (
+            {data.map((activity, i) => (
               <TableRow>
                 <TableCell key={1}>{i}</TableCell>
-                <TableCell key={2}>{activity.activity_category_name}</TableCell>
+                <TableCell key={2}>{activity.category_name}</TableCell>
                 <TableCell key={3}>{activity.name}</TableCell>
                 <TableCell key={4}>{activity.points}</TableCell>
-                <TableCell key={5}>{activity.total_submissions}</TableCell>
+                <TableCell key={5}>{activity.total}</TableCell>
                 <TableCell key={6} align="center">
                   <span
                     className={`${classes.status} ${
-                      activity.success_submissions ? classes.activeStatus : classes.inactiveStatus
+                      activity.success ? classes.activeStatus : classes.inactiveStatus
                     }`}
                   />
                 </TableCell>
@@ -215,10 +222,10 @@ class StudentCategoryStats extends React.Component<Props, State> {
     const { error, activitiesStats } = this.state;
 
     const dataScore = {
-      labels: activitiesStats && activitiesStats.map(activity => activity.name),
+      labels: activitiesStats && activitiesStats.metadata.map(activity => activity.name),
       datasets: [
         {
-          data: activitiesStats && activitiesStats.map(activity => activity.total_submissions),
+          data: activitiesStats && activitiesStats.submission_stats.map(activity => activity.total),
         },
       ],
     };
@@ -235,10 +242,7 @@ class StudentCategoryStats extends React.Component<Props, State> {
       ],
       xAxes: [
         {
-          // display: false,
-          labels:
-            activitiesStats &&
-            activitiesStats.map(activity => _.truncate(activity.name, { length: 20 })),
+          display: false
         },
       ],
     };
