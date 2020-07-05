@@ -33,6 +33,30 @@ exports.create = (
     method: "POST",
   });
 
+exports.edit = (
+  id: string,
+  name: string,
+  university: string,
+  universityCourseId: string,
+  semester: string,
+  semesterStartDate: string,
+  semesterEndDate: string,
+  description: string
+) =>
+  request({
+    url: `http://${producer.base_url}/api/courses/${id}`,
+    body: JSON.stringify({
+      name,
+      university,
+      university_course_id: universityCourseId,
+      semester,
+      semester_start_date: semesterStartDate,
+      semester_end_date: semesterEndDate,
+      description,
+    }),
+    method: "PUT",
+  });
+
 exports.get = (courseId: number): Promise<Course> => 
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}`,

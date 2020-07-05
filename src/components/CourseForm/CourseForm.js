@@ -72,7 +72,6 @@ class CourseForm extends React.Component<Props, State> {
 
   componentDidMount() {
     const course = this.props.course;
-    console.log(course);
     if (course) {
       this.setState({
         name: course.name,
@@ -83,9 +82,9 @@ class CourseForm extends React.Component<Props, State> {
         semesterEnd: new Date(course.semester_end_date),
         description: course.description,
       });
+    } else {
+      this.loadUsers(""); // Load users only if we are creating a course
     }
-
-    // this.loadUsers("");
   }
 
   handleChange(event) {
@@ -136,6 +135,44 @@ class CourseForm extends React.Component<Props, State> {
       });
   }
 
+  handleSaveClick(event) {
+    event.preventDefault();
+    const {
+      name,
+      university,
+      universityCourseId,
+      semester,
+      semesterStart,
+      semesterEnd,
+      description,
+    } = this.state;
+    const { course } = this.props;
+    coursesService
+      .edit(
+        course.id,
+        name,
+        university,
+        universityCourseId,
+        semester,
+        semesterStart.toLocaleDateString("sv-SE"),
+        semesterEnd.toLocaleDateString("sv-SE"),
+        description
+      )
+      .then(course => {
+        this.props.context.set("course", course);
+        this.props.history.push(`/courses/${course.id}/dashboard`);
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message:
+              "Hubo un error al guardar el curso, revisa que los datos ingresados sean validos.",
+          },
+        });
+      });
+  }
+
   loadUsers(query) {
     return usersService.findUsers(query).then(users => {
       this.setState({ users });
@@ -143,8 +180,8 @@ class CourseForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
-
+    const { classes, course } = this.props;
+    const editMode = !!course;
     const { error, users } = this.state;
 
     return (
@@ -235,18 +272,20 @@ class CourseForm extends React.Component<Props, State> {
                 />
               </Grid>
             </Grid>
-            <Autocomplete
-              margin="normal"
-              options={users}
-              id="courseAdmin"
-              name="courseAdmin"
-              autoComplete="courseAdmin"
-              onChange={(event, newValue) => this.setState({ courseAdminId: newValue.id })}
-              getOptionLabel={user => `${user.name} ${user.surname} (${user.username})`}
-              renderInput={params => (
-                <TextField {...params} label="Usuario administrador" margin="normal" />
-              )}
-            />
+            {!editMode && (
+              <Autocomplete
+                margin="normal"
+                options={users}
+                id="courseAdmin"
+                name="courseAdmin"
+                autoComplete="courseAdmin"
+                onChange={(event, newValue) => this.setState({ courseAdminId: newValue.id })}
+                getOptionLabel={user => `${user.name} ${user.surname} (${user.username})`}
+                renderInput={params => (
+                  <TextField {...params} label="Usuario administrador" margin="normal" />
+                )}
+              />
+            )}
             <TextField
               margin="normal"
               required
@@ -280,9 +319,9 @@ class CourseForm extends React.Component<Props, State> {
                 variant="contained"
                 color="primary"
                 className={classes.createButton}
-                onClick={e => this.handleCreateClick(e)}
+                onClick={e => (editMode ? this.handleSaveClick(e) : this.handleCreateClick(e))}
               >
-                Crear
+                {editMode ? "Guardar" : "Crear"}
               </Button>
             </Grid>
           </Grid>
