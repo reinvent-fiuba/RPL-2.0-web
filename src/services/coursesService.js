@@ -13,6 +13,8 @@ exports.create = (
   university: string,
   universityCourseId: string,
   semester: string,
+  semesterStartDate: string,
+  semesterEndDate: string,
   courseAdminId: string,
   description: string
 ) =>
@@ -23,10 +25,18 @@ exports.create = (
       university,
       university_course_id: universityCourseId,
       semester,
+      semester_start_date: semesterStartDate,
+      semester_end_date: semesterEndDate,
       course_admin_id: courseAdminId,
       description,
     }),
     method: "POST",
+  });
+
+exports.get = (courseId: number): Promise<Course> => 
+  request({
+    url: `http://${producer.base_url}/api/courses/${courseId}`,
+    method: "GET",
   });
 
 exports.getAll = (): Promise<Array<Course>> =>

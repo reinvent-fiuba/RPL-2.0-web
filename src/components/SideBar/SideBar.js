@@ -45,7 +45,7 @@ const actionIcons = {
   Actividades: CodeIcon,
   Inscriptos: PeopleIcon,
   Perfil: AccountCircleIcon,
-  Configuracion: SettingsIcon,
+  "Configuracion de Curso": SettingsIcon,
   Usuarios: RecentActorsIcon,
   "Cerrar Sesión": ExitToAppIcon,
 };
@@ -71,11 +71,11 @@ class SideBar extends React.PureComponent<Props> {
       itemsLinks.Dashboard = `/courses/${courseId}/dashboard`;
       itemsLinks.Actividades = `/courses/${courseId}/activities`;
       itemsLinks.Inscriptos = `/courses/${courseId}/students`;
+      itemsLinks["Configuracion de Curso"] = "/courses"; // TODO: Replace by configuration page or remove
     }
 
     const configurationLinks = {
       Perfil: "/profile",
-      Configuracion: "/courses", // TODO: Replace by configuration page or remove
     };
 
     return (

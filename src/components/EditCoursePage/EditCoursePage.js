@@ -33,7 +33,7 @@ const styles = theme => ({
   },
 });
 
-class CreateCoursePage extends React.Component {
+class EditCoursePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -50,22 +50,22 @@ class CreateCoursePage extends React.Component {
   }
 
   render() {
-    const { classes, history } = this.props;
+    const { classes, history, context } = this.props;
     return (
       <div>
         <TopBar
           handleDrawerOpen={this.handleDrawerOpen}
           open={this.state.open}
-          title="Crear Curso"
+          title="Editar Curso"
         />
         <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
         <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <CourseForm history={history} />
+          <CourseForm course={context.course} history={history} />
         </main>
       </div>
     );
   }
 }
 
-export default withState(withStyles(styles)(CreateCoursePage));
+export default withState(withStyles(styles)(EditCoursePage));

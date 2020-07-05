@@ -161,68 +161,6 @@ class ActivitiesPage extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  renderHeadRow(classes: any) {
-    const cells = [
-      <TableCell key={1}>#</TableCell>,
-      <TableCell key={2} className={classes.tableAvatarColumn} />,
-      <TableCell key={3}>Alumno</TableCell>,
-      <TableCell key={4} align="right">
-        Score
-      </TableCell>,
-      <TableCell key={5} align="right">
-        # Actividades Completadas
-      </TableCell>,
-    ];
-    return <TableRow key={0}>{cells}</TableRow>;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  renderStudentRow(student: any, classes: any) {
-    const cells = [
-      <TableCell key={5} align="left">
-        {student.position}
-      </TableCell>,
-      <TableCell key={2} component="th" scope="row">
-        <Avatar className={classes.avatar}>
-          {student.name[0]}
-          {student.surname[0]}
-        </Avatar>
-      </TableCell>,
-      <TableCell key={3} component="th" scope="row">
-        {`${student.name} ${student.surname}`}
-      </TableCell>,
-      <TableCell key={4} align="right">
-        {student.score}
-      </TableCell>,
-      <TableCell key={5} align="right">
-        {student.activities_count}
-      </TableCell>,
-    ];
-
-    return (
-      <TableRow hover key={student.student_id}>
-        {cells}
-      </TableRow>
-    );
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  renderScoreBoard(students: Array<Student>, classes: any) {
-    return (
-      <TableContainer component={Paper} className={classes.tableContainer}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>{this.renderHeadRow(classes)}</TableHead>
-          <TableBody>
-            {students.map((student, i) =>
-              this.renderStudentRow(Object.assign(student, { position: i + 1 }), classes)
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
-
   handleChange(event, newValue) {
     this.setState({ current: newValue });
   }

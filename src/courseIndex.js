@@ -10,15 +10,19 @@ import ActivitiesTeacherPage from "./components/ActivitiesTeacherPage/Activities
 import StudentsPage from "./components/StudentsPage/StudentsPage";
 import DashboardPage from "./components/DashboardPage/DashboardPage";
 import coursesService from "./services/coursesService";
+import EditCoursePage from "./components/EditCoursePage/EditCoursePage";
 
 class CourseIndex extends React.PureComponent {
   componentDidMount() {
     const courseId = parseInt(this.props.match.params.courseId);
-    if (!isNaN(courseId) && !this.props.context.permissions) {
+    if (!isNaN(courseId) &&
+      (!this.props.context.permissions || !this.props.context.course || this.props.context.course.id !== courseId)) {
       // TODO: Review permissions by course, in order to support different permissions for different courses
-      coursesService.getPermissions(courseId).then(permissions => {
-        this.props.context.set("permissions", permissions);
-      });
+      coursesService
+        .getPermissions(courseId)
+        .then(permissions => this.props.context.set("permissions", permissions))
+        .then(() => coursesService.get(courseId))
+        .then(course => this.props.context.set("course", course));
     }
   }
 
@@ -33,6 +37,7 @@ class CourseIndex extends React.PureComponent {
 
     return (
       <>
+        <Route exact path="/courses/:courseId/edit" component={EditCoursePage} />
         <Route exact path="/courses/:courseId/activities" component={activityPage} />
         <Route exact path="/courses/:courseId/dashboard" component={DashboardPage} />
         <Route exact path="/courses/:courseId/students" component={StudentsPage} />
