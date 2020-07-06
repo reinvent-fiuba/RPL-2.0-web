@@ -4,7 +4,7 @@ import type { Activity, IOTest } from "../types";
 const { request } = require("../utils/Request");
 
 const producer = {
-  base_url: process.env.API_BASE_URL || "localhost:8080",
+  base_url: process.env.API_BASE_URL || "http://localhost:8080",
 };
 
 exports.createIOTest = (
@@ -15,7 +15,7 @@ exports.createIOTest = (
   textOut: string
 ): Promise<IOTest> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests`,
     body: JSON.stringify({ name: testName, text_in: textIn, text_out: textOut }),
     method: "POST",
   });
@@ -29,7 +29,7 @@ exports.updateIOTest = (
   textOut: string
 ): Promise<IOTest> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests/${ioTestId}`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests/${ioTestId}`,
     body: JSON.stringify({ name: testName, text_in: textIn, text_out: textOut }),
     method: "PUT",
   });
@@ -40,7 +40,7 @@ exports.deleteIOTest = (
   ioTestId: number
 ): Promise<Activity> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests/${ioTestId}`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/iotests/${ioTestId}`,
     method: "DELETE",
   });
 
@@ -50,7 +50,7 @@ exports.createUnitTest = (
   unitTestCode: string
 ): Promise<Activity> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/unittests`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/unittests`,
     body: JSON.stringify({ unit_test_code: unitTestCode }),
     method: "POST",
   });
@@ -61,7 +61,7 @@ exports.updateUnitTest = (
   unitTestCode: string
 ): Promise<Activity> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/unittests`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/unittests`,
     body: JSON.stringify({ unit_test_code: unitTestCode }),
     method: "PUT",
   });

@@ -9,7 +9,7 @@ const { request } = require("../utils/Request");
 // });
 
 const producer = {
-  base_url: process.env.API_BASE_URL || "localhost:8080",
+  base_url: process.env.API_BASE_URL || "http://localhost:8080",
 };
 
 exports.createActivity = ({
@@ -38,7 +38,7 @@ exports.createActivity = ({
   });
 
   return request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities`,
     body: formData,
     method: "POST",
     headers: new Headers(),
@@ -73,7 +73,7 @@ exports.updateActivity = ({
   }
 
   return request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     body: formData,
     method: "PATCH",
     headers: new Headers(),
@@ -82,7 +82,7 @@ exports.updateActivity = ({
 
 exports.getActivityCategories = (courseId: number): Promise<Array<Category>> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,
+    url: `${producer.base_url}/api/courses/${courseId}/activityCategories`,
     method: "GET",
   });
 
@@ -92,36 +92,34 @@ exports.createActivityCategories = (
   description: string
 ): Promise<Category> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activityCategories`,
+    url: `${producer.base_url}/api/courses/${courseId}/activityCategories`,
     method: "POST",
     body: JSON.stringify({ name, description }),
   });
 
 exports.getAllActivities = (courseId: number): Promise<Array<Activity>> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities`,
     method: "GET",
   });
 
 exports.getActivity = (courseId: number, activityId: number): Promise<Activity> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     method: "GET",
   }).then(activity => {
-    return fetch(`http://localhost:8080/api/getExtractedFile/${activity.file_id}`).then(
-      response => {
-        return response.json().then(code => {
-          const completeActivity = activity;
-          completeActivity.initial_code = code;
-          return completeActivity;
-        });
-      }
-    );
+    return fetch(`${producer.base_url}/api/getExtractedFile/${activity.file_id}`).then(response => {
+      return response.json().then(code => {
+        const completeActivity = activity;
+        completeActivity.initial_code = code;
+        return completeActivity;
+      });
+    });
   });
 
 exports.deleteActivity = (courseId: number, activityId: number): Promise<Activity> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
     method: "DELETE",
   });
 
