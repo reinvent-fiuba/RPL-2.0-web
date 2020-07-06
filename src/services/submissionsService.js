@@ -4,7 +4,7 @@ import type { SubmissionResult } from "../types";
 const { request } = require("../utils/Request");
 
 const producer = {
-  base_url: process.env.API_BASE_URL || "localhost:8080",
+  base_url: process.env.API_BASE_URL || "http://localhost:8080",
 };
 
 exports.createSubmission = (courseId: number, activityId: number, code: { [string]: string }) => {
@@ -16,7 +16,7 @@ exports.createSubmission = (courseId: number, activityId: number, code: { [strin
   });
 
   return request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
     body: formData,
     method: "POST",
     headers: new Headers(),
@@ -25,18 +25,18 @@ exports.createSubmission = (courseId: number, activityId: number, code: { [strin
 
 exports.getSubmissionResult = (submissionId: number): Promise<SubmissionResult> =>
   request({
-    url: `http://${producer.base_url}/api/submissions/${submissionId}/result`,
+    url: `${producer.base_url}/api/submissions/${submissionId}/result`,
     method: "GET",
   }).then(submission => {
-    return fetch(
-      `http://localhost:8080/api/getExtractedFile/${submission.submission_file_id}`
-    ).then(response => {
-      return response.json().then(code => {
-        const completeSubmission = submission;
-        completeSubmission.submited_code = code;
-        return completeSubmission;
-      });
-    });
+    return fetch(`${producer.base_url}/api/getExtractedFile/${submission.submission_file_id}`).then(
+      response => {
+        return response.json().then(code => {
+          const completeSubmission = submission;
+          completeSubmission.submited_code = code;
+          return completeSubmission;
+        });
+      }
+    );
   });
 
 exports.getAllSubmissions = (
@@ -44,19 +44,19 @@ exports.getAllSubmissions = (
   activityId: number
 ): Promise<Array<SubmissionResult>> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions`,
     method: "GET",
   });
 
 exports.getStats = (courseId: number): Promise<> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/submissions/stats`,
+    url: `${producer.base_url}/api/courses/${courseId}/submissions/stats`,
     method: "GET",
   });
 
 exports.getFinalSolution = (courseId: number, activityId: number): Promise<SubmissionResult> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/finalSubmission`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/finalSubmission`,
     method: "GET",
   });
 
@@ -65,18 +65,18 @@ exports.getFinalSolutionWithFile = (
   activityId: number
 ): Promise<SubmissionResult> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/finalSubmission`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/finalSubmission`,
     method: "GET",
   }).then(submission => {
-    return fetch(
-      `http://localhost:8080/api/getExtractedFile/${submission.submission_file_id}`
-    ).then(response => {
-      return response.json().then(code => {
-        const completeSubmission = submission;
-        completeSubmission.submited_code = code;
-        return completeSubmission;
-      });
-    });
+    return fetch(`${producer.base_url}/api/getExtractedFile/${submission.submission_file_id}`).then(
+      response => {
+        return response.json().then(code => {
+          const completeSubmission = submission;
+          completeSubmission.submited_code = code;
+          return completeSubmission;
+        });
+      }
+    );
   });
 
 exports.getAllFinalSolutionsFiles = (
@@ -84,11 +84,11 @@ exports.getAllFinalSolutionsFiles = (
   activityId: number
 ): Promise<Array<{ [string]: string }>> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/allFinalSubmissions`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/allFinalSubmissions`,
     method: "GET",
   }).then(response =>
     request({
-      url: `http://localhost:8080/api/getExtractedFiles/${response.submission_file_ids}`,
+      url: `${producer.base_url}/api/getExtractedFiles/${response.submission_file_ids}`,
       method: "GET",
     })
   );
@@ -99,6 +99,6 @@ exports.putSolutionAsFinal = (
   submissionId: number
 ): Promise<SubmissionResult> =>
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions/${submissionId}/final`,
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/submissions/${submissionId}/final`,
     method: "PUT",
   });
