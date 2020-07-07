@@ -111,6 +111,11 @@ exports.acceptStudent = (courseId: number, userId: number) =>
     accepted: true,
   });
 
+exports.changeStudentRole = (courseId: number, userId: number, roleName: string) =>
+  patchCourseUser(courseId, userId, {
+    role: roleName,
+  });
+
 exports.deleteStudent = (courseId: Number, userId: number) =>
   request({
     url: `http://${producer.base_url}/api/courses/${courseId}/users/${userId}`,

@@ -61,3 +61,9 @@ exports.resendEmailToken = (user: string): Promise<Student> =>
     body: JSON.stringify({ username_or_email: user }),
     method: "POST",
   });
+
+exports.getRoles = (): Promise<> =>
+  request({
+    url: `http://${producer.base_url}/api/auth/roles`,
+    method: "GET",
+  });
