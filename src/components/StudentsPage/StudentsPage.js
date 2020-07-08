@@ -10,15 +10,24 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
+import EditIcon from "@material-ui/icons/Edit";
+import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
+import Fab from "@material-ui/core/Fab";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import coursesService from "../../services/coursesService";
+import authenticationService from "../../services/authenticationService";
 import ErrorNotification from "../../utils/ErrorNotification";
+import Select from "@material-ui/core/Select";
 
 import type { Student } from "../../types";
+import EditStudentModal from "./EditStudentModal";
+import { MenuItem } from "@material-ui/core";
+
+const _ = require("lodash");
 
 const drawerWidth = 240;
 
@@ -57,6 +66,7 @@ const styles = theme => ({
     display: "flex",
     marginLeft: "auto",
     marginRight: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   table: {
     minWidth: 650,
@@ -120,10 +130,15 @@ class StudentsPage extends React.Component<Props, State> {
     isSideBarOpen: false,
     students: [],
     refreshStudentsNotification: false,
+    editMode: false,
+    currentUserId: "",
+    currentUserRole: undefined,
+    roles: [],
   };
 
   componentDidMount() {
     this.loadStudents();
+    this.loadRoles();
   }
 
   loadStudents() {
@@ -141,6 +156,12 @@ class StudentsPage extends React.Component<Props, State> {
           },
         });
       });
+  }
+
+  loadRoles() {
+    authenticationService.getRoles().then(roles => {
+      this.setState({ roles });
+    });
   }
 
   handleSwitchDrawer(event: any) {
@@ -167,6 +188,48 @@ class StudentsPage extends React.Component<Props, State> {
           refreshStudentsNotification: !prevState.refreshStudentsNotification,
         }))
       );
+  }
+
+  handleEditStudent(courseId: Number, userId: number, event: any) {
+    this.setState((prevState) => ({ editMode: true, currentUserId: userId }));
+  }
+
+  handleSaveStudent(courseId: Number, userId: number, event: any) {
+    if (!this.state.currentUserRole) {
+      return this.setState(prevState => ({
+        editMode: false,
+        currentUserId: "",
+        currentUserRole: undefined,
+      }));
+    }
+
+    coursesService
+      .changeStudentRole(courseId, userId, this.state.currentUserRole.name)
+      .then(() => this.loadStudents())
+      .then(() =>
+        this.setState(prevState => ({
+          editMode: false,
+          currentUserId: "",
+          currentUserRole: undefined,
+        }))
+      );
+  }
+
+  handleCloseModal() {
+    this.setState({ editMode: false });
+  }
+
+  handleSelectRole(event) {
+    this.setState({ currentUserRole : event.target.value });
+  }
+
+  renderRolesOptions() {
+    const { roles } = this.state;
+    return _.map(roles, role => (
+      <MenuItem key={role.id} value={role}>
+        {role.name}
+      </MenuItem>
+    ));
   }
 
   renderHeadRow(classes: any) {
@@ -217,7 +280,13 @@ class StudentsPage extends React.Component<Props, State> {
         {student.student_id}
       </TableCell>,
       <TableCell key={5} align="right">
-        {student.role}
+        {this.state.editMode && this.state.currentUserId === student.id ? (
+          <Select id="role" name="role" onChange={event => this.handleSelectRole(event)}>
+            {this.renderRolesOptions()}
+          </Select>
+        ) : (
+          student.role
+        )}
       </TableCell>,
     ];
 
@@ -262,6 +331,22 @@ class StudentsPage extends React.Component<Props, State> {
           >
             <DeleteIcon />
           </IconButton>
+
+          {this.state.editMode && this.state.currentUserId === student.id ? (
+            <IconButton
+              component="span"
+              onClick={event => this.handleSaveStudent(courseId, student.id, event)}
+            >
+              <SaveIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              component="span"
+              onClick={event => this.handleEditStudent(courseId, student.id, event)}
+            >
+              <EditIcon />
+            </IconButton>
+          )}
         </TableCell>,
       ];
 
