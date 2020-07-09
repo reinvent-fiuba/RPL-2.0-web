@@ -71,7 +71,7 @@ class SideBar extends React.PureComponent<Props> {
       itemsLinks.Dashboard = `/courses/${courseId}/dashboard`;
       itemsLinks.Actividades = `/courses/${courseId}/activities`;
       itemsLinks.Inscriptos = `/courses/${courseId}/students`;
-      itemsLinks["Configuracion de Curso"] = "/courses"; // TODO: Replace by configuration page or remove
+      itemsLinks["Configuracion de Curso"] = `/courses/${courseId}/edit`;
     }
 
     const configurationLinks = {
