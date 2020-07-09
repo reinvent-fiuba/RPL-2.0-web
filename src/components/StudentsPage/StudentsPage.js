@@ -24,7 +24,6 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import Select from "@material-ui/core/Select";
 
 import type { Student } from "../../types";
-import EditStudentModal from "./EditStudentModal";
 import { MenuItem } from "@material-ui/core";
 
 const _ = require("lodash");
