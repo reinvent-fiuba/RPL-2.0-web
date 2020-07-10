@@ -79,7 +79,12 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    this.getAllActivities();
+    const { context } = this.props;
+    if (context && context.activities) {
+      this.setState({ activities: context.activities });
+    } else {
+      this.getAllActivities();
+    }
   }
 
   getAllActivities() {
@@ -87,6 +92,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
     activitiesService
       .getAllActivities(match.params.courseId)
       .then(response => {
+        this.props.context.set("activities", response);
         this.setState({ activities: response });
       })
       .catch(() => {

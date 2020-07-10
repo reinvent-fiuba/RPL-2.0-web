@@ -88,7 +88,11 @@ class ActivitiesPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    const { match } = this.props;
+    const { match, context } = this.props;
+    if (context && context.activities) {
+      this.setState({ activities: context.activities });
+      return;
+    }
     activitiesService
       .getAllActivities(match.params.courseId)
       .then(response => {
