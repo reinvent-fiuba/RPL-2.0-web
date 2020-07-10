@@ -95,17 +95,27 @@ class CourseCard extends React.PureComponent<Props> {
 
         <CardActions disableSpacing>
           {enrolled ? (
-            <Button onClick={e => onClickGoToCourse(e, courseId)}>Acceder</Button>
+            [
+              <Button color="secondary" onClick={e => onClickUnenrollToCourse(e, courseId)}>
+                Desinscribirse
+              </Button>,
+              <Button
+                color="primary"
+                onClick={e => onClickGoToCourse(e, courseId)}
+                className={classes.action}
+              >
+                Acceder
+              </Button>,
+            ]
           ) : (
-            <div />
+            <Button
+              color="primary"
+              onClick={e => onClickEnrollToCourse(e, courseId)}
+              className={classes.action}
+            >
+              Inscribirse
+            </Button>
           )}
-          <Button
-            onClick={e =>
-              enrolled ? onClickUnenrollToCourse(e, courseId) : onClickEnrollToCourse(e, courseId)}
-            className={classes.action}
-          >
-            {enrolled ? "Desinscribirse" : "Inscribirse"}
-          </Button>
         </CardActions>
       </Card>
     );
