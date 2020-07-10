@@ -62,8 +62,10 @@ class TopBar extends React.PureComponent {
   }
 
   render() {
-    const { open, title, handleDrawerOpen, context, classes, refreshNotifications } = this.props;
+    const { open, title, handleDrawerOpen, context, classes, refreshNotifications, match } = this.props;
     const { name, surname, is_admin } = context && context.profile;
+    const { courseId } = match.params;
+    const courseName = context.course && courseId == context.course.id && context.course.name;
     const { isNotificationModalOpen } = this.state;
 
     return (
@@ -79,7 +81,7 @@ class TopBar extends React.PureComponent {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title} noWrap>
-            {title}
+            {courseId && courseName ? `${title} - ${courseName}` : title}
           </Typography>
           <NotificationsButton
             open={isNotificationModalOpen}
