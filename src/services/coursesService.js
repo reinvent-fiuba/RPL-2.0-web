@@ -44,7 +44,7 @@ exports.edit = (
   description: string
 ) =>
   request({
-    url: `http://${producer.base_url}/api/courses/${id}`,
+    url: `${producer.base_url}/api/courses/${id}`,
     body: JSON.stringify({
       name,
       university,
@@ -59,7 +59,7 @@ exports.edit = (
 
 exports.get = (courseId: number): Promise<Course> => 
   request({
-    url: `http://${producer.base_url}/api/courses/${courseId}`,
+    url: `${producer.base_url}/api/courses/${courseId}`,
     method: "GET",
   });
 

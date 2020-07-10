@@ -18,6 +18,7 @@ class CourseIndex extends React.PureComponent {
     if (!isNaN(courseId) &&
       (!this.props.context.permissions || !this.props.context.course || this.props.context.course.id !== courseId)) {
       // TODO: Review permissions by course, in order to support different permissions for different courses
+      this.props.context.invalidateByKeys("permissions", "course", "activities");
       coursesService
         .getPermissions(courseId)
         .then(permissions => this.props.context.set("permissions", permissions))

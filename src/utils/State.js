@@ -1,8 +1,12 @@
 import React, { useState, useContext } from "react";
 
+const _ = require("lodash");
+
 export const State = React.createContext();
 
 export const StateProvider = props => {
+  let initState;
+
   const set = (key, value) => {
     return setState(oldState => {
       const newState = { ...oldState, [key]: value };
@@ -16,8 +20,26 @@ export const StateProvider = props => {
     });
   };
 
-  const initState = {
+  const invalidate = () => {
+    return setState(() => {
+      localStorage.removeItem("state");
+      return initState;
+    });
+  };
+
+  const invalidateByKeys = (...keys) => {
+    return setState(oldState => {
+      const newState = _.omit(oldState, ...keys);
+      const localStorageState = JSON.parse(localStorage.getItem("state")) || {};
+      localStorage.setItem("state", JSON.stringify(_.omit(localStorageState, ...keys)));
+      return newState;
+    });
+  };
+
+  initState = {
     set,
+    invalidate,
+    invalidateByKeys,
     ...JSON.parse(localStorage.getItem("state")),
   };
 
