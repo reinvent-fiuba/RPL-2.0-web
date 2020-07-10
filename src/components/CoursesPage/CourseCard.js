@@ -7,6 +7,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
+import Tooltip from "@material-ui/core/Tooltip";
 import { red } from "@material-ui/core/colors";
 import { withStyles } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
@@ -28,6 +29,11 @@ const styles = () => ({
   avatar: {
     backgroundColor: red[500],
     fontSize: 14,
+  },
+  description: {
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
   },
 });
 
@@ -75,14 +81,24 @@ class CourseCard extends React.PureComponent<Props> {
         />
 
         <CardContent>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {description}
-          </Typography>
+          <Tooltip title={description} placement="top">
+            <Typography
+              className={classes.description}
+              variant="body2"
+              color="textSecondary"
+              component="p"
+            >
+              {description}
+            </Typography>
+          </Tooltip>
         </CardContent>
 
         <CardActions disableSpacing>
-          <Button onClick={e => onClickGoToCourse(e, courseId)}>Acceder</Button>
-
+          {enrolled ? (
+            <Button onClick={e => onClickGoToCourse(e, courseId)}>Acceder</Button>
+          ) : (
+            <div />
+          )}
           <Button
             onClick={e =>
               enrolled ? onClickUnenrollToCourse(e, courseId) : onClickEnrollToCourse(e, courseId)}
