@@ -46,7 +46,7 @@ class LoginForm extends React.Component<Props, State> {
 
   componentDidMount() {
     // This is how our logout works JAJA
-    localStorage.removeItem("state");
+    this.props.context.invalidate();
   }
 
   handleChange(event) {
