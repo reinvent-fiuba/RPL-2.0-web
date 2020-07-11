@@ -5,8 +5,8 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel src/ -d lib/ && webpack-dev-server -e --open --hot --mode development --host 0.0.0.0 --port 8088 --config webpack.config.js",
-    "build": "babel src/ -d lib/ && webpack --optimize-minimize --mode production --config webpack.config.js",
+    "start": "babel src/ -d lib/ && webpack-dev-server -e --open --hot --mode development --env.ENVIRONMENT=development --host 0.0.0.0 --port 8088 --config webpack.config.js",
+    "build": "babel src/ -d lib/ && webpack --optimize-minimize --mode production --env.ENVIRONMENT=production --config webpack.config.js",
     "lint": "eslint src/**/*.js src/**/*.jsx",
     "flow": "flow",
     "profile": "webpack --profile --json > stats.json",
@@ -74,6 +74,7 @@
     "chart.js": "^2.9.3",
     "date-fns": "^2.14.0",
     "dot-env": "0.0.1",
+    "dotenv": "^8.2.0",
     "dotenv-webpack": "^1.7.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
