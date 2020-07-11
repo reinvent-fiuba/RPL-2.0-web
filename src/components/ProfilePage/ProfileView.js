@@ -86,7 +86,7 @@ class ProfileView extends React.Component {
         <Grid container spacing={8}>
           <Grid align="center" justify="center" direction="column" container spacing={2} xs={4}>
             <Grid item>
-              <Avatar className={classes.avatar}>
+              <Avatar src={profile.img_uri} className={classes.avatar}>
                 {profile.name[0]}
                 {profile.surname[0]}
               </Avatar>

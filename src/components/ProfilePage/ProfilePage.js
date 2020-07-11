@@ -97,6 +97,7 @@ class ProfilePage extends React.Component {
 
   handleClickSave(profileData) {
     authenticationServer.updateProfile(profileData).then(response => {
+      this.props.context.set("profile", response);
       this.setState({ profile: response, editMode: false });
     });
   }

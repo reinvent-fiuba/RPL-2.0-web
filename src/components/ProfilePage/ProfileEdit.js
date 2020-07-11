@@ -7,7 +7,9 @@ import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import Fab from "@material-ui/core/Fab";
+import { DropzoneArea } from "material-ui-dropzone";
 import { withState } from "../../utils/State";
+import cloudinaryService from "../../services/cloudinaryService";
 
 const drawerWidth = 240;
 
@@ -74,7 +76,8 @@ class ProfileEdit extends React.Component {
       studentId: profile.student_id,
       email: profile.email,
       degree: profile.degree,
-      university: profile.university
+      university: profile.university,
+      userImg: undefined,
     };
   }
 
@@ -82,6 +85,35 @@ class ProfileEdit extends React.Component {
     event.persist();
     // Close error message
     this.setState({ [event.target.id]: event.target.value });
+  }
+
+  handleAddFile(files) {
+    if (!files || !files[0]) return;
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onload = () => this.setState({ userImg: reader.result });
+    reader.readAsDataURL(file);
+  }
+
+  handleClickSave() {
+    const { userImg } = this.state;
+    console.log("state", this.state);
+    console.log("userImg", this.state.userImg);
+    console.log("userImg2", userImg);
+    const { onClickSave } = this.props;
+    const userImgPromise = userImg ? cloudinaryService.uploadFile(userImg) : Promise.resolve();
+
+    userImgPromise.then(userImgAsset =>
+      onClickSave({
+        name: this.state.name,
+        surname: this.state.surname,
+        student_id: this.state.studentId,
+        email: this.state.email,
+        degree: this.state.degree,
+        university: this.state.university,
+        img_uri: userImgAsset && userImgAsset.url,
+      })
+    );
   }
 
   render() {
@@ -93,24 +125,19 @@ class ProfileEdit extends React.Component {
           color="primary"
           aria-label="add"
           className={classes.rightButton}
-          onClick={() => this.props.onClickSave({
-              name: this.state.name,
-              surname: this.state.surname,
-              student_id: this.state.studentId,
-              email: this.state.email,
-              degree: this.state.degree,
-              university: this.state.university,
-            })}
+          onClick={() => this.handleClickSave()}
         >
           <SaveIcon />
         </Fab>
         <Grid container spacing={8}>
           <Grid align="center" justify="center" direction="column" container spacing={2} xs={4}>
             <Grid item>
-              <Avatar className={classes.avatar}>
-                {profile.name[0]}
-                {profile.surname[0]}
-              </Avatar>
+              <DropzoneArea
+                filesLimit={1}
+                acceptedFiles={["image/*"]}
+                dropzoneText="Arrastra una imagen de perfil"
+                onChange={files => this.handleAddFile(files)}
+              />
             </Grid>
             <Grid item>
               <Typography style={{fontStyle: "italic"}} className={classes.property} variant="h6">

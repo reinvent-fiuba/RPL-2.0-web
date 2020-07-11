@@ -64,7 +64,7 @@ class TopBar extends React.PureComponent {
   render() {
     const { open, title, handleDrawerOpen, context, classes, refreshNotifications, match } = this.props;
     if (!context.profile) return <div />;
-    const { name, surname, is_admin } = context && context.profile;
+    const { name, surname, is_admin, img_uri } = context && context.profile;
     const { courseId } = match.params;
     const courseName = context.course && courseId == context.course.id && context.course.name;
     const { isNotificationModalOpen } = this.state;
@@ -94,7 +94,7 @@ class TopBar extends React.PureComponent {
             {name} {surname}
           </Typography>
           <div className={classes.adminIcon}>{is_admin ? <LockIcon /> : <div />}</div>
-          <Avatar>
+          <Avatar src={img_uri}>
             {name[0]}
             {surname[0]}
           </Avatar>

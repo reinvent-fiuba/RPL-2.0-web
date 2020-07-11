@@ -126,7 +126,7 @@ class UsersPage extends React.Component<Props, State> {
     return (
       <TableRow hover key={user.student_id}>
         <TableCell key={1} component="th" scope="row">
-          <Avatar className={classes.avatar}>
+          <Avatar src={user.img_uri} className={classes.avatar}>
             {user.name[0]}
             {user.surname[0]}
           </Avatar>
