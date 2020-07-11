@@ -264,7 +264,7 @@ class StudentsPage extends React.Component<Props, State> {
   renderStudentRow(student: any, classes: any) {
     const cells = [
       <TableCell key={1} component="th" scope="row">
-        <Avatar className={classes.avatar}>
+        <Avatar src={student.img_uri} className={classes.avatar}>
           {student.name[0]}
           {student.surname[0]}
         </Avatar>

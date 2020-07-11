@@ -139,7 +139,7 @@ class Scoreboard extends React.Component<Props, State> {
         {student.position}
       </TableCell>,
       <TableCell key={2} component="th" scope="row">
-        <Avatar className={classes.avatar}>
+        <Avatar src={student.img_uri} className={classes.avatar}>
           {student.name[0]}
           {student.surname[0]}
         </Avatar>
