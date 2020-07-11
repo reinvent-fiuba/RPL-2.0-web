@@ -7,10 +7,12 @@ import { withStyles } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import { DropzoneArea } from "material-ui-dropzone";
 import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
 import coursesService from "../../services/coursesService";
 import usersService from "../../services/usersService";
+import cloudinaryService from "../../services/cloudinaryService";
 
 const styles = theme => ({
   avatar: {
@@ -63,10 +65,11 @@ class CourseForm extends React.Component<Props, State> {
     university: "",
     universityCourseId: "",
     semester: "",
-    semesterStart: Date.now(),
-    semesterEnd: Date.now(),
+    semesterStart: new Date(),
+    semesterEnd: new Date(),
     description: "",
     courseAdminId: "",
+    courseImg: undefined,
     users: [],
   };
 
@@ -109,18 +112,26 @@ class CourseForm extends React.Component<Props, State> {
       semesterEnd,
       description,
       courseAdminId,
+      courseImg,
     } = this.state;
-    coursesService
-      .create(
-        name,
-        university,
-        universityCourseId,
-        semester,
-        semesterStart.toLocaleDateString("sv-SE"),
-        semesterEnd.toLocaleDateString("sv-SE"),
-        courseAdminId,
-        description
-      )
+    const courseImgPromise = courseImg
+      ? cloudinaryService.uploadFile(courseImg)
+      : Promise.resolve();
+
+    courseImgPromise
+      .then(courseImgAsset => {
+        return coursesService.create(
+          name,
+          university,
+          universityCourseId,
+          semester,
+          semesterStart.toLocaleDateString("sv-SE"),
+          semesterEnd.toLocaleDateString("sv-SE"),
+          courseAdminId,
+          description,
+          courseImgAsset && courseImgAsset.url
+        );
+      })
       .then(() => {
         this.props.history.push("/courses");
       })
@@ -145,19 +156,27 @@ class CourseForm extends React.Component<Props, State> {
       semesterStart,
       semesterEnd,
       description,
+      courseImg,
     } = this.state;
     const { course } = this.props;
-    coursesService
-      .edit(
-        course.id,
-        name,
-        university,
-        universityCourseId,
-        semester,
-        semesterStart.toLocaleDateString("sv-SE"),
-        semesterEnd.toLocaleDateString("sv-SE"),
-        description
-      )
+    const courseImgPromise = courseImg
+      ? cloudinaryService.uploadFile(courseImg)
+      : Promise.resolve();
+
+    courseImgPromise
+      .then(courseImgAsset => {
+        return coursesService.edit(
+          course.id,
+          name,
+          university,
+          universityCourseId,
+          semester,
+          semesterStart.toLocaleDateString("sv-SE"),
+          semesterEnd.toLocaleDateString("sv-SE"),
+          description,
+          courseImgAsset && courseImgAsset.url
+        );
+      })
       .then(course => {
         this.props.context.set("course", course);
         this.props.history.push(`/courses/${course.id}/dashboard`);
@@ -177,6 +196,14 @@ class CourseForm extends React.Component<Props, State> {
     return usersService.findUsers(query).then(users => {
       this.setState({ users });
     });
+  }
+
+  handleAddFile(files) {
+    if (!files || !files[0]) return;
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onload = () => this.setState({ courseImg: reader.result });
+    reader.readAsDataURL(file);
   }
 
   render() {
@@ -300,6 +327,12 @@ class CourseForm extends React.Component<Props, State> {
               value={this.state.description}
               onChange={e => this.handleChange(e)}
               variant="outlined"
+            />
+            <DropzoneArea
+              filesLimit={1}
+              acceptedFiles={["image/*"]}
+              dropzoneText="Arrastra una imagen para el curso"
+              onChange={files => this.handleAddFile(files)}
             />
           </form>
           <Grid container>
