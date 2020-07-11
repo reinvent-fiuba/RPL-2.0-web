@@ -16,7 +16,8 @@ exports.create = (
   semesterStartDate: string,
   semesterEndDate: string,
   courseAdminId: string,
-  description: string
+  description: string,
+  imgUri: string,
 ) =>
   request({
     url: `${producer.base_url}/api/courses`,
@@ -29,6 +30,7 @@ exports.create = (
       semester_end_date: semesterEndDate,
       course_admin_id: courseAdminId,
       description,
+      img_uri: imgUri,
     }),
     method: "POST",
   });
@@ -41,7 +43,8 @@ exports.edit = (
   semester: string,
   semesterStartDate: string,
   semesterEndDate: string,
-  description: string
+  description: string,
+  imgUri: string
 ) =>
   request({
     url: `${producer.base_url}/api/courses/${id}`,
@@ -53,6 +56,7 @@ exports.edit = (
       semester_start_date: semesterStartDate,
       semester_end_date: semesterEndDate,
       description,
+      img_uri: imgUri,
     }),
     method: "PUT",
   });

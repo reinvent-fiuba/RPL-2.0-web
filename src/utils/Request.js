@@ -4,7 +4,8 @@ function logout() {
   window.localStorage.removeItem("state");
 }
 
-exports.request = options => {
+exports.request = (options, config) => {
+  const { ignoreToken } = config || {};
   const headers = new Headers({
     "Content-Type": "application/json",
   });
@@ -13,7 +14,7 @@ exports.request = options => {
   const defaults = { headers };
   options = { ...defaults, ...options };
 
-  if (localStorageState.token) {
+  if (!ignoreToken && localStorageState.token) {
     options.headers.append(
       "Authorization",
       `${localStorageState.token.tokenType} ${localStorageState.token.accessToken}`
