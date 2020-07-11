@@ -48,6 +48,16 @@ exports.getAllSubmissions = (
     method: "GET",
   });
 
+exports.getAllSubmissionsFromStudent = (
+  courseId: number,
+  activityId: number,
+  studentId: number
+): Promise<Array<SubmissionResult>> =>
+  request({
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/students/${studentId}/submissions`,
+    method: "GET",
+  });
+
 exports.getStats = (courseId: number): Promise<> =>
   request({
     url: `${producer.base_url}/api/courses/${courseId}/submissions/stats`,
