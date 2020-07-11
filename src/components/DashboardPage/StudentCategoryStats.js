@@ -13,6 +13,9 @@ import TableBody from "@material-ui/core/TableBody";
 import Table from "@material-ui/core/Table";
 import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
+import { Grid } from "@material-ui/core";
+import SubmissionsSidePanel from "../ActivitiesPage/SubmissionsSidePanel.react";
+import SubmissionResultModal from "../SubmissionResultModal/TestResultsModal.react";
 
 import coursesService from "../../services/coursesService";
 import activitiesService from "../../services/activitiesService";
@@ -20,8 +23,6 @@ import statsService from "../../services/statsService";
 
 import "react-calendar-heatmap/dist/styles.css";
 
-import ErrorNotification from "../../utils/ErrorNotification";
-import { Grid, Typography } from "@material-ui/core";
 import { withState } from "../../utils/State";
 
 const _ = require("lodash");
@@ -114,6 +115,9 @@ const styles = theme => ({
   inactiveStatus: {
     backgroundColor: theme.palette.error.main,
   },
+  tableRow: {
+    cursor: "pointer",
+  },
 });
 
 const legendOpts = {
@@ -133,17 +137,24 @@ type Props = {
 };
 
 type State = {
-  error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
+  students: Array<any>,
+  categories: Array<any>,
+  activitiesStats: any,
+  studentId: ?number,
+  categoryId: ?number,
+  submissionsPanel: { isOpen: boolean, activityId: ?number },
+  selectedSubmissionId: ?number,
 };
 
 class StudentCategoryStats extends React.Component<Props, State> {
   state = {
-    error: { open: false, message: null },
     students: [],
     categories: [],
+    activitiesStats: null,
     studentId: undefined,
     categoryId: undefined,
+    submissionsPanel: { isOpen: false, activityId: null },
+    selectedSubmissionId: null,
   };
 
   componentDidMount() {
@@ -171,9 +182,49 @@ class StudentCategoryStats extends React.Component<Props, State> {
       });
   }
 
-  renderActivities() {
+  // START CONTROLL OF THE SUBMISSIONS PANEL
+
+  handleOnActivityClick(activityId: number) {
+    this.setOpenPanel(activityId);
+  }
+
+  // submissions sidepanel
+  setOpenPanel(activityId: number) {
+    this.setState({ submissionsPanel: { isOpen: true, activityId } });
+  }
+
+  // submissions sidepanel
+  setClosePanel() {
+    this.setState({ submissionsPanel: { isOpen: false, activityId: null } });
+  }
+
+  // click on submission in the right SidePanel
+  handleClickOnSubmission(submissionId: number, idx: number) {
+    this.setState(prevState => ({
+      submissionsPanel: { isOpen: false, activityId: prevState.submissionsPanel.activityId },
+    }));
+    setTimeout(() => {
+      this.setState({
+        selectedSubmissionId: submissionId,
+      });
+    }, 200);
+  }
+
+  handleCloseModal(e: Event) {
+    e.preventDefault();
+    this.setState({ selectedSubmissionId: null });
+    setTimeout(() => {
+      this.setState(prevState => ({
+        submissionsPanel: { isOpen: true, activityId: prevState.submissionsPanel.activityId },
+        selectedSubmissionId: null,
+      }));
+    }, 200);
+  }
+
+  // END CONTROLL OF THE SUBMISSIONS PANEL
+
+  renderActivities(activitiesStats: any) {
     const { classes } = this.props;
-    const { activitiesStats } = this.state;
 
     const { metadata, submissions_stats } = activitiesStats;
     const data = _.zipWith(submissions_stats, metadata, (stat, meta) => ({
@@ -196,7 +247,12 @@ class StudentCategoryStats extends React.Component<Props, State> {
           </TableHead>
           <TableBody>
             {data.map((activity, i) => (
-              <TableRow>
+              <TableRow
+                key={i}
+                hover
+                onClick={() => this.handleOnActivityClick(activity.id)}
+                className={classes.tableRow}
+              >
                 <TableCell key={1}>{i}</TableCell>
                 <TableCell key={2}>{activity.category_name}</TableCell>
                 <TableCell key={3}>{activity.name}</TableCell>
@@ -218,11 +274,19 @@ class StudentCategoryStats extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
-    const { error, activitiesStats } = this.state;
+    const { classes, courseId } = this.props;
+    const {
+      activitiesStats,
+      students,
+      categories,
+      submissionsPanel,
+      selectedSubmissionId,
+      studentId,
+    } = this.state;
 
     const colors = palette("sequential", 2).map(hex => `#${hex}`);
-    const data = activitiesStats && activitiesStats.submissions_stats.map(activity => activity.total);
+    const data =
+      activitiesStats && activitiesStats.submissions_stats.map(activity => activity.total);
     const dataScore = {
       labels: activitiesStats && activitiesStats.metadata.map(activity => activity.name),
       datasets: [
@@ -258,12 +322,32 @@ class StudentCategoryStats extends React.Component<Props, State> {
 
     return (
       <div>
+        {/* Se abre cuando alguien presiona el boton de VER ENTEGAS */}
+        <SubmissionsSidePanel
+          isOpen={submissionsPanel.isOpen}
+          activityId={submissionsPanel.activityId}
+          courseId={courseId}
+          studentId={studentId}
+          backdropClicked={() => this.setClosePanel()}
+          onSelectSubmission={(submissionId, i) => this.handleClickOnSubmission(submissionId, i)}
+        />
+
+        {/* APARECE CUANDO SE QUIERE VER EL DETALLE DE UNA ENTEGA PASADA DESDE EL SIDE PANEL */}
+        {selectedSubmissionId !== null && (
+          <SubmissionResultModal
+            open={selectedSubmissionId !== null}
+            handleCloseModal={e => this.handleCloseModal(e)}
+            showWaitingDialog
+            activitySubmissionId={selectedSubmissionId}
+            courseId={courseId}
+          />
+        )}
         <br />
-        <Grid container className={classes.filters} xs={12} spacing={3} >
+        <Grid container className={classes.filters} xs={12} spacing={3}>
           <Grid item xs={5}>
             <Autocomplete
               margin="normal"
-              options={this.state.students}
+              options={students}
               id="student"
               name="student"
               autoComplete="student"
@@ -275,7 +359,7 @@ class StudentCategoryStats extends React.Component<Props, State> {
           <Grid item xs={5}>
             <Autocomplete
               margin="normal"
-              options={this.state.categories}
+              options={categories}
               id="category"
               name="category"
               autoComplete="category"
@@ -295,7 +379,7 @@ class StudentCategoryStats extends React.Component<Props, State> {
             </Button>
           </Grid>
           <Grid item xs={12}>
-            {this.state.activitiesStats && (
+            {activitiesStats && (
               <Bar
                 data={dataScore}
                 legend={legendOpts}
@@ -307,7 +391,7 @@ class StudentCategoryStats extends React.Component<Props, State> {
             )}
           </Grid>
           <Grid item xs={12}>
-            {this.state.activitiesStats && this.renderActivities()}
+            {activitiesStats && this.renderActivities(activitiesStats)}
           </Grid>
         </Grid>
       </div>

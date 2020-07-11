@@ -22,6 +22,7 @@ const _ = require("lodash");
 type Props = {
   activityId: number,
   courseId: number,
+  studentId: ?number,
   backdropClicked: void => void,
   isOpen: boolean,
   onSelectSubmission: (submissionId: number, idx: number) => void,
@@ -46,20 +47,36 @@ class SubmissionsSidePanel extends React.Component<Props, State> {
       (refresh && !prevProps.refresh) ||
       (activityId !== prevProps.activityId && activityId !== null)
     ) {
-      submissionsService
-        .getAllSubmissions(courseId, activityId)
-        .then(response => {
-          this.setState({ submissions: response });
-        })
-        .catch(() => {
-          this.setState({
-            error: {
-              open: true,
-              message: "Hubo un error al obtener las actividades, Por favor reintenta",
-            },
-          });
-        });
+      this.getSubmissions();
     }
+  }
+
+  getSubmissions() {
+    const { courseId, activityId, studentId } = this.props;
+
+    let serviceToCall;
+    if (studentId !== null && studentId !== undefined) {
+      serviceToCall = submissionsService.getAllSubmissionsFromStudent(
+        courseId,
+        activityId,
+        studentId
+      );
+    } else {
+      serviceToCall = submissionsService.getAllSubmissions(courseId, activityId);
+    }
+
+    serviceToCall
+      .then(response => {
+        this.setState({ submissions: response });
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al obtener las actividades, Por favor reintenta",
+          },
+        });
+      });
   }
 
   render() {
