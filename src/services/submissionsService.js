@@ -70,7 +70,7 @@ exports.getFinalSolution = (courseId: number, activityId: number): Promise<Submi
     method: "GET",
   });
 
-exports.getFinalSolutionWithFile = (
+exports.getFinalSolutionWithFileForStudent = (
   courseId: number,
   activityId: number
 ): Promise<SubmissionResult> =>
@@ -88,6 +88,20 @@ exports.getFinalSolutionWithFile = (
       });
     });
   });
+
+exports.getAllFinalSolutionsFilesForStudent = (
+  courseId: number,
+  activityId: number
+): Promise<Array<{ [string]: string }>> =>
+  request({
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/allFinalSubmissions`,
+    method: "GET",
+  }).then(response =>
+    request({
+      url: `${producer.base_url}/api/getFilesForStudent/${response.submission_file_ids}`,
+      method: "GET",
+    })
+  );
 
 exports.getAllFinalSolutionsFiles = (
   courseId: number,

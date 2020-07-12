@@ -92,12 +92,30 @@ const styles = theme => ({
   bulletTitle: {
     marginRight: "5px",
   },
+  filesPermissionsContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+  },
   filePermissionsContainer: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "5px",
     marginRight: "15px",
+    maxWidth: "600px",
+    [theme.breakpoints.down("md")]: {
+      alignItems: "inherit",
+    },
+  },
+  fileNameTitle: {
+    marginRight: "5px",
+    fontFamily: "monospace",
+    minWidth: "100px",
+    [theme.breakpoints.up("md")]: {
+      width: "500px",
+    },
   },
 });
 
@@ -132,7 +150,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     selectTestStepExpanded: true,
     configTestStepExpanded: false,
     configCompilerFlagsStepExpanded: false,
-    configFilePermissionsForStudents: false,
+    configFilePermissionsForStudentsExpanded: false,
     flags: "",
     activityFilesMetadata: {
       "file1.c": { display: "hidden" },
@@ -251,7 +269,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
       selectTestStepExpanded,
       configTestStepExpanded,
       configCompilerFlagsStepExpanded,
-      configFilePermissionsForStudents,
+      configFilePermissionsForStudentsExpanded,
       activityFilesMetadata,
     } = this.state;
     const { courseId, activityId } = this.props.match.params;
@@ -304,8 +322,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 size="small"
                 color="primary"
                 onClick={() =>
-                  this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")
-                }
+                  this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")}
               >
                 Siguiente
               </Button>
@@ -344,8 +361,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
               <Button
                 size="small"
                 onClick={() =>
-                  this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")
-                }
+                  this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")}
               >
                 Anterior
               </Button>
@@ -353,8 +369,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 size="small"
                 color="primary"
                 onClick={() =>
-                  this.handleClickNext("configTestStepExpanded", "configCompilerFlagsStepExpanded")
-                }
+                  this.handleClickNext("configTestStepExpanded", "configCompilerFlagsStepExpanded")}
               >
                 Siguiente
               </Button>
@@ -362,11 +377,11 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           </Accordion>
           <Accordion expanded={configCompilerFlagsStepExpanded}>
             <AccordionSummary
-              expandIcon={
+              expandIcon={(
                 <ExpandMoreIcon
                   onClick={() => this.handleClickPanel("configCompilerFlagsStepExpanded")}
                 />
-              }
+              )}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 3: Definir flags de compilación
@@ -411,8 +426,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
               <Button
                 size="small"
                 onClick={() =>
-                  this.handleClickNext("configCompilerFlagsStepExpanded", "configTestStepExpanded")
-                }
+                  this.handleClickNext("configCompilerFlagsStepExpanded", "configTestStepExpanded")}
               >
                 Anterior
               </Button>
@@ -422,21 +436,20 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 onClick={() =>
                   this.handleClickNext(
                     "configCompilerFlagsStepExpanded",
-                    "configFilePermissionsForStudents"
-                  )
-                }
+                    "configFilePermissionsForStudentsExpanded"
+                  )}
               >
                 Siguiente
               </Button>
             </AccordionActions>
           </Accordion>
-          <Accordion expanded={configFilePermissionsForStudents}>
+          <Accordion expanded={configFilePermissionsForStudentsExpanded}>
             <AccordionSummary
-              expandIcon={
+              expandIcon={(
                 <ExpandMoreIcon
-                  onClick={() => this.handleClickPanel("configFilePermissionsForStudents")}
+                  onClick={() => this.handleClickPanel("configFilePermissionsForStudentsExpanded")}
                 />
-              }
+              )}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 4: Definir permisos de archivos para los alumnos
@@ -516,15 +529,14 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 </ul>
                 <br />
                 <br />
-                <div>
+                <div className={classes.filesPermissionsContainer}>
                   {Object.keys(activityFilesMetadata).map(filename => (
                     <div className={classes.filePermissionsContainer}>
                       <Typography
                         variant="h6"
                         component="h1"
                         display="inline"
-                        className={classes.bulletTitle}
-                        style={{ fontFamily: "monospace" }}
+                        className={classes.fileNameTitle}
                       >
                         {filename}
                       </Typography>
@@ -587,10 +599,9 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 size="small"
                 onClick={() =>
                   this.handleClickNext(
-                    "configFilePermissionsForStudents",
+                    "configFilePermissionsForStudentsExpanded",
                     "configCompilerFlagsStepExpanded"
-                  )
-                }
+                  )}
               >
                 Anterior
               </Button>
