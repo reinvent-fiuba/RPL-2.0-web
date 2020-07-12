@@ -194,8 +194,8 @@ class CategoryStats extends React.Component<Props, State> {
               <TableCell key={2}>Categoria</TableCell>
               <TableCell key={3}>Actividad</TableCell>
               <TableCell key={4}>Puntos</TableCell>
-              <TableCell key={5}>Envios incorrectos</TableCell>
-              <TableCell key={6}>Envios correctos</TableCell>
+              <TableCell key={5}>Alumnos en proceso</TableCell>
+              <TableCell key={6}>Alumnos exitosos</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -205,8 +205,8 @@ class CategoryStats extends React.Component<Props, State> {
                 <TableCell key={2}>{activity.category_name}</TableCell>
                 <TableCell key={3}>{activity.name}</TableCell>
                 <TableCell key={4}>{activity.points}</TableCell>
-                <TableCell key={5}>{activity.total}</TableCell>
-                <TableCell key={6}>{activity.success}</TableCell>
+                <TableCell key={5}>{activity.total_students_error}</TableCell>
+                <TableCell key={6}>{activity.total_students_success}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -220,7 +220,7 @@ class CategoryStats extends React.Component<Props, State> {
     const { error, activitiesStats } = this.state;
 
     const colors = palette("sequential", 2).map(hex => `#${hex}`);
-    const data = activitiesStats && activitiesStats.submissions_stats.map(activity => activity.total);
+    const data = activitiesStats && activitiesStats.submissions_stats.map(activity => activity.avg_error_submissions_by_student);
     const dataScore = {
       labels: activitiesStats && activitiesStats.metadata.map(activity => activity.name),
       datasets: [
@@ -296,7 +296,6 @@ class CategoryStats extends React.Component<Props, State> {
             {this.state.activitiesStats && this.renderActivities()}
           </Grid>
         </Grid>
-        {this.state.activitiesStats ? <div></div> : <div />}
       </div>
     );
   }

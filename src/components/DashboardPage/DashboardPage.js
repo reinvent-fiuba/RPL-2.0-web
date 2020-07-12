@@ -202,10 +202,10 @@ class ActivitiesPage extends React.Component<Props, State> {
                     indicatorColor="primary"
                     textColor="primary"
                   >
-                    <Tab label="Scoreboard" />
-                    <Tab label="General" />
-                    <Tab label="Entregas por alumno y categoría" />
-                    <Tab label="Entregas por categorías" />
+                    <Tab label="Ranking" />
+                    <Tab label="Envios por Fecha" />
+                    <Tab label="Envios por Alunno" />
+                    <Tab label="Envios por Categoría" />
                   </Tabs>
                 </Paper>
                 {teacherStats[this.state.current]}
