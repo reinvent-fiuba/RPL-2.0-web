@@ -91,7 +91,7 @@ class SolveActivityPage extends React.Component<Props, State> {
 
   componentDidMount() {
     activitiesService
-      .getActivity(this.props.match.params.courseId, this.props.match.params.activityId)
+      .getActivityForStudent(this.props.match.params.courseId, this.props.match.params.activityId)
       .then(activityResponse => {
         this.setState({
           activity: activityResponse,
@@ -136,6 +136,8 @@ class SolveActivityPage extends React.Component<Props, State> {
     event.preventDefault();
     const { courseId, activityId } = this.props.match.params;
     const { code } = this.state;
+
+    delete code.files_metadata;
 
     submissionsService
       .createSubmission(courseId, activityId, code)
@@ -207,7 +209,8 @@ class SolveActivityPage extends React.Component<Props, State> {
             courseId={this.props.match.params.courseId}
             backdropClicked={() => this.setCloseSubmissionsPanel()}
             onSelectSubmission={(submissionId, i) =>
-              this.handleClickOnPastSubmission(submissionId, i)}
+              this.handleClickOnPastSubmission(submissionId, i)
+            }
           />
         )}
 
@@ -261,6 +264,7 @@ class SolveActivityPage extends React.Component<Props, State> {
                     initialCode={code}
                     language={activity.language.toLowerCase()}
                     readOnly={false}
+                    canEditFiles={false}
                     onCodeChange={newCode => this.onCodeChange(newCode)}
                     editorDidMount={mountedEditor => {
                       mountedEditor.changeViewZones(changeAccessor => {

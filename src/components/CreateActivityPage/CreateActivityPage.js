@@ -446,6 +446,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                   initialCode={code}
                   language={language}
                   readOnly={false}
+                  canEditFiles
                   onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
                   editorDidMount={mountedEditor => {
                     mountedEditor.changeViewZones(changeAccessor => {
@@ -468,8 +469,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                 selectedTab={mdEditorTab}
                 onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })
-                }
+                  this.setState({ mdEditorTab: mdEditorTabChanged })}
                 generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
               />
             </Grid>

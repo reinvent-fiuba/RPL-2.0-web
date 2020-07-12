@@ -117,6 +117,22 @@ exports.getActivity = (courseId: number, activityId: number): Promise<Activity> 
     });
   });
 
+exports.getActivityForStudent = (courseId: number, activityId: number): Promise<Activity> =>
+  request({
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,
+    method: "GET",
+  }).then(activity => {
+    return fetch(`${producer.base_url}/api/getFileForStudent/${activity.file_id}`).then(
+      response => {
+        return response.json().then(code => {
+          const completeActivity = activity;
+          completeActivity.initial_code = code;
+          return completeActivity;
+        });
+      }
+    );
+  });
+
 exports.deleteActivity = (courseId: number, activityId: number): Promise<Activity> =>
   request({
     url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}`,

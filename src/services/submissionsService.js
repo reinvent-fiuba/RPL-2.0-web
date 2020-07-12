@@ -28,15 +28,15 @@ exports.getSubmissionResult = (submissionId: number): Promise<SubmissionResult> 
     url: `${producer.base_url}/api/submissions/${submissionId}/result`,
     method: "GET",
   }).then(submission => {
-    return fetch(`${producer.base_url}/api/getExtractedFile/${submission.submission_file_id}`).then(
-      response => {
-        return response.json().then(code => {
-          const completeSubmission = submission;
-          completeSubmission.submited_code = code;
-          return completeSubmission;
-        });
-      }
-    );
+    return fetch(
+      `${producer.base_url}/api/getFileForStudent/${submission.submission_file_id}`
+    ).then(response => {
+      return response.json().then(code => {
+        const completeSubmission = submission;
+        completeSubmission.submited_code = code;
+        return completeSubmission;
+      });
+    });
   });
 
 exports.getAllSubmissions = (
@@ -78,15 +78,15 @@ exports.getFinalSolutionWithFile = (
     url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/finalSubmission`,
     method: "GET",
   }).then(submission => {
-    return fetch(`${producer.base_url}/api/getExtractedFile/${submission.submission_file_id}`).then(
-      response => {
-        return response.json().then(code => {
-          const completeSubmission = submission;
-          completeSubmission.submited_code = code;
-          return completeSubmission;
-        });
-      }
-    );
+    return fetch(
+      `${producer.base_url}/api/getFileForStudent/${submission.submission_file_id}`
+    ).then(response => {
+      return response.json().then(code => {
+        const completeSubmission = submission;
+        completeSubmission.submited_code = code;
+        return completeSubmission;
+      });
+    });
   });
 
 exports.getAllFinalSolutionsFiles = (

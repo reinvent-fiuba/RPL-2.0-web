@@ -150,9 +150,16 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     activitiesService
       .getActivity(courseId, activityId)
       .then(response => {
+        const filesMetadata =
+          "files_metadata" in response.initial_code
+            ? JSON.parse(response.initial_code.files_metadata)
+            : AddActivityCorrectionTests.buildFilesMetadata(response.initial_code);
+
+        delete filesMetadata.files_metadata;
+
         this.setState({
-          activty: response,
-          // activityFilesMetadata: {}
+          activity: response,
+          activityFilesMetadata: filesMetadata,
           flags: response.compilation_flags,
           selectedTestMode: !response.is_iotested ? "Unit tests" : "IO tests",
         });
@@ -165,6 +172,14 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           },
         });
       });
+  }
+
+  static buildFilesMetadata(files: { [string]: string }): Object {
+    const filesMetadata = {};
+    Object.keys(files).forEach(file => {
+      filesMetadata[file] = { display: "read_write" };
+    });
+    return filesMetadata;
   }
 
   handleSwitchDrawer() {
@@ -203,6 +218,18 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
       activityId,
       courseId,
       compilationFlags: this.state.flags,
+    });
+  }
+
+  handleSaveFilesMetadata() {
+    const { courseId, activityId } = this.props.match.params;
+    const { activity, activityFilesMetadata } = this.state;
+    const newFiles = activity.initial_code;
+    newFiles.files_metadata = JSON.stringify(activityFilesMetadata);
+    return activitiesService.updateActivity({
+      activityId,
+      courseId,
+      code: newFiles,
     });
   }
 
@@ -422,7 +449,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                   size="small"
                   color="primary"
                   className={classes.saveFlagsButton}
-                  onClick={() => this.handleSaveFlags()}
+                  onClick={() => this.handleSaveFilesMetadata()}
                 >
                   <SaveIcon />
                 </Fab>

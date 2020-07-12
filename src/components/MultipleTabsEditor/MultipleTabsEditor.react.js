@@ -7,6 +7,7 @@ import Tab from "@material-ui/core/Tab";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { withState } from "../../utils/State";
 import AddNewFileModal from "./AddNewFileModal.react";
+import AddActivityCorrectionTests from "../AddActivityCorrectionTests/AddActivityCorrectionTests.react";
 
 const styles = theme => ({
   addFileButton: {
@@ -74,18 +75,21 @@ type Props = {
   initialCode: { [string]: string },
   readOnly: boolean,
   editorDidMount: any,
+  canEditFiles: booleanean,
 };
 
 type State = {
   code: { [string]: string },
   selectedEditor: string,
   fileNameModal: { text: ?string, isNewFileModalOpen: boolean },
+  filesMetadata: { [string]: { display: string } },
 };
 
 const commentByLanguage = { c: "//", python: "#" };
 
 class MultipleTabsEditor extends React.Component<Props, State> {
   state = {
+    filesMetadata: this.getFilesMetadata(),
     // eslint-disable-next-line react/destructuring-assignment
     code: this.props.initialCode,
     // eslint-disable-next-line react/destructuring-assignment
@@ -93,7 +97,27 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     fileNameModal: { text: null, isNewFileModalOpen: false },
   };
 
-  componentDidMount() {}
+  getFilesMetadata() {
+    if ("files_metadata" in this.props.initialCode) {
+      const metadata = JSON.parse(this.props.initialCode.files_metadata);
+      Object.keys(this.props.initialCode).forEach(filename => {
+        if (filename === "files_metadata") return;
+        if (!(filename in metadata)) {
+          metadata.fileName = { display: "read_write" };
+        }
+      });
+      return metadata;
+    }
+    return MultipleTabsEditor.buildFilesMetadata(this.props.initialCode);
+  }
+
+  static buildFilesMetadata(files: { [string]: string }): Object {
+    const filesMetadata = {};
+    Object.keys(files).forEach(file => {
+      filesMetadata[file] = { display: "read_write" };
+    });
+    return filesMetadata;
+  }
 
   handleTabChange(selectedEditor, event, newSelectedTab, readOnly) {
     if (newSelectedTab === undefined) {
@@ -111,9 +135,11 @@ class MultipleTabsEditor extends React.Component<Props, State> {
   }
 
   handleCodeChange(code: { [string]: string }, codeChanged: string, selectedEditor: string) {
+    const { filesMetadata } = this.state;
     const newCode = code;
     newCode[selectedEditor] = codeChanged;
     this.setState({ code: newCode });
+    newCode.files_metadata = JSON.stringify(filesMetadata);
     this.props.onCodeChange(newCode);
   }
 
@@ -123,23 +149,32 @@ class MultipleTabsEditor extends React.Component<Props, State> {
 
   handleCloseFileNameModal(prevFileName: ?string, newFileName: string, code: { [string]: string }) {
     const { language } = this.props;
+    const { filesMetadata } = this.state;
     if (!newFileName || newFileName === "") {
       this.setState({ fileNameModal: { text: null, isNewFileModalOpen: false } });
       return;
     }
     const newCode = code;
+    const newMetadata = filesMetadata;
     if (prevFileName !== null && prevFileName !== undefined) {
       // Change name of existing file
       newCode[newFileName] = newCode[prevFileName];
+      newMetadata[newFileName] = newMetadata[prevFileName];
       delete newCode[prevFileName];
+      delete filesMetadata[prevFileName];
     } else {
       newCode[newFileName] = `${commentByLanguage[language]} file ${newFileName}`;
+      newMetadata[newFileName] = { display: "read_write" };
     }
     this.setState({
       code: newCode,
+      filesMetadata: newMetadata,
       selectedEditor: newFileName,
       fileNameModal: { text: null, isNewFileModalOpen: false },
     });
+
+    newCode.files_metadata = JSON.stringify(newMetadata);
+    this.props.onCodeChange(newCode);
   }
 
   getLanguageForMonaco(): string {
@@ -152,8 +187,26 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     return lang;
   }
 
+  isReadOnlyFile(filename: string) {
+    const { readOnly, canEditFiles } = this.props;
+    const { filesMetadata } = this.state;
+
+    // Mainly for Submission results
+    if (readOnly) {
+      return true;
+    }
+
+    // Mainly for activity creation and edition
+    if (canEditFiles) {
+      return false;
+    }
+
+    // Students solving an activity
+    return filesMetadata[filename].display !== "read_write";
+  }
+
   render() {
-    const { classes, width, height, editorDidMount, readOnly } = this.props;
+    const { classes, width, editorDidMount, readOnly } = this.props;
 
     const { code, fileNameModal, selectedEditor } = this.state;
 
@@ -162,13 +215,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
       return [];
     }
 
-    let readOnlyFile;
-    if (code && code[selectedEditor].includes("RPL_STUDENT_CANT_CHANGE")) {
-      readOnlyFile = true;
-    } else {
-      readOnlyFile = readOnly;
-    }
-    console.log(`readOnlyFile: ${readOnlyFile}`);
+    const readOnlyFile = this.isReadOnlyFile(selectedEditor);
 
     return (
       <div className={classes.tabsEditorContainer}>
@@ -190,6 +237,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             variant="scrollable"
           >
             {Object.keys(code).map(fileName => {
+              if (fileName === "files_metadata") return;
               return <StyledTab key={fileName} label={fileName} value={fileName} />;
             })}
 
