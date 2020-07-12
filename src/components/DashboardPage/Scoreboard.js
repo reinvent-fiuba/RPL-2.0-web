@@ -77,6 +77,9 @@ const styles = theme => ({
     display: "flex",
     alignItems: "center",
   },
+  currentUserRow: {
+    backgroundColor: theme.palette.success.light,
+  },
 });
 
 type Props = {
@@ -134,6 +137,8 @@ class Scoreboard extends React.Component<Props, State> {
 
   // eslint-disable-next-line class-methods-use-this
   renderStudentRow(student: any, classes: any) {
+    const { profile } = this.props.context;
+
     const cells = [
       <TableCell key={5} align="left">
         {student.position}
@@ -156,9 +161,7 @@ class Scoreboard extends React.Component<Props, State> {
     ];
 
     return (
-      <TableRow hover key={student.student_id}>
-        {cells}
-      </TableRow>
+      <TableRow className={profile.id === student.id && classes.currentUserRow}>{cells}</TableRow>
     );
   }
 
