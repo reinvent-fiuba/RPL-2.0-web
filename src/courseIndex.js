@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import { withState } from "./utils/State";
 import CreateActivityPage from "./components/CreateActivityPage/CreateActivityPage";
 import AddActivityCorrectionTests from "./components/AddActivityCorrectionTests/AddActivityCorrectionTests.react";
@@ -36,8 +36,19 @@ class CourseIndex extends React.PureComponent {
       ? ActivitiesTeacherPage
       : ActivitiesPage;
 
+    const { courseId } = this.props.match.params;
     return (
       <>
+        <Route
+          exact
+          path="/courses/:courseId"
+          render={() => (
+          permissions.includes("activity_manage") ? (
+            <Redirect to={`/courses/${courseId}/dashboard`} />
+          ) : (
+            <Redirect to={`/courses/${courseId}/activities`} />
+          )
+        )}/>
         <Route exact path="/courses/:courseId/edit" component={EditCoursePage} />
         <Route exact path="/courses/:courseId/activities" component={activityPage} />
         <Route exact path="/courses/:courseId/dashboard" component={DashboardPage} />

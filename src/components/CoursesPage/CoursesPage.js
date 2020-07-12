@@ -143,7 +143,7 @@ class CoursesPage extends React.Component<Props, State> {
 
   handleClickGoToCourse(e: Event, courseId: number) {
     e.preventDefault();
-    this.props.history.push(`/courses/${courseId}/dashboard`);
+    this.props.history.push(`/courses/${courseId}`);
   }
 
   handleClickEnrollToCourse(e: Event, courseId: number) {
