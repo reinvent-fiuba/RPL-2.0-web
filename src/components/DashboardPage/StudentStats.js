@@ -190,15 +190,15 @@ class StudentStats extends React.Component<Props, State> {
       <Grid container xs={12} spacing={3} className={classes.plotContainerDiv}>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
         <Grid item xs={3}>
-          <Typography>Actividades</Typography>
+          <Typography>Mis Actividades</Typography>
           <Pie data={dataActivities} legend={legendOpts} />
         </Grid>
         <Grid item xs={3}>
-          <Typography>Entregas</Typography>
+          <Typography>Mis Entregas</Typography>
           <Pie data={dataSubmissions} />
         </Grid>
         <Grid item xs={3}>
-          <Typography>Puntos</Typography>
+          <Typography>Mis Puntos</Typography>
           <Pie data={dataScore} />
         </Grid>
       </Grid>
