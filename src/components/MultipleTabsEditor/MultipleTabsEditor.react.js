@@ -159,7 +159,16 @@ class MultipleTabsEditor extends React.Component<Props, State> {
 
     if (!Object.keys(code).includes(selectedEditor)) {
       this.setState({ selectedEditor: Object.keys(code)[0] });
+      return [];
     }
+
+    let readOnlyFile;
+    if (code && code[selectedEditor].includes("RPL_STUDENT_CANT_CHANGE")) {
+      readOnlyFile = true;
+    } else {
+      readOnlyFile = readOnly;
+    }
+    console.log(`readOnlyFile: ${readOnlyFile}`);
 
     return (
       <div className={classes.tabsEditorContainer}>
@@ -169,7 +178,8 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             existingFilenames={Object.keys(code)}
             open={fileNameModal.isNewFileModalOpen}
             handleCloseModal={(prevFileName, newFileName) =>
-              this.handleCloseFileNameModal(prevFileName, newFileName, code)}
+              this.handleCloseFileNameModal(prevFileName, newFileName, code)
+            }
           />
         )}
         <div className={classes.tabsContainer}>
@@ -196,7 +206,9 @@ class MultipleTabsEditor extends React.Component<Props, State> {
           width={width}
           options={{
             renderFinalNewline: true,
-            readOnly,
+            readOnly: readOnlyFile,
+            scrollBeyondLastLine: false,
+            wordWrap: "on",
           }}
           language={this.getLanguageForMonaco()}
           theme="vs-dark"

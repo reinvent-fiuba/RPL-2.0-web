@@ -3,16 +3,17 @@ import React from "react";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpansionPanelActions from "@material-ui/core/ExpansionPanelActions";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import AccordionActions from "@material-ui/core/AccordionActions";
 import SaveIcon from "@material-ui/icons/Save";
 import Fab from "@material-ui/core/Fab";
 import Divider from "@material-ui/core/Divider";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -88,7 +89,28 @@ const styles = theme => ({
     display: "flex",
     marginLeft: "auto",
   },
+  bulletTitle: {
+    marginRight: "5px",
+  },
+  filePermissionsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "5px",
+    marginRight: "15px",
+  },
 });
+
+const StyledButton = withStyles({
+  root: {
+    backgroundColor: "#5f9caf",
+    color: "#fff",
+  },
+  outlined: {
+    color: "#5f9caf",
+    backgroundColor: "#fff",
+  },
+})(Button);
 
 type Props = {
   match: any,
@@ -109,8 +131,14 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     selectedTestMode: "IO tests",
     selectTestStepExpanded: true,
     configTestStepExpanded: false,
-    configFlagsStepExpanded: false,
+    configCompilerFlagsStepExpanded: false,
+    configFilePermissionsForStudents: false,
     flags: "",
+    activityFilesMetadata: {
+      "file1.c": { display: "hidden" },
+      "file_very_long_2.h": { display: "read" },
+      "main.c": { display: "read_write" },
+    },
   };
 
   componentDidMount() {
@@ -124,6 +152,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
       .then(response => {
         this.setState({
           activty: response,
+          // activityFilesMetadata: {}
           flags: response.compilation_flags,
           selectedTestMode: !response.is_iotested ? "Unit tests" : "IO tests",
         });
@@ -191,7 +220,13 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
   render() {
     const { classes } = this.props;
-    const { selectTestStepExpanded, configTestStepExpanded, configFlagsStepExpanded } = this.state;
+    const {
+      selectTestStepExpanded,
+      configTestStepExpanded,
+      configCompilerFlagsStepExpanded,
+      configFilePermissionsForStudents,
+      activityFilesMetadata,
+    } = this.state;
     const { courseId, activityId } = this.props.match.params;
 
     const { isSideBarOpen, error, selectedTestMode } = this.state;
@@ -211,8 +246,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <ExpansionPanel expanded={selectTestStepExpanded}>
-            <ExpansionPanelSummary
+          <Accordion expanded={selectTestStepExpanded}>
+            <AccordionSummary
               expandIcon={
                 <ExpandMoreIcon onClick={() => this.handleClickPanel("selectTestStepExpanded")} />
               }
@@ -220,15 +255,10 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 1: Seleccionar modo de testeo de la actividad
               </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
               <div>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  component="h1"
-                  className={classes.title}
-                >
+                <Typography variant="subtitle1" color="textSecondary" component="h1">
                   Solo se puede elegir 1 modo!
                 </Typography>
                 <RadioGroup
@@ -240,21 +270,22 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                   {/* <FormControlLabel value="no tests" control={<Radio />} label="No tests" /> */}
                 </RadioGroup>
               </div>
-            </ExpansionPanelDetails>
+            </AccordionDetails>
             <Divider />
-            <ExpansionPanelActions>
+            <AccordionActions>
               <Button
                 size="small"
                 color="primary"
                 onClick={() =>
-                  this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")}
+                  this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")
+                }
               >
                 Siguiente
               </Button>
-            </ExpansionPanelActions>
-          </ExpansionPanel>
-          <ExpansionPanel expanded={configTestStepExpanded}>
-            <ExpansionPanelSummary
+            </AccordionActions>
+          </Accordion>
+          <Accordion expanded={configTestStepExpanded}>
+            <AccordionSummary
               expandIcon={
                 <ExpandMoreIcon onClick={() => this.handleClickPanel("configTestStepExpanded")} />
               }
@@ -262,8 +293,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
               <Typography variant="h6" color="textPrimary" component="h1">
                 {`Paso 2: Definir tests${selectedTestMode ? ` - ${selectedTestMode}` : ""}`}
               </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
               <div>
                 {selectedTestMode === "IO tests" && (
                   <IOTestsCorrection
@@ -280,13 +311,14 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                   />
                 )}
               </div>
-            </ExpansionPanelDetails>
+            </AccordionDetails>
             <Divider />
-            <ExpansionPanelActions>
+            <AccordionActions>
               <Button
                 size="small"
                 onClick={() =>
-                  this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")}
+                  this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")
+                }
               >
                 Anterior
               </Button>
@@ -294,23 +326,26 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 size="small"
                 color="primary"
                 onClick={() =>
-                  this.handleClickNext("configTestStepExpanded", "configFlagsStepExpanded")}
+                  this.handleClickNext("configTestStepExpanded", "configCompilerFlagsStepExpanded")
+                }
               >
                 Siguiente
               </Button>
-            </ExpansionPanelActions>
-          </ExpansionPanel>
-          <ExpansionPanel expanded={configFlagsStepExpanded}>
-            <ExpansionPanelSummary
+            </AccordionActions>
+          </Accordion>
+          <Accordion expanded={configCompilerFlagsStepExpanded}>
+            <AccordionSummary
               expandIcon={
-                <ExpandMoreIcon onClick={() => this.handleClickPanel("configFlagsStepExpanded")} />
+                <ExpandMoreIcon
+                  onClick={() => this.handleClickPanel("configCompilerFlagsStepExpanded")}
+                />
               }
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 3: Definir flags de compilación
               </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
               <div className={classes.flagsField}>
                 <Fab
                   aria-label="add"
@@ -321,12 +356,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 >
                   <SaveIcon />
                 </Fab>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  component="h1"
-                  className={classes.title}
-                >
+                <Typography variant="subtitle1" color="textSecondary" component="h1">
                   A continuación se pueden definir los flags de compilación que se usaran para
                   compilar los ejercicios.
                 </Typography>
@@ -349,17 +379,196 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                   variant="outlined"
                 />
               </div>
-            </ExpansionPanelDetails>
-            <ExpansionPanelActions>
+            </AccordionDetails>
+            <AccordionActions>
               <Button
                 size="small"
                 onClick={() =>
-                  this.handleClickNext("configFlagsStepExpanded", "configTestStepExpanded")}
+                  this.handleClickNext("configCompilerFlagsStepExpanded", "configTestStepExpanded")
+                }
               >
                 Anterior
               </Button>
-            </ExpansionPanelActions>
-          </ExpansionPanel>
+              <Button
+                size="small"
+                color="primary"
+                onClick={() =>
+                  this.handleClickNext(
+                    "configCompilerFlagsStepExpanded",
+                    "configFilePermissionsForStudents"
+                  )
+                }
+              >
+                Siguiente
+              </Button>
+            </AccordionActions>
+          </Accordion>
+          <Accordion expanded={configFilePermissionsForStudents}>
+            <AccordionSummary
+              expandIcon={
+                <ExpandMoreIcon
+                  onClick={() => this.handleClickPanel("configFilePermissionsForStudents")}
+                />
+              }
+            >
+              <Typography variant="h6" color="textPrimary" component="h1">
+                Paso 4: Definir permisos de archivos para los alumnos
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <div className={classes.flagsField}>
+                <Fab
+                  aria-label="add"
+                  size="small"
+                  color="primary"
+                  className={classes.saveFlagsButton}
+                  onClick={() => this.handleSaveFlags()}
+                >
+                  <SaveIcon />
+                </Fab>
+                <Typography variant="subtitle1" color="textSecondary" component="h1">
+                  A continuación se pueden definir los permisos que van a tener los alumnos para
+                  cada archivo.
+                </Typography>
+                <ul>
+                  <li>
+                    <Typography
+                      variant="subtitle2"
+                      component="h1"
+                      display="inline"
+                      className={classes.bulletTitle}
+                    >
+                      Lectura y escritura:
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      color="textSecondary"
+                      component="h1"
+                      display="inline"
+                    >
+                      El alumno podrá editarlos y será parte de la entrega si no lo borra.
+                    </Typography>
+                  </li>
+                  <li>
+                    <Typography
+                      variant="subtitle2"
+                      component="h1"
+                      display="inline"
+                      className={classes.bulletTitle}
+                    >
+                      Lectura:
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      color="textSecondary"
+                      component="h1"
+                      display="inline"
+                    >
+                      El alumno podrá ver el archivo pero no editarlo. Formará parte de la entrega.
+                    </Typography>
+                  </li>
+                  <li>
+                    <Typography
+                      variant="subtitle2"
+                      component="h1"
+                      display="inline"
+                      className={classes.bulletTitle}
+                    >
+                      Oculto:
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      color="textSecondary"
+                      component="h1"
+                      display="inline"
+                    >
+                      El archivo permanecerá oculto para el alumno pero será agregado a los archivos
+                      de la entrega del alumno.
+                    </Typography>
+                  </li>
+                </ul>
+                <br />
+                <br />
+                <div>
+                  {Object.keys(activityFilesMetadata).map(filename => (
+                    <div className={classes.filePermissionsContainer}>
+                      <Typography
+                        variant="h6"
+                        component="h1"
+                        display="inline"
+                        className={classes.bulletTitle}
+                        style={{ fontFamily: "monospace" }}
+                      >
+                        {filename}
+                      </Typography>
+                      <ButtonGroup
+                        color="primary"
+                        aria-label="outlined primary button group"
+                        display="inline"
+                      >
+                        <StyledButton
+                          color="inherit"
+                          variant={
+                            activityFilesMetadata[filename].display === "read_write"
+                              ? "contained"
+                              : null
+                          }
+                          onClick={() => {
+                            const newMetadata = activityFilesMetadata;
+                            newMetadata[filename].display = "read_write";
+                            return this.setState({ activityFilesMetadata: newMetadata });
+                          }}
+                        >
+                          Escritura
+                        </StyledButton>
+                        <StyledButton
+                          color="inherit"
+                          variant={
+                            activityFilesMetadata[filename].display === "read" ? "contained" : null
+                          }
+                          onClick={() => {
+                            const newMetadata = activityFilesMetadata;
+                            newMetadata[filename].display = "read";
+                            return this.setState({ activityFilesMetadata: newMetadata });
+                          }}
+                        >
+                          Lectura
+                        </StyledButton>
+                        <StyledButton
+                          color="inherit"
+                          variant={
+                            activityFilesMetadata[filename].display === "hidden"
+                              ? "contained"
+                              : null
+                          }
+                          onClick={() => {
+                            const newMetadata = activityFilesMetadata;
+                            newMetadata[filename].display = "hidden";
+                            return this.setState({ activityFilesMetadata: newMetadata });
+                          }}
+                        >
+                          Oculto
+                        </StyledButton>
+                      </ButtonGroup>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </AccordionDetails>
+            <AccordionActions>
+              <Button
+                size="small"
+                onClick={() =>
+                  this.handleClickNext(
+                    "configFilePermissionsForStudents",
+                    "configCompilerFlagsStepExpanded"
+                  )
+                }
+              >
+                Anterior
+              </Button>
+            </AccordionActions>
+          </Accordion>
           <Grid container className={classes.buttons}>
             <Grid item>
               <Button

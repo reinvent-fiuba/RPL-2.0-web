@@ -21,8 +21,6 @@ import type { Activity } from "../../types";
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
 
-const _ = require("lodash");
-
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -209,8 +207,7 @@ class SolveActivityPage extends React.Component<Props, State> {
             courseId={this.props.match.params.courseId}
             backdropClicked={() => this.setCloseSubmissionsPanel()}
             onSelectSubmission={(submissionId, i) =>
-              this.handleClickOnPastSubmission(submissionId, i)
-            }
+              this.handleClickOnPastSubmission(submissionId, i)}
           />
         )}
 
