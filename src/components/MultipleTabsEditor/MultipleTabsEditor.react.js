@@ -7,7 +7,9 @@ import Tab from "@material-ui/core/Tab";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { withState } from "../../utils/State";
 import AddNewFileModal from "./AddNewFileModal.react";
-import AddActivityCorrectionTests from "../AddActivityCorrectionTests/AddActivityCorrectionTests.react";
+import type { FilesMetadata } from "../../types";
+import { getFilesMetadata } from "../../utils/files";
+import { FILE_DISPLAY_MODE } from "../../types";
 
 const styles = theme => ({
   addFileButton: {
@@ -75,49 +77,27 @@ type Props = {
   initialCode: { [string]: string },
   readOnly: boolean,
   editorDidMount: any,
-  canEditFiles: booleanean,
+  canEditFiles: boolean,
 };
 
 type State = {
   code: { [string]: string },
   selectedEditor: string,
   fileNameModal: { text: ?string, isNewFileModalOpen: boolean },
-  filesMetadata: { [string]: { display: string } },
+  filesMetadata: FilesMetadata,
 };
 
 const commentByLanguage = { c: "//", python: "#" };
 
 class MultipleTabsEditor extends React.Component<Props, State> {
   state = {
-    filesMetadata: this.getFilesMetadata(),
+    filesMetadata: getFilesMetadata(this.props.initialCode),
     // eslint-disable-next-line react/destructuring-assignment
     code: this.props.initialCode,
     // eslint-disable-next-line react/destructuring-assignment
     selectedEditor: Object.keys(this.props.initialCode)[0],
     fileNameModal: { text: null, isNewFileModalOpen: false },
   };
-
-  getFilesMetadata() {
-    if ("files_metadata" in this.props.initialCode) {
-      const metadata = JSON.parse(this.props.initialCode.files_metadata);
-      Object.keys(this.props.initialCode).forEach(filename => {
-        if (filename === "files_metadata") return;
-        if (!(filename in metadata)) {
-          metadata.fileName = { display: "read_write" };
-        }
-      });
-      return metadata;
-    }
-    return MultipleTabsEditor.buildFilesMetadata(this.props.initialCode);
-  }
-
-  static buildFilesMetadata(files: { [string]: string }): Object {
-    const filesMetadata = {};
-    Object.keys(files).forEach(file => {
-      filesMetadata[file] = { display: "read_write" };
-    });
-    return filesMetadata;
-  }
 
   handleTabChange(selectedEditor, event, newSelectedTab, readOnly) {
     if (newSelectedTab === undefined) {
@@ -164,7 +144,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
       delete filesMetadata[prevFileName];
     } else {
       newCode[newFileName] = `${commentByLanguage[language]} file ${newFileName}`;
-      newMetadata[newFileName] = { display: "read_write" };
+      newMetadata[newFileName] = { display: FILE_DISPLAY_MODE.READ_WRITE };
     }
     this.setState({
       code: newCode,
@@ -202,7 +182,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     }
 
     // Students solving an activity
-    return filesMetadata[filename].display !== "read_write";
+    return filesMetadata[filename].display !== FILE_DISPLAY_MODE.READ_WRITE;
   }
 
   render() {
@@ -225,8 +205,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             existingFilenames={Object.keys(code)}
             open={fileNameModal.isNewFileModalOpen}
             handleCloseModal={(prevFileName, newFileName) =>
-              this.handleCloseFileNameModal(prevFileName, newFileName, code)
-            }
+              this.handleCloseFileNameModal(prevFileName, newFileName, code)}
           />
         )}
         <div className={classes.tabsContainer}>

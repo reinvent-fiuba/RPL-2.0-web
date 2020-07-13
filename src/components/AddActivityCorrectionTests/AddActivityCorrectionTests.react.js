@@ -13,7 +13,6 @@ import Divider from "@material-ui/core/Divider";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -24,6 +23,9 @@ import IOTestsCorrection from "./IOTestsCorrection.react";
 import UnitTestsCorrection from "./UnitTestsCorrection.react";
 import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
+import FilesPermissionTypeCorrection from "./FilesPermissionTypeCorrection.react";
+import type { Activity, FilesMetadata } from "../../types";
+import { getFilesMetadata } from "../../utils/files";
 
 const drawerWidth = 240;
 
@@ -89,46 +91,7 @@ const styles = theme => ({
     display: "flex",
     marginLeft: "auto",
   },
-  bulletTitle: {
-    marginRight: "5px",
-  },
-  filesPermissionsContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  filePermissionsContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "5px",
-    marginRight: "15px",
-    maxWidth: "600px",
-    [theme.breakpoints.down("md")]: {
-      alignItems: "inherit",
-    },
-  },
-  fileNameTitle: {
-    marginRight: "5px",
-    fontFamily: "monospace",
-    minWidth: "100px",
-    [theme.breakpoints.up("md")]: {
-      width: "500px",
-    },
-  },
 });
-
-const StyledButton = withStyles({
-  root: {
-    backgroundColor: "#5f9caf",
-    color: "#fff",
-  },
-  outlined: {
-    color: "#5f9caf",
-    backgroundColor: "#fff",
-  },
-})(Button);
 
 type Props = {
   match: any,
@@ -140,6 +103,13 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   selectedTestMode: string,
+  selectTestStepExpanded: boolean,
+  configTestStepExpanded: boolean,
+  configCompilerFlagsStepExpanded: boolean,
+  configFilePermissionsForStudentsExpanded: boolean,
+  flags: string,
+  activityFilesMetadata: FilesMetadata,
+  activity: ?Activity,
 };
 
 class AddActivityCorrectionTests extends React.Component<Props, State> {
@@ -152,11 +122,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     configCompilerFlagsStepExpanded: false,
     configFilePermissionsForStudentsExpanded: false,
     flags: "",
-    activityFilesMetadata: {
-      "file1.c": { display: "hidden" },
-      "file_very_long_2.h": { display: "read" },
-      "main.c": { display: "read_write" },
-    },
+    activity: null,
+    activityFilesMetadata: {},
   };
 
   componentDidMount() {
@@ -168,11 +135,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     activitiesService
       .getActivity(courseId, activityId)
       .then(response => {
-        const filesMetadata =
-          "files_metadata" in response.initial_code
-            ? JSON.parse(response.initial_code.files_metadata)
-            : AddActivityCorrectionTests.buildFilesMetadata(response.initial_code);
-
+        const filesMetadata = getFilesMetadata(response.initial_code);
         delete filesMetadata.files_metadata;
 
         this.setState({
@@ -182,7 +145,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           selectedTestMode: !response.is_iotested ? "Unit tests" : "IO tests",
         });
       })
-      .catch(() => {
+      .catch(err => {
+        console.log(err);
         this.setState({
           error: {
             open: true,
@@ -190,14 +154,6 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           },
         });
       });
-  }
-
-  static buildFilesMetadata(files: { [string]: string }): Object {
-    const filesMetadata = {};
-    Object.keys(files).forEach(file => {
-      filesMetadata[file] = { display: "read_write" };
-    });
-    return filesMetadata;
   }
 
   handleSwitchDrawer() {
@@ -293,9 +249,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           <div className={classes.drawerHeader} />
           <Accordion expanded={selectTestStepExpanded}>
             <AccordionSummary
-              expandIcon={
-                <ExpandMoreIcon onClick={() => this.handleClickPanel("selectTestStepExpanded")} />
-              }
+              onClick={() => this.handleClickPanel("selectTestStepExpanded")}
+              expandIcon={<ExpandMoreIcon />}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 1: Seleccionar modo de testeo de la actividad
@@ -330,9 +285,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           </Accordion>
           <Accordion expanded={configTestStepExpanded}>
             <AccordionSummary
-              expandIcon={
-                <ExpandMoreIcon onClick={() => this.handleClickPanel("configTestStepExpanded")} />
-              }
+              onClick={() => this.handleClickPanel("configTestStepExpanded")}
+              expandIcon={<ExpandMoreIcon />}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 {`Paso 2: Definir tests${selectedTestMode ? ` - ${selectedTestMode}` : ""}`}
@@ -377,11 +331,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           </Accordion>
           <Accordion expanded={configCompilerFlagsStepExpanded}>
             <AccordionSummary
-              expandIcon={(
-                <ExpandMoreIcon
-                  onClick={() => this.handleClickPanel("configCompilerFlagsStepExpanded")}
-                />
-              )}
+              onClick={() => this.handleClickPanel("configCompilerFlagsStepExpanded")}
+              expandIcon={<ExpandMoreIcon />}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 3: Definir flags de compilación
@@ -445,11 +396,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           </Accordion>
           <Accordion expanded={configFilePermissionsForStudentsExpanded}>
             <AccordionSummary
-              expandIcon={(
-                <ExpandMoreIcon
-                  onClick={() => this.handleClickPanel("configFilePermissionsForStudentsExpanded")}
-                />
-              )}
+              onClick={() => this.handleClickPanel("configFilePermissionsForStudentsExpanded")}
+              expandIcon={<ExpandMoreIcon />}
             >
               <Typography variant="h6" color="textPrimary" component="h1">
                 Paso 4: Definir permisos de archivos para los alumnos
@@ -457,141 +405,12 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
             </AccordionSummary>
             <AccordionDetails>
               <div className={classes.flagsField}>
-                <Fab
-                  aria-label="add"
-                  size="small"
-                  color="primary"
-                  className={classes.saveFlagsButton}
-                  onClick={() => this.handleSaveFilesMetadata()}
-                >
-                  <SaveIcon />
-                </Fab>
-                <Typography variant="subtitle1" color="textSecondary" component="h1">
-                  A continuación se pueden definir los permisos que van a tener los alumnos para
-                  cada archivo.
-                </Typography>
-                <ul>
-                  <li>
-                    <Typography
-                      variant="subtitle2"
-                      component="h1"
-                      display="inline"
-                      className={classes.bulletTitle}
-                    >
-                      Lectura y escritura:
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="textSecondary"
-                      component="h1"
-                      display="inline"
-                    >
-                      El alumno podrá editarlos y será parte de la entrega si no lo borra.
-                    </Typography>
-                  </li>
-                  <li>
-                    <Typography
-                      variant="subtitle2"
-                      component="h1"
-                      display="inline"
-                      className={classes.bulletTitle}
-                    >
-                      Lectura:
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="textSecondary"
-                      component="h1"
-                      display="inline"
-                    >
-                      El alumno podrá ver el archivo pero no editarlo. Formará parte de la entrega.
-                    </Typography>
-                  </li>
-                  <li>
-                    <Typography
-                      variant="subtitle2"
-                      component="h1"
-                      display="inline"
-                      className={classes.bulletTitle}
-                    >
-                      Oculto:
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="textSecondary"
-                      component="h1"
-                      display="inline"
-                    >
-                      El archivo permanecerá oculto para el alumno pero será agregado a los archivos
-                      de la entrega del alumno.
-                    </Typography>
-                  </li>
-                </ul>
-                <br />
-                <br />
-                <div className={classes.filesPermissionsContainer}>
-                  {Object.keys(activityFilesMetadata).map(filename => (
-                    <div className={classes.filePermissionsContainer}>
-                      <Typography
-                        variant="h6"
-                        component="h1"
-                        display="inline"
-                        className={classes.fileNameTitle}
-                      >
-                        {filename}
-                      </Typography>
-                      <ButtonGroup
-                        color="primary"
-                        aria-label="outlined primary button group"
-                        display="inline"
-                      >
-                        <StyledButton
-                          color="inherit"
-                          variant={
-                            activityFilesMetadata[filename].display === "read_write"
-                              ? "contained"
-                              : null
-                          }
-                          onClick={() => {
-                            const newMetadata = activityFilesMetadata;
-                            newMetadata[filename].display = "read_write";
-                            return this.setState({ activityFilesMetadata: newMetadata });
-                          }}
-                        >
-                          Escritura
-                        </StyledButton>
-                        <StyledButton
-                          color="inherit"
-                          variant={
-                            activityFilesMetadata[filename].display === "read" ? "contained" : null
-                          }
-                          onClick={() => {
-                            const newMetadata = activityFilesMetadata;
-                            newMetadata[filename].display = "read";
-                            return this.setState({ activityFilesMetadata: newMetadata });
-                          }}
-                        >
-                          Lectura
-                        </StyledButton>
-                        <StyledButton
-                          color="inherit"
-                          variant={
-                            activityFilesMetadata[filename].display === "hidden"
-                              ? "contained"
-                              : null
-                          }
-                          onClick={() => {
-                            const newMetadata = activityFilesMetadata;
-                            newMetadata[filename].display = "hidden";
-                            return this.setState({ activityFilesMetadata: newMetadata });
-                          }}
-                        >
-                          Oculto
-                        </StyledButton>
-                      </ButtonGroup>
-                    </div>
-                  ))}
-                </div>
+                <FilesPermissionTypeCorrection
+                  handleSaveFilesMetadata={() => this.handleSaveFilesMetadata()}
+                  activityFilesMetadata={activityFilesMetadata}
+                  onFileMetadataChanged={newMetadata =>
+                    this.setState({ activityFilesMetadata: newMetadata })}
+                />
               </div>
             </AccordionDetails>
             <AccordionActions>
