@@ -105,3 +105,14 @@ export type SubmissionResult = {
   submited_code: { [string]: string },
   is_final_solution: boolean,
 };
+
+export const FILE_DISPLAY_MODE = Object.freeze({
+  READ_WRITE: "read_write",
+  READ: "read",
+  HIDDEN: "hidden",
+});
+
+export type FileDisplayMode = $Values<typeof FILE_DISPLAY_MODE>;
+
+export type FileMetadata = { display: FileDisplayMode };
+export type FilesMetadata = { [string]: FileMetadata };

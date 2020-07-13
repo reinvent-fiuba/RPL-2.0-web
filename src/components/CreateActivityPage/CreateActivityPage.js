@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
@@ -280,7 +279,7 @@ class CreateActivityPage extends React.Component<Props, State> {
         {category.name}
       </MenuItem>
     )).concat(
-      <MenuItem className={classes.addNewCategory}>
+      <MenuItem key="new_category" className={classes.addNewCategory}>
         <Button
           fullWidth
           size="small"
@@ -446,6 +445,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                   initialCode={code}
                   language={language}
                   readOnly={false}
+                  canEditFiles
                   onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
                   editorDidMount={mountedEditor => {
                     mountedEditor.changeViewZones(changeAccessor => {
@@ -468,8 +468,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                 onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                 selectedTab={mdEditorTab}
                 onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })
-                }
+                  this.setState({ mdEditorTab: mdEditorTabChanged })}
                 generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
               />
             </Grid>

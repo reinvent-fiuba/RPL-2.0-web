@@ -28,15 +28,15 @@ exports.getSubmissionResult = (submissionId: number): Promise<SubmissionResult> 
     url: `${producer.base_url}/api/submissions/${submissionId}/result`,
     method: "GET",
   }).then(submission => {
-    return fetch(`${producer.base_url}/api/getExtractedFile/${submission.submission_file_id}`).then(
-      response => {
-        return response.json().then(code => {
-          const completeSubmission = submission;
-          completeSubmission.submited_code = code;
-          return completeSubmission;
-        });
-      }
-    );
+    return fetch(
+      `${producer.base_url}/api/getFileForStudent/${submission.submission_file_id}`
+    ).then(response => {
+      return response.json().then(code => {
+        const completeSubmission = submission;
+        completeSubmission.submited_code = code;
+        return completeSubmission;
+      });
+    });
   });
 
 exports.getAllSubmissions = (
@@ -70,7 +70,7 @@ exports.getFinalSolution = (courseId: number, activityId: number): Promise<Submi
     method: "GET",
   });
 
-exports.getFinalSolutionWithFile = (
+exports.getFinalSolutionWithFileForStudent = (
   courseId: number,
   activityId: number
 ): Promise<SubmissionResult> =>
@@ -78,16 +78,30 @@ exports.getFinalSolutionWithFile = (
     url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/finalSubmission`,
     method: "GET",
   }).then(submission => {
-    return fetch(`${producer.base_url}/api/getExtractedFile/${submission.submission_file_id}`).then(
-      response => {
-        return response.json().then(code => {
-          const completeSubmission = submission;
-          completeSubmission.submited_code = code;
-          return completeSubmission;
-        });
-      }
-    );
+    return fetch(
+      `${producer.base_url}/api/getFileForStudent/${submission.submission_file_id}`
+    ).then(response => {
+      return response.json().then(code => {
+        const completeSubmission = submission;
+        completeSubmission.submited_code = code;
+        return completeSubmission;
+      });
+    });
   });
+
+exports.getAllFinalSolutionsFilesForStudent = (
+  courseId: number,
+  activityId: number
+): Promise<Array<{ [string]: string }>> =>
+  request({
+    url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/allFinalSubmissions`,
+    method: "GET",
+  }).then(response =>
+    request({
+      url: `${producer.base_url}/api/getFilesForStudent/${response.submission_file_ids}`,
+      method: "GET",
+    })
+  );
 
 exports.getAllFinalSolutionsFiles = (
   courseId: number,

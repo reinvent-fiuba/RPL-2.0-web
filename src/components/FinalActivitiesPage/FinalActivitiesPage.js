@@ -112,7 +112,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
           activity: activityResponse,
         });
         submissionsService
-          .getFinalSolutionWithFile(
+          .getFinalSolutionWithFileForStudent(
             this.props.match.params.courseId,
             this.props.match.params.activityId
           )
@@ -121,7 +121,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
               code: finalSolution.submited_code,
             });
             submissionsService
-              .getAllFinalSolutionsFiles(
+              .getAllFinalSolutionsFilesForStudent(
                 this.props.match.params.courseId,
                 this.props.match.params.activityId
               )
