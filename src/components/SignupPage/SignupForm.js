@@ -14,6 +14,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
 import authenticationService from "../../services/authenticationService";
+import { validate } from "../../utils/inputValidator";
 
 const styles = theme => ({
   avatar: {
@@ -49,7 +50,7 @@ type State = {
 
 class Signup extends React.Component<Props, State> {
   state = {
-    error: { open: false, message: null },
+    error: { open: false, message: null, invalidFields: new Set() },
     username: "",
     email: "",
     password: "",
@@ -60,10 +61,21 @@ class Signup extends React.Component<Props, State> {
     success: false,
   };
 
-  handleChange(event) {
+  handleChange(event, valid) {
     event.persist();
     // Close error message
-    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: "" } });
+    this.setState(prevState => {
+      const { invalidFields } = prevState.error;
+      if (valid && invalidFields.has(event.target.id)) {
+        invalidFields.delete(event.target.id);
+      } else if (!valid) {
+        invalidFields.add(event.target.id);
+      }
+      return {
+        [event.target.id]: event.target.value,
+        error: { open: false, message: "", invalidFields },
+      };
+    });
   }
 
   handleClick(event) {
@@ -132,66 +144,99 @@ class Signup extends React.Component<Props, State> {
             required
             fullWidth
             id="name"
-            label="Name"
+            label="Nombre"
             name="Name"
             autoComplete="name"
+            error={error.invalidFields.has("name")}
+            helperText={
+              error.invalidFields.has("name") && "El nombre debe estar formado por letras"
+            }
             autoFocus
-            onChange={e => this.handleChange(e)}
+            onChange={e =>
+              this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))
+            }
           />
           <TextField
             margin="normal"
             required
             fullWidth
             id="surname"
-            label="Surname"
+            label="Apellido"
             name="Surname"
             autoComplete="surname"
+            error={error.invalidFields.has("surname")}
+            helperText={
+              error.invalidFields.has("surname") && "El apellido debe estar formado por letras"
+            }
             autoFocus
-            onChange={e => this.handleChange(e)}
+            onChange={e =>
+              this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))
+            }
           />
           <TextField
             margin="normal"
             required
             fullWidth
             id="studentId"
-            label="Student Id"
+            label="Padron"
             name="Student Id"
             autoComplete="studentId"
+            error={error.invalidFields.has("studentId")}
+            helperText={
+              error.invalidFields.has("studentId") && "El padron debe estar formado por numeros"
+            }
             autoFocus
-            onChange={e => this.handleChange(e)}
+            onChange={e =>
+              this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z]+$/, "string"))
+            }
           />
           <TextField
             margin="normal"
             required
             fullWidth
             id="degree"
-            label="Degree"
+            label="Carrera"
             name="Degree"
             autoComplete="degree"
+            error={error.invalidFields.has("degree")}
+            helperText={
+              error.invalidFields.has("degree") && "La carrera debe estar formada por letras"
+            }
             autoFocus
-            onChange={e => this.handleChange(e)}
+            onChange={e => this.handleChange(e, validate(e.target.value, /^[a-zA-Z]+$/, "string"))}
           />
           <TextField
             margin="normal"
             required
             fullWidth
             id="university"
-            label="University"
+            label="Universidad"
             name="University"
             autoComplete="university"
+            error={error.invalidFields.has("university")}
+            helperText={
+              error.invalidFields.has("university") &&
+              "La universidad debe estar formada por letras"
+            }
             autoFocus
-            onChange={e => this.handleChange(e)}
+            onChange={e => this.handleChange(e, validate(e.target.value, /^[a-zA-Z]+$/, "string"))}
           />
           <TextField
             margin="normal"
             required
             fullWidth
             id="username"
-            label="Username"
+            label="Usuario"
             name="Username"
             autoComplete="username"
+            error={error.invalidFields.has("username")}
+            helperText={
+              error.invalidFields.has("username") && "El usuario debe estar formada por letras, guiones (_ ó -) o puntos (.)"
+            }
             autoFocus
-            onChange={e => this.handleChange(e)}
+            onChange={e =>
+              this.handleChange(e, validate(e.target.value, /^[a-zA-Z_-]+$/, "string"))
+            }
           />
           <TextField
             margin="normal"
@@ -201,19 +246,28 @@ class Signup extends React.Component<Props, State> {
             label="Email"
             name="Email"
             autoComplete="email"
+            error={error.invalidFields.has("email")}
+            helperText={error.invalidFields.has("email") && "El email debe ser un email valido"}
             autoFocus
-            onChange={e => this.handleChange(e)}
+            onChange={e =>
+              this.handleChange(e, validate(e.target.value, /^\S+@\S+\.\S+$/, "string"))
+            }
           />
           <TextField
             margin="normal"
             required
             fullWidth
             name="password"
-            label="Password"
+            label="Contraseña"
             type="password"
             id="password"
+            error={error.invalidFields.has("password")}
+            helperText={
+              error.invalidFields.has("password") &&
+              "La password debe tener un largo minimo de 6 caracteres"
+            }
             autoComplete="current-password"
-            onChange={e => this.handleChange(e)}
+            onChange={e => this.handleChange(e, validate(e.target.value, /.{6,}/, "string"))}
           />
           <Button
             type="submit"
