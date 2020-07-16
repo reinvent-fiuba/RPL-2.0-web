@@ -10,6 +10,7 @@ import Fab from "@material-ui/core/Fab";
 import { DropzoneArea } from "material-ui-dropzone";
 import { withState } from "../../utils/State";
 import cloudinaryService from "../../services/cloudinaryService";
+import { validate } from "../../utils/inputValidator";
 
 const drawerWidth = 240;
 
@@ -71,6 +72,7 @@ class ProfileEdit extends React.Component {
     super(props);
     const { profile } = this.props;
     this.state = {
+      error: { invalidFields: new Set() },
       name: profile.name,
       surname: profile.surname,
       studentId: profile.student_id,
@@ -81,10 +83,21 @@ class ProfileEdit extends React.Component {
     };
   }
 
-  handleChange(event) {
+  handleChange(event, valid) {
     event.persist();
     // Close error message
-    this.setState({ [event.target.id]: event.target.value });
+    this.setState(prevState => {
+      const { invalidFields } = prevState.error;
+      if (valid && invalidFields.has(event.target.id)) {
+        invalidFields.delete(event.target.id);
+      } else if (!valid) {
+        invalidFields.add(event.target.id);
+      }
+      return {
+        [event.target.id]: event.target.value,
+        error: { invalidFields },
+      };
+    });
   }
 
   handleAddFile(files) {
@@ -97,9 +110,6 @@ class ProfileEdit extends React.Component {
 
   handleClickSave() {
     const { userImg } = this.state;
-    console.log("state", this.state);
-    console.log("userImg", this.state.userImg);
-    console.log("userImg2", userImg);
     const { onClickSave } = this.props;
     const userImgPromise = userImg ? cloudinaryService.uploadFile(userImg) : Promise.resolve();
 
@@ -118,6 +128,7 @@ class ProfileEdit extends React.Component {
 
   render() {
     const { profile, classes } = this.props;
+    const { error } = this.state;
 
     return (
       <div>
@@ -158,7 +169,13 @@ class ProfileEdit extends React.Component {
                   autoComplete="name"
                   autoFocus
                   value={this.state.name}
-                  onChange={e => this.handleChange(e)}
+                  error={error.invalidFields.has("name")}
+                  helperText={
+                    error.invalidFields.has("name") && "El nombre debe estar formado por letras"
+                  }
+                  onChange={e =>
+                    this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))
+                  }
                 />
                 <TextField
                   margin="normal"
@@ -170,7 +187,14 @@ class ProfileEdit extends React.Component {
                   autoComplete="surname"
                   autoFocus
                   value={this.state.surname}
-                  onChange={e => this.handleChange(e)}
+                  error={error.invalidFields.has("surname")}
+                  helperText={
+                    error.invalidFields.has("surname") &&
+                    "El apellido debe estar formado por letras"
+                  }
+                  onChange={e =>
+                    this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))
+                  }
                 />
                 <TextField
                   margin="normal"
@@ -182,7 +206,13 @@ class ProfileEdit extends React.Component {
                   autoComplete="studentId"
                   autoFocus
                   value={this.state.studentId}
-                  onChange={e => this.handleChange(e)}
+                  error={error.invalidFields.has("studentId")}
+                  helperText={
+                    error.invalidFields.has("studentId") && "El padron debe estar formado por numeros"
+                  }
+                  onChange={e =>
+                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z]+$/, "string"))
+                  }
                 />
                 <TextField
                   margin="normal"
@@ -194,7 +224,11 @@ class ProfileEdit extends React.Component {
                   autoComplete="email"
                   autoFocus
                   value={this.state.email}
-                  onChange={e => this.handleChange(e)}
+                  error={error.invalidFields.has("email")}
+                  helperText={error.invalidFields.has("email") && "El email debe ser un email valido"}
+                  onChange={e =>
+                    this.handleChange(e, validate(e.target.value, /^\S+@\S+\.\S+$/, "string"))
+                  }
                 />
                 <TextField
                   margin="normal"
@@ -206,7 +240,11 @@ class ProfileEdit extends React.Component {
                   autoComplete="degree"
                   autoFocus
                   value={this.state.degree}
-                  onChange={e => this.handleChange(e)}
+                  error={error.invalidFields.has("degree")}
+                  helperText={
+                    error.invalidFields.has("degree") && "La carrera debe estar formada por letras"
+                  }
+                  onChange={e => this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))}
                 />
                 <TextField
                   margin="normal"
@@ -218,7 +256,12 @@ class ProfileEdit extends React.Component {
                   autoComplete="university"
                   autoFocus
                   value={this.state.university}
-                  onChange={e => this.handleChange(e)}
+                  error={error.invalidFields.has("university")}
+                  helperText={
+                    error.invalidFields.has("university") &&
+                    "La universidad debe estar formada por letras"
+                  }
+                  onChange={e => this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))}
                 />
               </form>
             </Paper>

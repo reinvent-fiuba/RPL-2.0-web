@@ -13,6 +13,7 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import coursesService from "../../services/coursesService";
 import usersService from "../../services/usersService";
 import cloudinaryService from "../../services/cloudinaryService";
+import { validate } from "../../utils/inputValidator";
 
 const styles = theme => ({
   avatar: {
@@ -60,7 +61,7 @@ type State = {
 
 class CourseForm extends React.Component<Props, State> {
   state = {
-    error: { open: false, message: "" },
+    error: { open: false, message: null, invalidFields: new Set() },
     name: "",
     university: "",
     universityCourseId: "",
@@ -90,10 +91,21 @@ class CourseForm extends React.Component<Props, State> {
     }
   }
 
-  handleChange(event) {
+  handleChange(event, valid) {
     event.persist();
     // Close error message
-    this.setState({ [event.target.id]: event.target.value, error: { open: false, message: "" } });
+    this.setState(prevState => {
+      const { invalidFields } = prevState.error;
+      if (valid && invalidFields.has(event.target.id)) {
+        invalidFields.delete(event.target.id);
+      } else if (!valid) {
+        invalidFields.add(event.target.id);
+      }
+      return {
+        [event.target.id]: event.target.value,
+        error: { open: false, message: "", invalidFields },
+      };
+    });
   }
 
   handleCancelClick(event) {
@@ -225,7 +237,13 @@ class CourseForm extends React.Component<Props, State> {
               name="name"
               autoComplete="name"
               value={this.state.name}
-              onChange={e => this.handleChange(e)}
+              error={error.invalidFields.has("name")}
+              helperText={
+                error.invalidFields.has("name") && "El nombre del curso estar formado por letras y numeros"
+              }
+              onChange={e =>
+                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z\s]+$/, "string"))
+              }
             />
             <TextField
               margin="normal"
@@ -236,8 +254,15 @@ class CourseForm extends React.Component<Props, State> {
               type="university"
               id="university"
               autoComplete="university"
+              error={error.invalidFields.has("university")}
+              helperText={
+                error.invalidFields.has("university") &&
+                "La universidad debe estar formada por letras"
+              }
               value={this.state.university}
-              onChange={e => this.handleChange(e)}
+              onChange={e =>
+                this.handleChange(e, validate(e.target.value, /^[a-zA-Z]+$/, "string"))
+              }
             />
             <TextField
               margin="normal"
@@ -248,7 +273,14 @@ class CourseForm extends React.Component<Props, State> {
               name="universityCourseId"
               autoComplete="universityCourseId"
               value={this.state.universityCourseId}
-              onChange={e => this.handleChange(e)}
+              error={error.invalidFields.has("universityCourseId")}
+              helperText={
+                error.invalidFields.has("universityCourseId") &&
+                "El Id del Curso debe estar formada por letras, numeros, guiones (_ ó -) o puntos (.)"
+              }
+              onChange={e =>
+                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))
+              }
             />
             <Grid container className={classes.semesterFields} xs={12} spacing={2}>
               <Grid item xs={6}>
@@ -261,7 +293,14 @@ class CourseForm extends React.Component<Props, State> {
                   name="semester"
                   autoComplete="semester"
                   value={this.state.semester}
-                  onChange={e => this.handleChange(e)}
+                  error={error.invalidFields.has("semester")}
+                  helperText={
+                    error.invalidFields.has("semester") &&
+                    "El semestre debe estar formada por letras, numeros, guiones (_ ó -) o puntos (.)"
+                  }
+                  onChange={e =>
+                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))
+                  }
                 />
               </Grid>
               <Grid item xs={3}>

@@ -231,7 +231,8 @@ class Signup extends React.Component<Props, State> {
             autoComplete="username"
             error={error.invalidFields.has("username")}
             helperText={
-              error.invalidFields.has("username") && "El usuario debe estar formada por letras, guiones (_ ó -) o puntos (.)"
+              error.invalidFields.has("username") &&
+              "El usuario debe estar formada por letras, guiones (_ ó -) o puntos (.)"
             }
             autoFocus
             onChange={e =>

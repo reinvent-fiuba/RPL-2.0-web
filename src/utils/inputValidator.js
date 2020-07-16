@@ -5,7 +5,7 @@ exports.validate = (input, pattern, type) => {
   if (typeof input !== type) {
     return false;
   }
-  if (pattern && !pattern.test(input)) {
+  if (type === "string" && pattern && !pattern.test(input)) {
     return false;
   }
   return true;
