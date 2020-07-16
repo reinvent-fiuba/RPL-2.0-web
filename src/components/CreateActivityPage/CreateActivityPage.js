@@ -6,6 +6,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import MenuItem from "@material-ui/core/MenuItem";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Grid from "@material-ui/core/Grid";
@@ -121,6 +122,11 @@ const styles = theme => ({
   },
   addNewCategory: {
     padding: "0",
+  },
+  circularProgress: {
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
 });
 
@@ -378,135 +384,143 @@ class CreateActivityPage extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          <form className={classes.form}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="name"
-              label="Nombre de Actividad"
-              name="name"
-              autoComplete="name"
-              onChange={e => this.handleChange(e)}
-              value={name}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="points"
-              label="Puntaje"
-              name="points"
-              autoComplete="points"
-              onChange={e => this.handleChange(e)}
-              value={points}
-            />
-            <FormControl>
-              <InputLabel id="language">Lenguaje</InputLabel>
-              <Select
-                id="language"
-                name="language"
-                value={language || ""}
-                onChange={event => this.setLanguage(event.target.value, code)}
-              >
-                <MenuItem key={0} value="c">
-                  C
-                </MenuItem>
-                <MenuItem key={1} value="python">
-                  Python
-                </MenuItem>
-                <MenuItem key={2} value="java">
-                  Java
-                </MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl>
-              <InputLabel id="category">Categoría</InputLabel>
-              <Select
-                labelId="category"
-                id="category"
-                value={categoryId !== -1 ? categoryId : ""}
-                onChange={event => this.setState({ categoryId: event.target.value })}
-              >
-                {this.renderCategoriesDropdown()}
-              </Select>
-            </FormControl>
-          </form>
 
-          <Grid container spacing={3} className={classes.grid}>
-            <Grid item xs={6} className={classes.codeEditor}>
-              <ReactResizeDetector
-                handleWidth
-                handleHeight
-                onResize={_.throttle(() => (editor ? editor.layout : () => {}))}
-              >
-                <MultipleTabsEditor
-                  key={activity ? activity.id : null}
-                  initialCode={code}
-                  language={language}
-                  readOnly={false}
-                  canEditFiles
-                  onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
-                  editorDidMount={mountedEditor => {
-                    mountedEditor.changeViewZones(changeAccessor => {
-                      changeAccessor.addZone({
-                        afterLineNumber: 0,
-                        heightInLines: 1,
-                        domNode: document.createElement("span"),
-                      });
-                    });
-                    this.setState({ editor: mountedEditor });
-                  }}
+          {!activity && <CircularProgress className={classes.circularProgress} />}
+          {activity && (
+            <div>
+              <form className={classes.form}>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="name"
+                  label="Nombre de Actividad"
+                  name="name"
+                  autoComplete="name"
+                  onChange={e => this.handleChange(e)}
+                  value={name}
                 />
-              </ReactResizeDetector>
-            </Grid>
-            <Grid item xs={6} className={classes.mdEditor}>
-              <ReactMde
-                minEditorHeight="53vh"
-                name="mdText"
-                value={mdText}
-                onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
-                selectedTab={mdEditorTab}
-                onTabChange={mdEditorTabChanged =>
-                  this.setState({ mdEditorTab: mdEditorTabChanged })}
-                generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
-              />
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item xs className={classes.buttons}>
-              <Button
-                variant="contained"
-                color="secondary"
-                className={classes.cancelButton}
-                onClick={() => this.handleCancel()}
-              >
-                Cancelar
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.saveButton}
-                onClick={e => this.handleCreateClick(e)}
-              >
-                Guardar
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.createButton}
-                onClick={e => this.handleGotToTestClick(e)}
-              >
-                Guardar y Agregar Pruebas
-              </Button>
-            </Grid>
-          </Grid>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="points"
+                  label="Puntaje"
+                  name="points"
+                  autoComplete="points"
+                  onChange={e => this.handleChange(e)}
+                  value={points}
+                />
+                <FormControl>
+                  <InputLabel id="language">Lenguaje</InputLabel>
+                  <Select
+                    id="language"
+                    name="language"
+                    value={language || ""}
+                    onChange={event => this.setLanguage(event.target.value, code)}
+                  >
+                    <MenuItem key={0} value="c">
+                      C
+                    </MenuItem>
+                    <MenuItem key={1} value="python">
+                      Python
+                    </MenuItem>
+                    <MenuItem key={2} value="java">
+                      Java
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <InputLabel id="category">Categoría</InputLabel>
+                  <Select
+                    labelId="category"
+                    id="category"
+                    value={categoryId !== -1 ? categoryId : ""}
+                    onChange={event => this.setState({ categoryId: event.target.value })}
+                  >
+                    {this.renderCategoriesDropdown()}
+                  </Select>
+                </FormControl>
+              </form>
+
+              <Grid container spacing={3} className={classes.grid}>
+                <Grid item xs={6} className={classes.codeEditor}>
+                  <ReactResizeDetector
+                    handleWidth
+                    handleHeight
+                    onResize={_.throttle(() => (editor ? editor.layout : () => {}))}
+                  >
+                    <MultipleTabsEditor
+                      key={activity ? activity.id : null}
+                      initialCode={code}
+                      language={language}
+                      readOnly={false}
+                      canEditFiles
+                      onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
+                      editorDidMount={mountedEditor => {
+                        mountedEditor.changeViewZones(changeAccessor => {
+                          changeAccessor.addZone({
+                            afterLineNumber: 0,
+                            heightInLines: 1,
+                            domNode: document.createElement("span"),
+                          });
+                        });
+                        this.setState({ editor: mountedEditor });
+                      }}
+                    />
+                  </ReactResizeDetector>
+                </Grid>
+                <Grid item xs={6} className={classes.mdEditor}>
+                  <ReactMde
+                    minEditorHeight="53vh"
+                    name="mdText"
+                    value={mdText}
+                    onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
+                    selectedTab={mdEditorTab}
+                    onTabChange={mdEditorTabChanged =>
+                      this.setState({ mdEditorTab: mdEditorTabChanged })
+                    }
+                    generateMarkdownPreview={markdown =>
+                      Promise.resolve(converter.makeHtml(markdown))}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container>
+                <Grid item xs className={classes.buttons}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    className={classes.cancelButton}
+                    onClick={() => this.handleCancel()}
+                  >
+                    Cancelar
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.saveButton}
+                    onClick={e => this.handleCreateClick(e)}
+                  >
+                    Guardar
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.createButton}
+                    onClick={e => this.handleGotToTestClick(e)}
+                  >
+                    Guardar y Agregar Pruebas
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
+          )}
         </main>
       </div>
     );
