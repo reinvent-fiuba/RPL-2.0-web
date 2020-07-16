@@ -22,6 +22,7 @@ import activitiesService from "../../services/activitiesService";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
 import AddMainFileModal from "./AddMainFileModal.react";
 import type { Activity, Category } from "../../types";
+import { validate } from "../../utils/inputValidator";
 
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
@@ -157,7 +158,7 @@ const mainFileByLanguage = { c: "main.c", python: "assignment_main.py", java: "m
 
 class CreateActivityPage extends React.Component<Props, State> {
   state = {
-    error: { open: false, message: null },
+    error: { open: false, message: null, invalidFields: new Set()  },
     isSideBarOpen: false,
     activity: null,
     categories: [],
@@ -205,10 +206,21 @@ class CreateActivityPage extends React.Component<Props, State> {
     this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
-  handleChange(event) {
+  handleChange(event, valid) {
     event.persist();
     // Close error message
-    this.setState({ [event.target.id]: event.target.value });
+    this.setState(prevState => {
+      const { invalidFields } = prevState.error;
+      if (valid && invalidFields.has(event.target.id)) {
+        invalidFields.delete(event.target.id);
+      } else if (!valid) {
+        invalidFields.add(event.target.id);
+      }
+      return {
+        [event.target.id]: event.target.value,
+        error: { open: false, message: "", invalidFields },
+      };
+    });
   }
 
   static activityHasMainFile(language: string, code: { [string]: string }) {
@@ -397,7 +409,13 @@ class CreateActivityPage extends React.Component<Props, State> {
                   label="Nombre de Actividad"
                   name="name"
                   autoComplete="name"
-                  onChange={e => this.handleChange(e)}
+                  error={error.invalidFields.has("name")}
+                  helperText={
+                    error.invalidFields.has("name") && "El nombre de la actividad debe estar formado por letras o numeros"
+                  }
+                  onChange={e =>
+                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z\s]+$/, "string"))
+                  }
                   value={name}
                 />
                 <TextField
@@ -408,7 +426,8 @@ class CreateActivityPage extends React.Component<Props, State> {
                   label="Puntaje"
                   name="points"
                   autoComplete="points"
-                  onChange={e => this.handleChange(e)}
+                  type="number"
+                  onChange={e => this.handleChange(e, true)}
                   value={points}
                 />
                 <FormControl>
