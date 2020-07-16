@@ -5,10 +5,12 @@ import MonacoEditor from "react-monaco-editor";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import IconButton from "@material-ui/core/IconButton";
+import CancelIcon from "@material-ui/icons/Cancel";
 import { withState } from "../../utils/State";
 import AddNewFileModal from "./AddNewFileModal.react";
 import type { FilesMetadata } from "../../types";
-import { getFilesMetadata } from "../../utils/files";
+import { getFilesMetadata, FILES_METADATA } from "../../utils/files";
 import { FILE_DISPLAY_MODE } from "../../types";
 
 const styles = theme => ({
@@ -21,6 +23,13 @@ const styles = theme => ({
   tabsEditorContainer: {
     width: "100%",
     height: "100%",
+  },
+  styledTabContent: {
+    display: "flex",
+    alignItems: "center",
+  },
+  deleteFileButton: {
+    padding: "0 0 0 5px",
   },
 });
 
@@ -82,7 +91,7 @@ type Props = {
 
 type State = {
   code: { [string]: string },
-  selectedEditor: string,
+  selectedEditor: ?string,
   fileNameModal: { text: ?string, isNewFileModalOpen: boolean },
   filesMetadata: FilesMetadata,
 };
@@ -107,11 +116,32 @@ class MultipleTabsEditor extends React.Component<Props, State> {
       event.preventDefault();
       return;
     }
-    if (selectedEditor === newSelectedTab && !readOnly) {
+    if (selectedEditor === newSelectedTab && !readOnly && !this.isReadOnlyFile(newSelectedTab)) {
       this.setState({ fileNameModal: { text: selectedEditor, isNewFileModalOpen: true } });
       return;
     }
     this.setState({ selectedEditor: newSelectedTab });
+  }
+
+  onClickDeleteFile(e: Event, selectedEditorToDelete: string) {
+    e.stopPropagation(); // Do not delete or it will move to this tab "after" deletion
+    const { filesMetadata, code, selectedEditor } = this.state;
+    const newCode = code;
+    const newMetadata = filesMetadata;
+    delete newCode[selectedEditorToDelete];
+    delete newMetadata[selectedEditorToDelete];
+
+    let newSelectedEditor = null;
+    if (
+      selectedEditor === selectedEditorToDelete &&
+      Object.keys(newCode).filter(fileName => fileName !== FILES_METADATA).length > 0
+    ) {
+      [newSelectedEditor] = Object.keys(code); // array destructuring === array[0]
+    }
+
+    this.setState({ code: newCode, filesMetadata: newMetadata, selectedEditor: newSelectedEditor });
+    newCode.files_metadata = JSON.stringify(filesMetadata);
+    this.props.onCodeChange(newCode);
   }
 
   handleCodeChange(code: { [string]: string }, codeChanged: string, selectedEditor: string) {
@@ -141,7 +171,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
       newCode[newFileName] = newCode[prevFileName];
       newMetadata[newFileName] = newMetadata[prevFileName];
       delete newCode[prevFileName];
-      delete filesMetadata[prevFileName];
+      delete newMetadata[prevFileName];
     } else {
       newCode[newFileName] = `${commentByLanguage[language]} file ${newFileName}`;
       newMetadata[newFileName] = { display: FILE_DISPLAY_MODE.READ_WRITE };
@@ -167,9 +197,13 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     return lang;
   }
 
-  isReadOnlyFile(filename: string) {
+  isReadOnlyFile(filename: ?string) {
     const { readOnly, canEditFiles } = this.props;
     const { filesMetadata } = this.state;
+
+    if (filename === null || filename === undefined) {
+      return true;
+    }
 
     // Mainly for Submission results
     if (readOnly) {
@@ -190,12 +224,14 @@ class MultipleTabsEditor extends React.Component<Props, State> {
 
     const { code, fileNameModal, selectedEditor } = this.state;
 
-    if (!Object.keys(code).includes(selectedEditor)) {
+    if (
+      selectedEditor !== null &&
+      !Object.keys(code).includes(selectedEditor) &&
+      Object.keys(code).filter(fileName => fileName !== FILES_METADATA).length > 0
+    ) {
       this.setState({ selectedEditor: Object.keys(code)[0] });
       return [];
     }
-
-    const readOnlyFile = this.isReadOnlyFile(selectedEditor);
 
     return (
       <div className={classes.tabsEditorContainer}>
@@ -205,20 +241,42 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             existingFilenames={Object.keys(code)}
             open={fileNameModal.isNewFileModalOpen}
             handleCloseModal={(prevFileName, newFileName) =>
-              this.handleCloseFileNameModal(prevFileName, newFileName, code)}
+              this.handleCloseFileNameModal(prevFileName, newFileName, code)
+            }
           />
         )}
         <div className={classes.tabsContainer}>
           <StyledTabs
-            value={selectedEditor}
+            value={selectedEditor || "AddNewFile"}
             onChange={(e, v) => this.handleTabChange(selectedEditor, e, v, readOnly)}
             aria-label="styled tabs example"
             variant="scrollable"
           >
-            {Object.keys(code).map(fileName => {
-              if (fileName === "files_metadata") return;
-              return <StyledTab key={fileName} label={fileName} value={fileName} />;
-            })}
+            {Object.keys(code)
+              .filter(fileName => fileName !== FILES_METADATA)
+              .map(fileName => {
+                return (
+                  <StyledTab
+                    component="div"
+                    key={fileName}
+                    label={
+                      <div className={classes.styledTabContent}>
+                        <span>{fileName}</span>
+                        {!this.isReadOnlyFile(fileName) && !readOnly && (
+                          <IconButton
+                            aria-label="delete"
+                            className={classes.deleteFileButton}
+                            onClick={e => this.onClickDeleteFile(e, fileName)}
+                          >
+                            <CancelIcon fontSize="small" style={{ color: "#fff" }} />
+                          </IconButton>
+                        )}
+                      </div>
+                    }
+                    value={fileName}
+                  />
+                );
+              })}
 
             {!readOnly && (
               <NewFileButtonTab
@@ -229,21 +287,23 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             )}
           </StyledTabs>
         </div>
-        <MonacoEditor
-          width={width}
-          options={{
-            renderFinalNewline: true,
-            readOnly: readOnlyFile,
-            scrollBeyondLastLine: false,
-            wordWrap: "on",
-          }}
-          language={this.getLanguageForMonaco()}
-          theme="vs-dark"
-          defaultValue=""
-          value={code[selectedEditor]}
-          onChange={codeChanged => this.handleCodeChange(code, codeChanged, selectedEditor)}
-          editorDidMount={editorDidMount}
-        />
+        {selectedEditor && (
+          <MonacoEditor
+            width={width}
+            options={{
+              renderFinalNewline: true,
+              readOnly: this.isReadOnlyFile(selectedEditor),
+              scrollBeyondLastLine: false,
+              wordWrap: "on",
+            }}
+            language={this.getLanguageForMonaco()}
+            theme="vs-dark"
+            defaultValue=""
+            value={code[selectedEditor]}
+            onChange={codeChanged => this.handleCodeChange(code, codeChanged, selectedEditor)}
+            editorDidMount={editorDidMount}
+          />
+        )}
       </div>
     );
   }
