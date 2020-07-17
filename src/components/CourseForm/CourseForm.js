@@ -125,7 +125,20 @@ class CourseForm extends React.Component<Props, State> {
       description,
       courseAdminId,
       courseImg,
+      error,
     } = this.state;
+
+    if (error.invalidFields.size !== 0) {
+      this.setState(prevState => ({
+        error: {
+          open: true,
+          message: "El formulario cuenta con campos invalidos",
+          invalidFields: prevState.error.invalidFields,
+        },
+      }));
+      return;
+    }
+
     const courseImgPromise = courseImg
       ? cloudinaryService.uploadFile(courseImg)
       : Promise.resolve();

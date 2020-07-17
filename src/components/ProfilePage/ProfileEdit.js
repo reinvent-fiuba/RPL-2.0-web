@@ -109,8 +109,20 @@ class ProfileEdit extends React.Component {
   }
 
   handleClickSave() {
-    const { userImg } = this.state;
+    const { userImg, error } = this.state;
     const { onClickSave } = this.props;
+
+    if (error.invalidFields.size !== 0) {
+      this.setState(prevState => ({
+        error: {
+          open: true,
+          message: "El formulario cuenta con campos invalidos",
+          invalidFields: prevState.error.invalidFields,
+        },
+      }));
+      return;
+    }
+
     const userImgPromise = userImg ? cloudinaryService.uploadFile(userImg) : Promise.resolve();
 
     userImgPromise.then(userImgAsset =>

@@ -80,7 +80,18 @@ class Signup extends React.Component<Props, State> {
 
   handleClick(event) {
     event.preventDefault();
-    const { username, email, password, name, surname, degree, university } = this.state;
+    const { username, email, password, name, surname, degree, university, error } = this.state;
+
+    if (error.invalidFields.size !== 0) {
+      this.setState(prevState => ({
+        error: {
+          open: true,
+          message: "El formulario cuenta con campos invalidos",
+          invalidFields: prevState.error.invalidFields,
+        },
+      }));
+      return;
+    }
 
     authenticationService
       .signup({
