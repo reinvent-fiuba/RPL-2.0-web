@@ -153,7 +153,7 @@ class Signup extends React.Component<Props, State> {
             }
             autoFocus
             onChange={e =>
-              this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))
+              this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
             }
           />
           <TextField
@@ -170,7 +170,7 @@ class Signup extends React.Component<Props, State> {
             }
             autoFocus
             onChange={e =>
-              this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))
+              this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
             }
           />
           <TextField
@@ -203,7 +203,9 @@ class Signup extends React.Component<Props, State> {
               error.invalidFields.has("degree") && "La carrera debe estar formada por letras"
             }
             autoFocus
-            onChange={e => this.handleChange(e, validate(e.target.value, /^[a-zA-Z]+$/, "string"))}
+            onChange={e =>
+              this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
+            }
           />
           <TextField
             margin="normal"
@@ -219,7 +221,9 @@ class Signup extends React.Component<Props, State> {
               "La universidad debe estar formada por letras"
             }
             autoFocus
-            onChange={e => this.handleChange(e, validate(e.target.value, /^[a-zA-Z]+$/, "string"))}
+            onChange={e =>
+              this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
+            }
           />
           <TextField
             margin="normal"

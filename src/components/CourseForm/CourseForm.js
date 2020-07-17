@@ -242,7 +242,7 @@ class CourseForm extends React.Component<Props, State> {
                 error.invalidFields.has("name") && "El nombre del curso estar formado por letras y numeros"
               }
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z\s]+$/, "string"))
+                this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))
               }
             />
             <TextField
@@ -261,7 +261,7 @@ class CourseForm extends React.Component<Props, State> {
               }
               value={this.state.university}
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[a-zA-Z]+$/, "string"))
+                this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
               }
             />
             <TextField
