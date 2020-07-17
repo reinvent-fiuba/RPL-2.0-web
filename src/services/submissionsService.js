@@ -91,17 +91,22 @@ exports.getFinalSolutionWithFileForStudent = (
 
 exports.getAllFinalSolutionsFilesForStudent = (
   courseId: number,
-  activityId: number
+  activityId: number,
+  exceptFileId: ?number
 ): Promise<Array<{ [string]: string }>> =>
   request({
     url: `${producer.base_url}/api/courses/${courseId}/activities/${activityId}/allFinalSubmissions`,
     method: "GET",
-  }).then(response =>
-    request({
-      url: `${producer.base_url}/api/getFilesForStudent/${response.submission_file_ids}`,
+  }).then(response => {
+    const filesQuery =
+      exceptFileId !== null
+        ? response.submission_file_ids.filter(id => id !== exceptFileId)
+        : response.submission_file_ids;
+    return request({
+      url: `${producer.base_url}/api/getFilesForStudent/${filesQuery}`,
       method: "GET",
-    })
-  );
+    });
+  });
 
 exports.getAllFinalSolutionsFiles = (
   courseId: number,

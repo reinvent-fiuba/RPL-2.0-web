@@ -25,9 +25,9 @@ const styles = () => ({
     minHeight: "200px",
   },
   circularProgress: {
-    display: "block",
-    marginLeft: "auto",
-    marginRight: "auto",
+    position: "absolute",
+    left: "50%",
+    top: "50%",
   },
   dialogTitle: {
     display: "flex",
