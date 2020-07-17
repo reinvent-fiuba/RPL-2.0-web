@@ -80,7 +80,17 @@ class Signup extends React.Component<Props, State> {
 
   handleClick(event) {
     event.preventDefault();
-    const { username, email, password, name, surname, degree, university, error } = this.state;
+    const {
+      username,
+      email,
+      password,
+      name,
+      surname,
+      degree,
+      university,
+      student_id: studentId,
+      error,
+    } = this.state;
 
     if (error.invalidFields.size !== 0) {
       this.setState(prevState => ({
@@ -102,6 +112,7 @@ class Signup extends React.Component<Props, State> {
         surname,
         degree,
         university,
+        studentId,
       })
       .then(() => {
         this.setState({ success: true });
@@ -251,7 +262,7 @@ class Signup extends React.Component<Props, State> {
             }
             autoFocus
             onChange={e =>
-              this.handleChange(e, validate(e.target.value, /^[a-zA-Z_-]+$/, "string"))
+              this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))
             }
           />
           <TextField
