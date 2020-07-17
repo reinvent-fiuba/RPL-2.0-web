@@ -51,10 +51,14 @@
 .Pane2 {
   background-color: rgb(244, 243, 243);
   color: rgb(121, 116, 116);
-  padding-left: 20px;
-  padding-right: 20px;
   font-family: Arial, Verdana, san-serif;
   /* font-family: Questrial; */
+}
+
+
+.Pane2 p {
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .Pane2 h1 {

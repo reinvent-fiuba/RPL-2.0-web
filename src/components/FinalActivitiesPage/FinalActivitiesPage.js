@@ -10,6 +10,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import Avatar from "@material-ui/core/Avatar";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
+import SolveActivityFirstModal from "./SolveActivityFirstModal.react";
 import { withState } from "../../utils/State";
 import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
@@ -23,8 +24,6 @@ import type { Activity } from "../../types";
 
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
-
-const _ = require("lodash");
 
 const drawerWidth = 240;
 
@@ -72,6 +71,9 @@ const styles = theme => ({
   splitPaneStyle: {
     height: "80vh",
   },
+  submissionsList: {
+    padding: "0",
+  },
 });
 
 type Props = {
@@ -108,9 +110,6 @@ class FinalActivitiesPage extends React.Component<Props, State> {
     activitiesService
       .getActivity(this.props.match.params.courseId, this.props.match.params.activityId)
       .then(activityResponse => {
-        this.setState({
-          activity: activityResponse,
-        });
         submissionsService
           .getFinalSolutionWithFileForStudent(
             this.props.match.params.courseId,
@@ -118,14 +117,21 @@ class FinalActivitiesPage extends React.Component<Props, State> {
           )
           .then(finalSolution => {
             this.setState({
+              activity: activityResponse,
               code: finalSolution.submited_code,
             });
             submissionsService
               .getAllFinalSolutionsFilesForStudent(
                 this.props.match.params.courseId,
-                this.props.match.params.activityId
+                this.props.match.params.activityId,
+                finalSolution.submission_file_id
               )
-              .then(files => this.setState({ finalSubmissions: files }));
+              .then(files =>
+                this.setState({
+                  finalSubmissions: [finalSolution.submited_code, ...files],
+                  selectedSubmissionIdx: 0,
+                })
+              );
           })
           .catch(err => {
             if (err.status === 404) {
@@ -183,58 +189,55 @@ class FinalActivitiesPage extends React.Component<Props, State> {
         {activity && (
           <main className={classes.content}>
             <div className={classes.drawerHeader} />
-            <SolvePageHeader
-              // handleSubmitActivity={e => this.handleSubmitActivity(e)}
-              // handleOpenPastSubmissionsSidePanel={() => this.setOpenSubmissionsPanel()}
-              activityName={activity.name}
-              onlyTitle
-              // history={history}
-            />
-            <SplitPane
-              split="vertical"
-              defaultSize="15%"
-              onChange={width => this.handleDrag(width)}
-              className={classes.splitPaneStyle}
-            >
-              <div className={classes.submissionsSideList}>
-                <List>
-                  {finalSubmissions.map((submissionCode, idx) => (
-                    <ListItem
-                      button
-                      key={idx}
-                      selected={selectedSubmissionIdx === idx}
-                      onClick={() =>
-                        this.setState({ code: finalSubmissions[idx], selectedSubmissionIdx: idx })
-                      }
-                    >
-                      <ListItemAvatar>
-                        <Avatar>
-                          <DescriptionOutlinedIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary={`Solución ${idx}`} />
-                    </ListItem>
-                  ))}
-                </List>
-              </div>
-              <div className={classes.editor}>
-                <ReactResizeDetector
-                  handleWidth
-                  handleHeight={false}
-                  onResize={() => (editor ? editor.layout : () => {})}
-                >
-                  {code && (
-                    <MultipleTabsEditor
-                      key={selectedSubmissionIdx}
-                      width={editorWidth}
-                      initialCode={code}
-                      language={activity.language.toLowerCase()}
-                      readOnly
-                    />
-                  )}
-                </ReactResizeDetector>
-              </div>
-            </SplitPane>
+            <SolvePageHeader activityName={activity.name} onlyTitle />
+            <SolveActivityFirstModal open={code === null} onClickHide={() => null} />
+            {code && (
+              <SplitPane
+                split="vertical"
+                defaultSize="15%"
+                onChange={width => this.handleDrag(width)}
+                className={classes.splitPaneStyle}
+              >
+                <div className={classes.submissionsSideList}>
+                  <List className={classes.submissionsList}>
+                    {finalSubmissions.map((submissionCode, idx) => (
+                      <ListItem
+                        button
+                        key={idx}
+                        selected={selectedSubmissionIdx === idx}
+                        onClick={() =>
+                          this.setState({ code: finalSubmissions[idx], selectedSubmissionIdx: idx })
+                        }
+                      >
+                        <ListItemAvatar>
+                          <Avatar>
+                            <DescriptionOutlinedIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary={idx === 0 ? `Mi Solución` : `Solución ${idx}`} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </div>
+                <div className={classes.editor}>
+                  <ReactResizeDetector
+                    handleWidth
+                    handleHeight={false}
+                    onResize={() => (editor ? editor.layout : () => {})}
+                  >
+                    {code && (
+                      <MultipleTabsEditor
+                        key={selectedSubmissionIdx}
+                        width={editorWidth}
+                        initialCode={code}
+                        language={activity.language.toLowerCase()}
+                        readOnly
+                      />
+                    )}
+                  </ReactResizeDetector>
+                </div>
+              </SplitPane>
+            )}
           </main>
         )}
       </div>

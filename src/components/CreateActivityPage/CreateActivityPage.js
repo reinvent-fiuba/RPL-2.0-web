@@ -124,9 +124,9 @@ const styles = theme => ({
     padding: "0",
   },
   circularProgress: {
-    display: "block",
-    marginLeft: "auto",
-    marginRight: "auto",
+    position: "absolute",
+    left: "50%",
+    top: "50%",
   },
 });
 
@@ -478,10 +478,10 @@ class CreateActivityPage extends React.Component<Props, State> {
                     onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                     selectedTab={mdEditorTab}
                     onTabChange={mdEditorTabChanged =>
-                      this.setState({ mdEditorTab: mdEditorTabChanged })
-                    }
+                      this.setState({ mdEditorTab: mdEditorTabChanged })}
                     generateMarkdownPreview={markdown =>
-                      Promise.resolve(converter.makeHtml(markdown))}
+                      Promise.resolve(converter.makeHtml(markdown))
+                    }
                   />
                 </Grid>
               </Grid>
