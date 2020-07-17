@@ -86,11 +86,12 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   activity: ?Activity,
-  code: ?{ [string]: string },
   editorWidth: string,
   editor: any,
   finalSubmissions: Array<{ [string]: string }>,
   selectedSubmissionIdx: ?number,
+  openModal: boolean,
+  teacherMode: boolean,
 };
 
 class FinalActivitiesPage extends React.Component<Props, State> {
@@ -99,31 +100,77 @@ class FinalActivitiesPage extends React.Component<Props, State> {
     isSideBarOpen: false,
     editorWidth: "100%",
     activity: null,
-    code: null,
     editor: null,
     finalSubmissions: [],
     selectedSubmissionIdx: null,
+    openModal: false,
+    teacherMode: false,
   };
 
   componentDidMount() {
+    const { permissions } = this.props.context;
+    if (permissions.includes("activity_manage")) {
+      this.loadSubmissionsForTeacher();
+    } else {
+      this.loadSubmissionsForStudents();
+    }
+  }
+
+  loadSubmissionsForTeacher() {
+    const { courseId, activityId } = this.props.match.params;
+    activitiesService
+      .getActivity(courseId, activityId)
+      .then(activityResponse => {
+        this.setState({
+          activity: activityResponse,
+          teacherMode: true,
+        });
+        submissionsService
+          .getAllFinalSolutionsFilesForStudent(courseId, activityId)
+          .then(files =>
+            this.setState({
+              finalSubmissions: files,
+              selectedSubmissionIdx: 0,
+            })
+          )
+          .catch(err => {
+            if (err.status === 404) {
+              return Promise.resolve(this.setState({ finalSubmissions: [], openModal: true }));
+            }
+            return Promise.reject(err);
+          });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al obtener la actividad, Por favor reintenta",
+          },
+        });
+      });
+  }
+
+  loadSubmissionsForStudents() {
+    const { courseId, activityId } = this.props.match.params;
     // Obtener todas las soluciones
     activitiesService
-      .getActivity(this.props.match.params.courseId, this.props.match.params.activityId)
+      .getActivity(courseId, activityId)
       .then(activityResponse => {
+        this.setState({
+          activity: activityResponse,
+          teacherMode: false,
+        });
         submissionsService
-          .getFinalSolutionWithFileForStudent(
-            this.props.match.params.courseId,
-            this.props.match.params.activityId
-          )
+          .getFinalSolutionWithFileForStudent(courseId, activityId)
           .then(finalSolution => {
             this.setState({
               activity: activityResponse,
-              code: finalSolution.submited_code,
             });
             submissionsService
               .getAllFinalSolutionsFilesForStudent(
-                this.props.match.params.courseId,
-                this.props.match.params.activityId,
+                courseId,
+                activityId,
                 finalSolution.submission_file_id
               )
               .then(files =>
@@ -135,7 +182,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
           })
           .catch(err => {
             if (err.status === 404) {
-              return Promise.resolve(this.setState({ finalSubmissions: [] }));
+              return Promise.resolve(this.setState({ finalSubmissions: [], openModal: true }));
             }
             return Promise.reject(err);
           });
@@ -166,10 +213,11 @@ class FinalActivitiesPage extends React.Component<Props, State> {
       isSideBarOpen,
       editorWidth,
       error,
-      code,
       editor,
       finalSubmissions,
       selectedSubmissionIdx,
+      openModal,
+      teacherMode,
     } = this.state;
     return (
       <div className={classes.topDiv}>
@@ -190,8 +238,12 @@ class FinalActivitiesPage extends React.Component<Props, State> {
           <main className={classes.content}>
             <div className={classes.drawerHeader} />
             <SolvePageHeader activityName={activity.name} onlyTitle />
-            <SolveActivityFirstModal open={code === null} onClickHide={() => null} />
-            {code && (
+            <SolveActivityFirstModal
+              open={openModal}
+              teacherMode={teacherMode}
+              onBackdropClicked={() => this.setState({ openModal: false })}
+            />
+            {selectedSubmissionIdx !== null && (
               <SplitPane
                 split="vertical"
                 defaultSize="15%"
@@ -205,16 +257,16 @@ class FinalActivitiesPage extends React.Component<Props, State> {
                         button
                         key={idx}
                         selected={selectedSubmissionIdx === idx}
-                        onClick={() =>
-                          this.setState({ code: finalSubmissions[idx], selectedSubmissionIdx: idx })
-                        }
+                        onClick={() => this.setState({ selectedSubmissionIdx: idx })}
                       >
                         <ListItemAvatar>
                           <Avatar>
                             <DescriptionOutlinedIcon />
                           </Avatar>
                         </ListItemAvatar>
-                        <ListItemText primary={idx === 0 ? `Mi Solución` : `Solución ${idx}`} />
+                        <ListItemText
+                          primary={idx === 0 && !teacherMode ? `Mi Solución` : `Solución ${idx}`}
+                        />
                       </ListItem>
                     ))}
                   </List>
@@ -225,11 +277,11 @@ class FinalActivitiesPage extends React.Component<Props, State> {
                     handleHeight={false}
                     onResize={() => (editor ? editor.layout : () => {})}
                   >
-                    {code && (
+                    {selectedSubmissionIdx !== null && selectedSubmissionIdx !== undefined && (
                       <MultipleTabsEditor
                         key={selectedSubmissionIdx}
                         width={editorWidth}
-                        initialCode={code}
+                        initialCode={finalSubmissions[selectedSubmissionIdx]}
                         language={activity.language.toLowerCase()}
                         readOnly
                       />

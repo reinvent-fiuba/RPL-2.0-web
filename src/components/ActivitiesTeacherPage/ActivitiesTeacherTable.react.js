@@ -83,7 +83,7 @@ function ActivitiesTeacherTable(props: Props) {
               Puntos
             </TableCell>
             <TableCell key={4} align="center">
-              Entregas
+              Soluciones Definitivas
             </TableCell>
             <TableCell key={5} align="center" />
           </TableRow>
@@ -122,7 +122,6 @@ function ActivitiesTeacherTable(props: Props) {
                 </TableCell>
                 <TableCell key={4} align="center">
                   <div className={classes.submissionsColumn}>
-                    #TODO
                     <Button
                       variant="outlined"
                       color="primary"

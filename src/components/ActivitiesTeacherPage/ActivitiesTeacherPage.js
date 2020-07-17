@@ -154,6 +154,11 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
       });
   }
 
+  handleClickActivityResults(event: Event, activityId: number) {
+    const { history, match } = this.props;
+    history.push(`/courses/${match.params.courseId}/activities/${activityId}/definitives`);
+  }
+
   render() {
     const { classes, match, context } = this.props;
 
@@ -201,14 +206,13 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
                   <ActivitiesTeacherTable
                     activities={activitiesByCategory[category]}
                     onClickActivityResults={(e, activityId) =>
-                      this.handleNotImplementedYet(e, activityId)
-                    }
+                      this.handleClickActivityResults(e, activityId)}
                     onClickDeleteActivity={activityId => this.handleDeleteActivity(activityId)}
                     onClickDisableActivity={(activityId, newStatus) =>
-                      this.handleDisableActivity(activityId, newStatus)}
-                    handleActivityRowClick={(event, activityId) =>
-                      this.handleClickOnActivityTitle(event, activityId)
+                      this.handleDisableActivity(activityId, newStatus)
                     }
+                    handleActivityRowClick={(event, activityId) =>
+                      this.handleClickOnActivityTitle(event, activityId)}
                   />
                 </div>
               ))}
