@@ -16,6 +16,7 @@ export type Activity = {
   name: string,
   description: string,
   language: string,
+  points: number,
   is_iotested: boolean,
   active: boolean,
   deleted: boolean,
