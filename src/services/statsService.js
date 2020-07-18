@@ -19,7 +19,7 @@ exports.getMyActivitiesStats = (courseId: number): Promise<> =>
     method: "GET",
   });
 
-exports.getSubmissionStatsByDate = (courseId: number): Promise<> =>
+exports.getSubmissionStatsByDate = (courseId: number): Promise<Object> =>
   request({
     url: `${producer.base_url}/api/stats/courses/${courseId}/submissions?groupBy=date`,
     method: "GET",
@@ -38,7 +38,7 @@ exports.getSubmissionStatsByActivity = (
   });
 };
 
-exports.getSubmissionStatsByStudent = (courseId: number, date: string): Promise<> =>
+exports.getSubmissionStatsByStudent = (courseId: number, date: ?string): Promise<Object> =>
   request({
     url: `${producer.base_url}/api/stats/courses/${courseId}/submissions?groupBy=user${
       date ? `&date=${date}` : ""

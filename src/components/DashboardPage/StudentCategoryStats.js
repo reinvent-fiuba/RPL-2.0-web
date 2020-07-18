@@ -21,8 +21,6 @@ import coursesService from "../../services/coursesService";
 import activitiesService from "../../services/activitiesService";
 import statsService from "../../services/statsService";
 
-import "react-calendar-heatmap/dist/styles.css";
-
 import { withState } from "../../utils/State";
 
 const _ = require("lodash");

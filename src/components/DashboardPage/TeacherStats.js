@@ -1,12 +1,9 @@
 // @flow
 import React from "react";
-import palette from "google-palette";
-import { Pie } from "react-chartjs-2";
 import { withStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import CalendarHeatmap from "react-calendar-heatmap";
-import submissionsService from "../../services/submissionsService";
+import CalendarHeatmap from "react-calendar-heatmap-fork";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
@@ -14,13 +11,12 @@ import TableBody from "@material-ui/core/TableBody";
 import Table from "@material-ui/core/Table";
 import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import statsService from "../../services/statsService";
-
-import ativitiesService from "../../services/activitiesService";
 
 import { withState } from "../../utils/State";
 
-import "react-calendar-heatmap/dist/styles.css";
+import "react-calendar-heatmap-fork/dist/styles.css";
 
 import ErrorNotification from "../../utils/ErrorNotification";
 
@@ -95,17 +91,12 @@ const styles = theme => ({
   container: {
     width: "100%",
   },
-});
-
-const legendOpts = {
-  display: true,
-  fullWidth: false,
-  position: "left",
-  reverse: false,
-  labels: {
-    fontSize: 10,
+  circularProgress: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
   },
-};
+});
 
 type Props = {
   courseId: number,
@@ -115,12 +106,19 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
+  selectedDate: any,
+  submissionsByDate: any,
+  submissionsByStudent: any,
+  loadingData: boolean,
 };
 
 class StudentStats extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
+    selectedDate: null,
+    submissionsByDate: null,
+    submissionsByStudent: null,
+    loadingData: false,
   };
 
   componentDidMount() {
@@ -136,26 +134,28 @@ class StudentStats extends React.Component<Props, State> {
         this.setState({
           submissionsByDate,
           submissionsByStudent,
-          defaultSubmissionsByStudent: submissionsByStudent,
-          defaultData: true,
         });
       });
   }
 
   handleDateClick(value) {
     const { courseId } = this.props;
+    const { selectedDate } = this.state;
 
     if (!value) {
-      return this.setState({
-        submissionsByStudent: this.state.defaultSubmissionsByStudent,
-        defaultData: true,
-      });
+      return;
     }
 
     const { date } = value;
 
-    return statsService.getSubmissionStatsByStudent(courseId, date).then(submissionsByStudent => {
-      return this.setState({ submissionsByStudent, defaultData: false });
+    if (selectedDate === date) {
+      return;
+    }
+
+    this.setState({ selectedDate: date, loadingData: true });
+
+    statsService.getSubmissionStatsByStudent(courseId, date).then(submissionsByStudent => {
+      return this.setState({ submissionsByStudent, loadingData: false });
     });
   }
 
@@ -201,21 +201,19 @@ class StudentStats extends React.Component<Props, State> {
 
   render() {
     const { classes, context } = this.props;
-    const { error, submissionsByDate } = this.state;
+    const { error, submissionsByDate, selectedDate, loadingData } = this.state;
     const { course } = context;
 
     if (!submissionsByDate) {
-      return <div></div>;
+      return <div />;
     }
 
-    const {metadata, submissions_stats} = submissionsByDate;
+    const { metadata, submissions_stats } = submissionsByDate;
 
     const data = _.zipWith(submissions_stats, metadata, (stat, meta) => ({
       count: stat.total,
       date: meta.date,
     }));
-
-    console.log(this.props.context);
 
     return (
       <div>
@@ -232,18 +230,21 @@ class StudentStats extends React.Component<Props, State> {
                 onClick={value => this.handleDateClick(value)}
                 showWeekdayLabels
                 values={data}
-                classForValue={(value) => {
+                firstWeekdayMonday
+                classForValue={value => {
                   if (!value) {
-                    return 'color-empty';
+                    return "color-empty";
                   }
-                  return `color-github-${value.count}`;
+                  return `color-github-${Math.min(Math.floor(value.count / 50), 4) + 1}`; // <50 solved activities in a day is color 0 (we have 0->5 colors)
                 }}
               />
             </div>
           </Grid>
           <Grid item xs={4} />
           <Grid item xs={12}>
-            {this.renderStudentsTable()}
+            <Typography>{selectedDate || "Envios totales"}</Typography>
+            {loadingData && <CircularProgress className={classes.circularProgress} />}
+            {!loadingData && this.renderStudentsTable()}
           </Grid>
         </Grid>
       </div>

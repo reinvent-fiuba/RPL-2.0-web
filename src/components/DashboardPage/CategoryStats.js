@@ -14,14 +14,11 @@ import Table from "@material-ui/core/Table";
 import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
 
+import { Grid } from "@material-ui/core";
 import coursesService from "../../services/coursesService";
 import activitiesService from "../../services/activitiesService";
 import statsService from "../../services/statsService";
 
-import "react-calendar-heatmap/dist/styles.css";
-
-import ErrorNotification from "../../utils/ErrorNotification";
-import { Grid, Typography } from "@material-ui/core";
 import { withState } from "../../utils/State";
 
 const _ = require("lodash");
@@ -220,7 +217,9 @@ class CategoryStats extends React.Component<Props, State> {
     const { error, activitiesStats } = this.state;
 
     const colors = palette("sequential", 2).map(hex => `#${hex}`);
-    const data = activitiesStats && activitiesStats.submissions_stats.map(activity => activity.avg_error_submissions_by_student);
+    const data =
+      activitiesStats &&
+      activitiesStats.submissions_stats.map(activity => activity.avg_error_submissions_by_student);
     const dataScore = {
       labels: activitiesStats && activitiesStats.metadata.map(activity => activity.name),
       datasets: [
@@ -257,7 +256,7 @@ class CategoryStats extends React.Component<Props, State> {
     return (
       <div>
         <br />
-        <Grid container className={classes.filters} xs={12} spacing={3} >
+        <Grid container className={classes.filters} xs={12} spacing={3}>
           <Grid item xs={5}>
             <Autocomplete
               margin="normal"
