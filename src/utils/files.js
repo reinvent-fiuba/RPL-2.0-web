@@ -1,5 +1,5 @@
 // @flow
-import type { FilesMetadata } from "../types";
+import type { FilesMetadata, Activity } from "../types";
 import { FILE_DISPLAY_MODE } from "../types";
 
 export const FILES_METADATA = "files_metadata";
@@ -24,4 +24,17 @@ export function getFilesMetadata(files: { [string]: string }): FilesMetadata {
     return metadata;
   }
   return buildFilesMetadata(files);
+}
+
+export function prepareInitialCode(activity: Activity) {
+  const code = activity.initial_code;
+  const metadata = getFilesMetadata(activity.initial_code);
+  if (activity.language === "python" && activity.is_iotested) {
+    code["assignment_main.py"] = code["assignment_main.py"] || "# tu codigo";
+    metadata["assignment_main.py"] = {
+      display: FILE_DISPLAY_MODE.WRITE_CANT_DELETE,
+    };
+    code[FILES_METADATA] = JSON.stringify(metadata);
+  }
+  return code;
 }

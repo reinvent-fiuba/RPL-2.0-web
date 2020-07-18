@@ -149,6 +149,12 @@ class IOCorrectionTests extends React.Component<Props, State> {
           Agrega tests de entrada salida para que los alumnos puedan corroborar que el ejercicio
           está bien hecho.
         </Typography>
+        {activity && activity.language === "python" && (
+          <Typography variant="body1" color="textSecondary" component="p" className={classes.title}>
+            El alumno deberá entregar un archivo con el nombre de &quot;assignment_main.py&quot;,
+            que será el punto de entrada de la ejecución.
+          </Typography>
+        )}
         <div className={classes.listContainer}>
           <List className={classes.list}>
             {activity &&

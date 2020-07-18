@@ -158,7 +158,7 @@ const mainFileByLanguage = { c: "main.c", python: "assignment_main.py", java: "m
 
 class CreateActivityPage extends React.Component<Props, State> {
   state = {
-    error: { open: false, message: null, invalidFields: new Set()  },
+    error: { open: false, message: null, invalidFields: new Set() },
     isSideBarOpen: false,
     activity: null,
     categories: [],
@@ -227,17 +227,17 @@ class CreateActivityPage extends React.Component<Props, State> {
     return Object.keys(code).includes(mainFileByLanguage[language]);
   }
 
-  saveActivity() {
-    const { courseId, activityId } = this.props.match.params;
+  saveActivity(): Promise<Activity> {
+    const { courseId } = this.props.match.params;
     const { name, points, language, categoryId, code, mdText, activity } = this.state;
     const serviceToCall = !activity
       ? activitiesService.createActivity
       : activitiesService.updateActivity;
 
-    if (!CreateActivityPage.activityHasMainFile(language, code)) {
-      this.setState({ isAddMainFileModalActive: true });
-      return;
-    }
+    // if (!CreateActivityPage.activityHasMainFile(language, code)) {
+    //   this.setState({ isAddMainFileModalActive: true });
+    //   return;
+    // }
 
     const data = {
       courseId,
@@ -268,7 +268,7 @@ class CreateActivityPage extends React.Component<Props, State> {
   handleCreateClick(event) {
     event.preventDefault();
 
-    return this.saveActivity();
+    this.saveActivity();
   }
 
   handleGotToTestClick(event) {
@@ -411,11 +411,11 @@ class CreateActivityPage extends React.Component<Props, State> {
                   autoComplete="name"
                   error={error.invalidFields.has("name")}
                   helperText={
-                    error.invalidFields.has("name") && "El nombre de la actividad debe estar formado por letras o numeros"
+                    error.invalidFields.has("name") &&
+                    "El nombre de la actividad debe estar formado por letras o numeros"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))
-                  }
+                    this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))}
                   value={name}
                 />
                 <TextField
@@ -497,10 +497,10 @@ class CreateActivityPage extends React.Component<Props, State> {
                     onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                     selectedTab={mdEditorTab}
                     onTabChange={mdEditorTabChanged =>
-                      this.setState({ mdEditorTab: mdEditorTabChanged })}
-                    generateMarkdownPreview={markdown =>
-                      Promise.resolve(converter.makeHtml(markdown))
+                      this.setState({ mdEditorTab: mdEditorTabChanged })
                     }
+                    generateMarkdownPreview={markdown =>
+                      Promise.resolve(converter.makeHtml(markdown))}
                   />
                 </Grid>
               </Grid>

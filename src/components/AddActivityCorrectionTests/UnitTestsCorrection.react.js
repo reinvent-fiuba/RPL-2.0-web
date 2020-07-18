@@ -14,7 +14,7 @@ import type { Activity } from "../../types";
 
 const initialUnitTestCode = {
   c: `#include <criterion/criterion.h>  // No borrar esto!
-#include "main.c"  // No borrar esto!
+#include "api.h"  // Modificar con el nombre de la api que se le entrega al alumno!
 
 Test(misc, testName1) {
     cr_assert(fooNoRepetido() == 1);
@@ -25,19 +25,24 @@ Test(misc, testName2) {
 }
 `,
   python: `import unittest  # No borrar esto!
-import assignment_main # No borrar esto!
+import test_api # Modificar con el nombre de la api que se le entrega al alumno!
 
-# Accede a las funciones del alumno desde el modulo assignment_main
+# Accede a las funciones del alumno desde el modulo test_api
 
 
 class TestMethods(unittest.TestCase):
 
   def test_1(self):
-    self.assertTrue(assignment_main.fooNoRepetido())
+    self.assertTrue(test_api.fooNoRepetido())
 
   def test_2(self):
-    self.assertTrue(assignment_main.barNoRepetido())
+    self.assertTrue(test_api.barNoRepetido())
 `,
+};
+
+const documentationByLangugage = {
+  c: "https://criterion.readthedocs.io/en/master/assert.html",
+  python: "https://docs.python.org/3/library/unittest.html",
 };
 
 const drawerWidth = 240;
@@ -164,20 +169,34 @@ class IOCorrectionTests extends React.Component<Props, State> {
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
         {successSave && <CustomSnackbar open={successSave} message="El test se guardó con éxito" />}
-        <Typography variant="body1" color="textSecondary" component="p" className={classes.title}>
-          {`Utiliza las funciones que desarrollaron los alumnos para comprobar que funcionan
+        {activity && (
+          <div>
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              component="p"
+              className={classes.title}
+            >
+              {`Utiliza las funciones que desarrollaron los alumnos para comprobar que funcionan
           correctamente. Documentación de la `}
-          <a
-            href="https://criterion.readthedocs.io/en/master/assert.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            librería de test unitarios
-          </a>
-        </Typography>
-        <Typography variant="body1" color="textSecondary" component="p" className={classes.title}>
-          No te olvides de aclararles cómo tiene que ser la firma de la función!
-        </Typography>
+              <a
+                href={documentationByLangugage[activity.language]}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                librería de test unitarios
+              </a>
+            </Typography>
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              component="p"
+              className={classes.title}
+            >
+              No te olvides de aclararles cómo tiene que ser la firma de la función!
+            </Typography>
+          </div>
+        )}
         <br />
 
         <Fab
@@ -203,7 +222,8 @@ class IOCorrectionTests extends React.Component<Props, State> {
             defaultValue={initialUnitTestCode[activity.language]}
             value={unitTestCode}
             onChange={codeChanged =>
-              this.setState({ unitTestCode: codeChanged, successSave: false })}
+              this.setState({ unitTestCode: codeChanged, successSave: false })
+            }
             editorDidMount={mountedEditor => {
               mountedEditor.changeViewZones(changeAccessor => {
                 changeAccessor.addZone({
