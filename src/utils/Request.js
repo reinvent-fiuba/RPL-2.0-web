@@ -25,13 +25,14 @@ exports.request = (options, config) => {
     if (response.status === 204) {
       return Promise.resolve();
     }
-    if (response.status === 401) {
-      logout();
-      window.location.assign(window.location);
-      return Promise.resolve();
-    }
     return response.json().then(json => {
       if (!response.ok) {
+        if (response.status === 401 && json.error !== "email_not_validated_error") {
+          logout();
+          window.location.assign(window.location); // then PrivateRoute will redirect you to the login page
+          return Promise.reject();
+        }
+
         return Promise.reject({ err: json, status: response.status });
       }
       return json;
