@@ -111,7 +111,11 @@ export const FILE_DISPLAY_MODE = Object.freeze({
   READ_WRITE: "read_write",
   READ: "read",
   HIDDEN: "hidden",
+  WRITE_CANT_DELETE: "write_cant_delete",
 });
+
+export const READ_ONLY_DISPLAY_MODES = [FILE_DISPLAY_MODE.READ, FILE_DISPLAY_MODE.HIDDEN];
+export const DELETEABLE_DISPLAY_MODES = [FILE_DISPLAY_MODE.READ_WRITE];
 
 export type FileDisplayMode = $Values<typeof FILE_DISPLAY_MODE>;
 

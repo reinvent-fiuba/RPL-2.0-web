@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-wrap-multilines */
 // @flow
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
@@ -11,7 +12,7 @@ import { withState } from "../../utils/State";
 import AddNewFileModal from "./AddNewFileModal.react";
 import type { FilesMetadata } from "../../types";
 import { getFilesMetadata, FILES_METADATA } from "../../utils/files";
-import { FILE_DISPLAY_MODE } from "../../types";
+import { FILE_DISPLAY_MODE, READ_ONLY_DISPLAY_MODES, DELETEABLE_DISPLAY_MODES } from "../../types";
 
 const styles = theme => ({
   addFileButton: {
@@ -124,22 +125,26 @@ class MultipleTabsEditor extends React.Component<Props, State> {
   }
 
   onClickDeleteFile(e: Event, selectedEditorToDelete: string) {
-    e.stopPropagation(); // Do not delete or it will move to this tab "after" deletion
+    e.stopPropagation(); // Do not delete or it will move to this tab "after" deletion (which is inconsistent)
     const { filesMetadata, code, selectedEditor } = this.state;
     const newCode = code;
     const newMetadata = filesMetadata;
     delete newCode[selectedEditorToDelete];
     delete newMetadata[selectedEditorToDelete];
 
+    const editableCodeEditors = Object.keys(newCode).filter(
+      fileName => fileName !== FILES_METADATA
+    );
     let newSelectedEditor = null;
-    if (
-      selectedEditor === selectedEditorToDelete &&
-      Object.keys(newCode).filter(fileName => fileName !== FILES_METADATA).length > 0
-    ) {
-      [newSelectedEditor] = Object.keys(code); // array destructuring === array[0]
+    if (selectedEditor === selectedEditorToDelete && editableCodeEditors.length > 0) {
+      [newSelectedEditor] = editableCodeEditors; // array destructuring === array[0]
     }
 
-    this.setState({ code: newCode, filesMetadata: newMetadata, selectedEditor: newSelectedEditor });
+    this.setState(prevState => ({
+      code: newCode,
+      filesMetadata: newMetadata,
+      selectedEditor: newSelectedEditor || prevState.selectedEditor,
+    }));
     newCode.files_metadata = JSON.stringify(filesMetadata);
     this.props.onCodeChange(newCode);
   }
@@ -216,7 +221,28 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     }
 
     // Students solving an activity
-    return filesMetadata[filename].display !== FILE_DISPLAY_MODE.READ_WRITE;
+    return READ_ONLY_DISPLAY_MODES.includes(filesMetadata[filename].display);
+  }
+
+  canDeleteFile(filename: ?string) {
+    const { readOnly, canEditFiles } = this.props;
+    const { filesMetadata } = this.state;
+
+    if (filename === null || filename === undefined) {
+      return true;
+    }
+
+    // Can't delete file while readOnly mode
+    if (readOnly) {
+      return false;
+    }
+
+    // Mainly for activity creation and edition
+    if (canEditFiles) {
+      return true;
+    }
+
+    return DELETEABLE_DISPLAY_MODES.includes(filesMetadata[filename].display);
   }
 
   render() {
@@ -262,7 +288,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
                     label={
                       <div className={classes.styledTabContent}>
                         <span>{fileName}</span>
-                        {!this.isReadOnlyFile(fileName) && !readOnly && (
+                        {this.canDeleteFile(fileName) && (
                           <IconButton
                             aria-label="delete"
                             className={classes.deleteFileButton}

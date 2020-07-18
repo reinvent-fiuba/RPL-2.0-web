@@ -17,6 +17,7 @@ import SubmissionsSidePanel from "../ActivitiesPage/SubmissionsSidePanel.react";
 import SubmissionResultModal from "../SubmissionResultModal/TestResultsModal.react";
 import "./SolveActivityPage.css";
 import type { Activity } from "../../types";
+import { prepareInitialCode } from "../../utils/files";
 
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
@@ -95,7 +96,7 @@ class SolveActivityPage extends React.Component<Props, State> {
       .then(activityResponse => {
         this.setState({
           activity: activityResponse,
-          code: activityResponse.initial_code,
+          code: prepareInitialCode(activityResponse),
         });
         submissionsService
           .getFinalSolution(this.props.match.params.courseId, this.props.match.params.activityId)
@@ -209,8 +210,7 @@ class SolveActivityPage extends React.Component<Props, State> {
             courseId={this.props.match.params.courseId}
             backdropClicked={() => this.setCloseSubmissionsPanel()}
             onSelectSubmission={(submissionId, i) =>
-              this.handleClickOnPastSubmission(submissionId, i)
-            }
+              this.handleClickOnPastSubmission(submissionId, i)}
           />
         )}
 

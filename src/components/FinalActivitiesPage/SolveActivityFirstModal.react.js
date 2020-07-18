@@ -11,6 +11,9 @@ type Props = {
   onBackdropClicked: void => void,
 };
 
+/**
+ * Dialog to show if someone attemps to see all the final solutions but hasn't finished its own first
+ */
 export default function SolveActivityFirstModal(props: Props) {
   const { open, teacherMode, onBackdropClicked } = props;
   return (
