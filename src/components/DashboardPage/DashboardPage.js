@@ -1,28 +1,14 @@
 // @flow
 import React from "react";
-import palette from "google-palette";
-import { Pie } from "react-chartjs-2";
 import { withStyles } from "@material-ui/core/styles";
-import Avatar from "@material-ui/core/Avatar";
-import Table from "@material-ui/core/Table";
 import Paper from "@material-ui/core/Paper";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import { Typography } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
-import submissionsService from "../../services/submissionsService";
 import coursesService from "../../services/coursesService";
-import ativitiesService from "../../services/activitiesService";
 import StudentStats from "./StudentStats";
 import TeacherStats from "./TeacherStats";
-
 
 import { withState } from "../../utils/State";
 
@@ -204,7 +190,7 @@ class ActivitiesPage extends React.Component<Props, State> {
                   >
                     <Tab label="Ranking" />
                     <Tab label="Envios por Fecha" />
-                    <Tab label="Envios por Alunno" />
+                    <Tab label="Envios por Alumno" />
                     <Tab label="Envios por Categoría" />
                   </Tabs>
                 </Paper>

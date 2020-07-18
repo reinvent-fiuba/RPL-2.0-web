@@ -6,7 +6,6 @@ import { withStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import statsService from "../../services/statsService";
-import ativitiesService from "../../services/activitiesService";
 
 import { withState } from "../../utils/State";
 
@@ -85,7 +84,7 @@ const styles = theme => ({
   },
   container: {
     width: "100%",
-  }
+  },
 });
 
 const legendOpts = {
