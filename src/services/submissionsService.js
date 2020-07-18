@@ -102,6 +102,9 @@ exports.getAllFinalSolutionsFilesForStudent = (
       exceptFileId !== null
         ? response.submission_file_ids.filter(id => id !== exceptFileId)
         : response.submission_file_ids;
+    if (filesQuery.length === 0) {
+      return Promise.resolve([]);
+    }
     return request({
       url: `${producer.base_url}/api/getFilesForStudent/${filesQuery}`,
       method: "GET",
