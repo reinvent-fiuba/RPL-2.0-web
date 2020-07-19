@@ -61,7 +61,7 @@ class SideBar extends React.PureComponent<Props> {
   render() {
     const { open, classes, courseId, context, handleDrawerClose } = this.props;
 
-    const itemsLinks = { Cursos: "/courses" };
+    const itemsLinks = {};
 
     if (context.profile && context.profile.is_admin) {
       itemsLinks.Usuarios = `/users`;
@@ -77,6 +77,7 @@ class SideBar extends React.PureComponent<Props> {
     }
 
     const configurationLinks = {
+      Cursos: "/courses",
       Perfil: "/profile",
     };
 
@@ -110,7 +111,7 @@ class SideBar extends React.PureComponent<Props> {
             );
           })}
         </List>
-        <Divider />
+        {Object.keys(itemsLinks).length !== 0 && <Divider />}
         <List>
           {Object.keys(configurationLinks).map(text => {
             const Icon = actionIcons[text];
