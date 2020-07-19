@@ -12,6 +12,9 @@ import TopBar from "../TopBar/TopBar";
 import coursesService from "../../services/coursesService";
 import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Paper from "@material-ui/core/Paper";
 import type { Course } from "../../types";
 
 const _ = require("lodash");
@@ -53,7 +56,19 @@ const styles = theme => ({
     display: "flex",
     marginLeft: "auto",
     marginRight: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
+  dashboardContainer: {
+    width: "75%",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: `0 auto`,
+    marginBottom: theme.spacing(5),
+  },
+  coursesGrid: {
+    margin: "auto",
+    marginTop: theme.spacing(3),
+  }
 });
 
 type Props = {
@@ -67,7 +82,10 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   myCourses: Array<Course>,
+  pendingCourses: Array<Course>,
   otherCourses: Array<Course>,
+  finishedCourses: Array<Course>,
+  currentTab: Number,
 };
 
 class CoursesPage extends React.Component<Props, State> {
@@ -76,6 +94,9 @@ class CoursesPage extends React.Component<Props, State> {
     isSideBarOpen: false,
     myCourses: [],
     otherCourses: [],
+    pendingCourses: [],
+    finishedCourses: [],
+    currentTab: 0,
   };
 
   componentDidMount() {
@@ -88,12 +109,24 @@ class CoursesPage extends React.Component<Props, State> {
     coursesService
       .getAll()
       .then(response => {
-        allCourses = response;
-        return coursesService.getAllByUser(profile.id);
-      })
-      .then(myCourses => {
-        const otherCourses = _.differenceBy(allCourses, myCourses, "id");
-        this.setState({ myCourses, otherCourses });
+        // Active courses were the user is enrolled
+        const myCourses = _.filter(
+          response,
+          course => course.active && course.enrolled && course.accepted
+        );
+        // Active courses were the user is waiting for acceptance
+        const pendingCourses = _.filter(
+          response,
+          course => course.active && course.enrolled && !course.accepted
+        );
+        // Other active courses
+        const otherCourses = _.filter(response, course => course.active && !course.enrolled);
+        // Inactive courses were the user was enrolled
+        const finishedCourses = _.filter(
+          response,
+          course => !course.active && course.enrolled && course.accepted
+        );
+        this.setState({ myCourses, otherCourses, pendingCourses, finishedCourses });
       })
       .catch(() => {
         this.setState({
@@ -106,8 +139,17 @@ class CoursesPage extends React.Component<Props, State> {
   }
 
   renderCourseCards(courses: Array<Course>) {
+    const { classes } = this.props;
+    if (courses.length === 0) {
+      return (
+        <Typography variant="h5" color="textSecondary" className={classes.coursesGrid}>
+          No se encuentran cursos
+        </Typography>
+      );
+    }
+
     return (
-      <Grid container spacing={1}>
+      <Grid className={classes.coursesGrid} container>
         {_.chunk(courses, 4).map((row, idx) => (
           <Grid container item xs={12} spacing={3} id={idx} key={idx}>
             {_.map(row, course => (
@@ -119,6 +161,7 @@ class CoursesPage extends React.Component<Props, State> {
                   description={course.description}
                   imgUri={course.img_uri}
                   enrolled={course.enrolled}
+                  accepted={course.accepted}
                   onClickGoToCourse={(e, courseId) => this.handleClickGoToCourse(e, courseId)}
                   onClickEnrollToCourse={(e, courseId) =>
                     this.handleClickEnrollToCourse(e, courseId)}
@@ -150,9 +193,7 @@ class CoursesPage extends React.Component<Props, State> {
     e.preventDefault();
     coursesService
       .enroll(courseId)
-      .then(() => {
-        this.props.history.push(`/courses/${courseId}/dashboard`);
-      })
+      .then(() => this.loadCourses())
       .catch(() => {
         this.setState({
           error: {
@@ -178,9 +219,22 @@ class CoursesPage extends React.Component<Props, State> {
       });
   }
 
+  handleChange(event, newValue) {
+    this.setState({ currentTab: newValue });
+  }
+
   render() {
     const { classes, context } = this.props;
-    const { otherCourses, myCourses, isSideBarOpen, error } = this.state;
+    const {
+      otherCourses,
+      myCourses,
+      pendingCourses,
+      finishedCourses,
+      isSideBarOpen,
+      error,
+    } = this.state;
+
+    const tab2courses = [myCourses, pendingCourses, otherCourses, finishedCourses];
 
     return (
       <div>
@@ -197,27 +251,34 @@ class CoursesPage extends React.Component<Props, State> {
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
-          {context.profile && context.profile.is_admin ? (
-            <Fab
-              color="primary"
-              aria-label="add"
-              className={classes.rightButton}
-              onClick={() => this.handleCreateCourseClick()}
-            >
-              <AddIcon />
-            </Fab>
-          ) : (
-            <div />
-          )}
-          <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
-            Mis Cursos
-          </Typography>
-          {this.renderCourseCards(myCourses)}
-          <Divider className={classes.divider} />
-          <Typography variant="h5" color="textSecondary" component="p" className={classes.title}>
-            Todos los Cursos
-          </Typography>
-          {this.renderCourseCards(otherCourses)}
+          <div className={classes.dashboardContainer}>
+            {context.profile && context.profile.is_admin ? (
+              <Fab
+                color="primary"
+                aria-label="add"
+                className={classes.rightButton}
+                onClick={() => this.handleCreateCourseClick()}
+              >
+                <AddIcon />
+              </Fab>
+            ) : (
+              <div />
+            )}
+            <Paper>
+              <Tabs
+                value={this.state.currentTab}
+                onChange={(event, newValue) => this.handleChange(event, newValue)}
+                indicatorColor="primary"
+                textColor="primary"
+              >
+                <Tab label="Mis cursos" />
+                <Tab label="Mis cursos pendientes" />
+                <Tab label="Otros cursos" />
+                <Tab label="Cursos terminados" />
+              </Tabs>
+            </Paper>
+            {this.renderCourseCards(tab2courses[this.state.currentTab])}
+          </div>
         </main>
       </div>
     );

@@ -60,6 +60,7 @@ class CourseCard extends React.PureComponent<Props> {
       description,
       enrolled,
       imgUri,
+      accepted,
       onClickGoToCourse,
       onClickEnrollToCourse,
       onClickUnenrollToCourse,
@@ -103,6 +104,7 @@ class CourseCard extends React.PureComponent<Props> {
                 color="primary"
                 onClick={e => onClickGoToCourse(e, courseId)}
                 className={classes.action}
+                disabled={!accepted}
               >
                 Acceder
               </Button>,
