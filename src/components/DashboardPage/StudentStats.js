@@ -6,6 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import statsService from "../../services/statsService";
+import getText from "../../utils/messages";
 
 import { withState } from "../../utils/State";
 
@@ -158,7 +159,12 @@ class StudentStats extends React.Component<Props, State> {
     };
 
     const dataSubmissions = {
-      labels: ["Resuelto", "Runtime Error", "Build Error", "Fallo"],
+      labels: [
+        getText("SUCCESS"),
+        getText("RUNTIME_ERROR"),
+        getText("BUILD_ERROR"),
+        getText("FAILURE"),
+      ],
       datasets: [
         {
           data: submissionsStats && [
