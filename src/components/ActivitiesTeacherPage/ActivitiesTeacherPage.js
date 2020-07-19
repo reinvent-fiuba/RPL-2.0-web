@@ -11,6 +11,7 @@ import activitiesService from "../../services/activitiesService";
 import ErrorNotification from "../../utils/ErrorNotification";
 import type { Activity } from "../../types";
 import ActivitiesTeacherTable from "./ActivitiesTeacherTable.react";
+import ConfirmDeleteActivityModal from "./ConfirmDeleteActivityModal.react";
 
 const _ = require("lodash");
 
@@ -69,6 +70,7 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   activities: Array<Activity>,
+  deleteModal: { open: boolean, activityId: ?number },
 };
 
 class ActivitiesTeacherPage extends React.Component<Props, State> {
@@ -76,6 +78,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
     error: { open: false, message: null },
     isSideBarOpen: false,
     activities: [],
+    deleteModal: { open: false, activityId: null },
   };
 
   componentDidMount() {
@@ -114,12 +117,13 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
     history.push(`/courses/${match.params.courseId}/activities/${activityId}/edit`);
   }
 
-  handleNotImplementedYet(e: Event, activityId: number) {
-    e.preventDefault();
-    alert(`Not implemented... YET!  ${activityId}`);
+  handleClickDeleteActivity(activityId: number) {
+    this.setState({ deleteModal: { open: true, activityId } });
   }
 
-  handleDeleteActivity(activityId: number) {
+  handleDeleteActivity(activityId: ?number) {
+    this.setState({ deleteModal: { open: false, activityId: null } });
+    if (!activityId) return;
     const { match } = this.props;
     activitiesService
       .deleteActivity(match.params.courseId, activityId)
@@ -162,7 +166,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
   render() {
     const { classes, match, context } = this.props;
 
-    const { activities, isSideBarOpen, error } = this.state;
+    const { activities, isSideBarOpen, error, deleteModal } = this.state;
 
     const nonDeletedActivities = _.filter(activities, activity => !activity.deleted);
     const activitiesByCategory = _.groupBy(nonDeletedActivities, "category_name");
@@ -180,6 +184,12 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
           handleDrawerClose={e => this.handleSwitchDrawer(e)}
           open={isSideBarOpen}
           courseId={match.params.courseId}
+        />
+
+        <ConfirmDeleteActivityModal
+          open={deleteModal.open}
+          onDeleteClicked={() => this.handleDeleteActivity(deleteModal.activityId)}
+          onCancelClicked={() => this.setState({ deleteModal: { open: false, activityId: null } })}
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
@@ -207,7 +217,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
                     activities={activitiesByCategory[category]}
                     onClickActivityResults={(e, activityId) =>
                       this.handleClickActivityResults(e, activityId)}
-                    onClickDeleteActivity={activityId => this.handleDeleteActivity(activityId)}
+                    onClickDeleteActivity={activityId => this.handleClickDeleteActivity(activityId)}
                     onClickDisableActivity={(activityId, newStatus) =>
                       this.handleDisableActivity(activityId, newStatus)
                     }
