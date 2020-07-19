@@ -228,19 +228,20 @@ class SubmissionResultModal extends React.Component<Props, State> {
           {results && (
             <DialogContent dividers className={classes.dialogContent}>
               {/* Mark as definitive (if success) */}
-              {!context.permissions.includes("activity_manage") &&
-                results.submission_status === "SUCCESS" &&
-                activityFinalSubmissionId === null && (
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.markAsDefinitiveButton}
-                    onClick={() => this.onClickMarkAsFinalSolution(results.activity_id, results.id)}
-                  >
-                    Marcar como solucion definitiva
-                  </Button>
-                )}
+              {!context.permissions.includes("activity_manage") && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={
+                    results.submission_status !== "SUCCESS" || activityFinalSubmissionId !== null
+                  }
+                  className={classes.markAsDefinitiveButton}
+                  onClick={() => this.onClickMarkAsFinalSolution(results.activity_id, results.id)}
+                >
+                  Marcar como solucion definitiva
+                </Button>
+              )}
               {/* IO test results (if any) */}
               {results.io_test_run_results.length > 0 && (
                 <Typography variant="h5" color="black" component="p">
