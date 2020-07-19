@@ -349,18 +349,21 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   />
                 </div>
               )}
-              <Divider variant="middle" />
-              <br />
-              <Typography variant="h5" color="black" component="p">
-                STDERR:
-              </Typography>
-              <br />
-              {results.stderr &&
-                results.stderr.split("\n").map((item, key) => (
-                  <Typography key={key} variant="subtitle1" color="textSecondary" component="p">
-                    {item}
+              {results.stderr && (
+                <div>
+                  <Divider variant="middle" />
+                  <br />
+                  <Typography variant="h5" color="black" component="p">
+                    STDERR:
                   </Typography>
-                ))}
+                  <br />
+                  {results.stderr.split("\n").map((item, key) => (
+                    <Typography key={key} variant="subtitle1" color="textSecondary" component="p">
+                      {item}
+                    </Typography>
+                  ))}
+                </div>
+              )}
               <br />
               <Divider variant="middle" />
               <br />
