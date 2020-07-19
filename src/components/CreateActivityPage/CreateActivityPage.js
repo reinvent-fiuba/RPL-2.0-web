@@ -72,8 +72,14 @@ const styles = theme => ({
     marginBottom: 20,
     "& > *": {
       width: 200,
-      margin: theme.spacing(1),
+      marginRight: theme.spacing(2),
+      marginTop: 0,
+      marginBottom: 0,
     },
+  },
+  formActivityName: {
+    maxWidth: "35%",
+    width: "100%",
   },
   divider: {
     margin: 20,
@@ -178,7 +184,7 @@ class CreateActivityPage extends React.Component<Props, State> {
     const { courseId, activityId } = this.props.match.params;
 
     // if we are editing pre-load all the activity fields
-    if (activityId !== undefined && activityId !== null) {
+    if (!this.isCreatingActivity()) {
       activitiesService.getActivity(courseId, activityId).then(activity => {
         this.setState({
           activity,
@@ -193,6 +199,13 @@ class CreateActivityPage extends React.Component<Props, State> {
     }
 
     this.loadActivityCategories();
+  }
+
+  isCreatingActivity() {
+    const { match } = this.props;
+    const { activityId } = match.params;
+
+    return activityId === undefined || activityId === null;
   }
 
   loadActivityCategories() {
@@ -227,17 +240,20 @@ class CreateActivityPage extends React.Component<Props, State> {
     return Object.keys(code).includes(mainFileByLanguage[language]);
   }
 
+  canSaveActivity() {
+    const { name, points, language, categoryId, code, mdText, activity } = this.state;
+    if (!name || !points || !language || categoryId === -1 || !mdText) {
+      return false;
+    }
+    return true;
+  }
+
   saveActivity(): Promise<Activity> {
     const { courseId } = this.props.match.params;
     const { name, points, language, categoryId, code, mdText, activity } = this.state;
     const serviceToCall = !activity
       ? activitiesService.createActivity
       : activitiesService.updateActivity;
-
-    // if (!CreateActivityPage.activityHasMainFile(language, code)) {
-    //   this.setState({ isAddMainFileModalActive: true });
-    //   return;
-    // }
 
     const data = {
       courseId,
@@ -256,11 +272,14 @@ class CreateActivityPage extends React.Component<Props, State> {
         return response;
       })
       .catch(() => {
-        this.setState({
-          error: {
-            open: true,
-            message: `Hubo un error al guardar la actividad, revisa que los datos ingresados sean validos.`,
-          },
+        this.setState(prevState => {
+          return {
+            error: {
+              open: true,
+              message: `Hubo un error al guardar la actividad, revisa que los datos ingresados sean validos.`,
+              invalidFields: prevState.error.invalidFields,
+            },
+          };
         });
       });
   }
@@ -351,6 +370,8 @@ class CreateActivityPage extends React.Component<Props, State> {
     const { classes, match } = this.props;
     const { courseId } = match.params;
 
+    const { activityId } = match.params;
+
     const {
       name,
       points,
@@ -397,11 +418,14 @@ class CreateActivityPage extends React.Component<Props, State> {
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
 
-          {!activity && <CircularProgress className={classes.circularProgress} />}
-          {activity && (
+          {!this.isCreatingActivity() && !activity && (
+            <CircularProgress className={classes.circularProgress} />
+          )}
+          {(this.isCreatingActivity() || activity) && (
             <div>
               <form className={classes.form}>
                 <TextField
+                  className={classes.formActivityName}
                   margin="normal"
                   required
                   fullWidth
@@ -409,13 +433,15 @@ class CreateActivityPage extends React.Component<Props, State> {
                   label="Nombre de Actividad"
                   name="name"
                   autoComplete="name"
-                  error={error.invalidFields.has("name")}
+                  error={error.invalidFields && error.invalidFields.has("name")}
                   helperText={
+                    error.invalidFields &&
                     error.invalidFields.has("name") &&
                     "El nombre de la actividad debe estar formado por letras o numeros"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))}
+                    this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))
+                  }
                   value={name}
                 />
                 <TextField
@@ -438,6 +464,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                     value={language || ""}
                     onChange={event => this.setLanguage(event.target.value, code)}
                   >
+                    400
                     <MenuItem key={0} value="c">
                       C
                     </MenuItem>
@@ -497,10 +524,10 @@ class CreateActivityPage extends React.Component<Props, State> {
                     onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                     selectedTab={mdEditorTab}
                     onTabChange={mdEditorTabChanged =>
-                      this.setState({ mdEditorTab: mdEditorTabChanged })
-                    }
+                      this.setState({ mdEditorTab: mdEditorTabChanged })}
                     generateMarkdownPreview={markdown =>
-                      Promise.resolve(converter.makeHtml(markdown))}
+                      Promise.resolve(converter.makeHtml(markdown))
+                    }
                   />
                 </Grid>
               </Grid>
@@ -522,6 +549,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                     color="primary"
                     className={classes.saveButton}
                     onClick={e => this.handleCreateClick(e)}
+                    disabled={!this.canSaveActivity()}
                   >
                     Guardar
                   </Button>
@@ -533,6 +561,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                     color="primary"
                     className={classes.createButton}
                     onClick={e => this.handleGotToTestClick(e)}
+                    disabled={!this.canSaveActivity()}
                   >
                     Guardar y Agregar Pruebas
                   </Button>
