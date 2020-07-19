@@ -128,9 +128,15 @@ class CoursesPage extends React.Component<Props, State> {
         let currentTab;
         if (goToTab !== undefined && goToTab !== null) {
           currentTab = goToTab;
+        } else if (myCourses && myCourses.length > 0) {
+          // If I have curses, go to my courses page
+          currentTab = 0;
+        } else if (pendingCourses && pendingCourses.length > 0) {
+          // If I have curses pending accepting, go to that tab
+          currentTab = 1;
         } else {
-          // If I have no curses, go to All courses page
-          currentTab = myCourses && myCourses.length > 0 ? 0 : 2;
+          // Go to Other courses tab
+          currentTab = 2;
         }
         this.setState({ myCourses, otherCourses, pendingCourses, finishedCourses, currentTab });
       })
