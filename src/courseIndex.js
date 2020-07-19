@@ -17,13 +17,16 @@ class CourseIndex extends React.PureComponent {
     const courseId = parseInt(this.props.match.params.courseId);
     if (!isNaN(courseId) &&
       (!this.props.context.permissions || !this.props.context.course || this.props.context.course.id !== courseId)) {
-      // TODO: Review permissions by course, in order to support different permissions for different courses
       this.props.context.invalidateByKeys("permissions", "course", "activities");
       coursesService
         .getPermissions(courseId)
-        .then(permissions => this.props.context.set("permissions", permissions))
+        .then(permissions => {
+          if (permissions.length === 0) return this.props.history.goBack();
+          return this.props.context.set("permissions", permissions)
+        })
         .then(() => coursesService.get(courseId))
-        .then(course => this.props.context.set("course", course));
+        .then(course => this.props.context.set("course", course))
+        .catch(() => this.props.history.goBack());
     }
   }
 

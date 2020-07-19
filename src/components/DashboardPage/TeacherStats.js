@@ -215,8 +215,6 @@ class StudentStats extends React.Component<Props, State> {
       date: meta.date,
     }));
 
-    console.log(this.props.context);
-
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -227,7 +225,7 @@ class StudentStats extends React.Component<Props, State> {
             <Typography>Totales</Typography>
             <div className={classes.calendarHeatmap}>
               <CalendarHeatmap
-                startDate={new Date(course.semester_start_date)} // TODO: Get semester start and end from backend
+                startDate={new Date(course.semester_start_date)}
                 endDate={new Date(course.semester_end_date)}
                 onClick={value => this.handleDateClick(value)}
                 showWeekdayLabels
