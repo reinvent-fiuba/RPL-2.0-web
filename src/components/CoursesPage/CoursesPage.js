@@ -1,20 +1,19 @@
 // @flow
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
 import { withStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Paper from "@material-ui/core/Paper";
 import CourseCard from "./CourseCard";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import coursesService from "../../services/coursesService";
 import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Paper from "@material-ui/core/Paper";
 import type { Course } from "../../types";
 
 const _ = require("lodash");
@@ -68,7 +67,7 @@ const styles = theme => ({
   coursesGrid: {
     margin: "auto",
     marginTop: theme.spacing(3),
-  }
+  },
 });
 
 type Props = {
@@ -85,7 +84,7 @@ type State = {
   pendingCourses: Array<Course>,
   otherCourses: Array<Course>,
   finishedCourses: Array<Course>,
-  currentTab: Number,
+  currentTab: number,
 };
 
 class CoursesPage extends React.Component<Props, State> {
@@ -103,8 +102,7 @@ class CoursesPage extends React.Component<Props, State> {
     this.loadCourses();
   }
 
-  loadCourses() {
-    let allCourses;
+  loadCourses(goToTab: ?number) {
     const { profile } = this.props.context;
     coursesService
       .getAll()
@@ -126,7 +124,15 @@ class CoursesPage extends React.Component<Props, State> {
           response,
           course => !course.active && course.enrolled && course.accepted
         );
-        this.setState({ myCourses, otherCourses, pendingCourses, finishedCourses });
+
+        let currentTab;
+        if (goToTab !== undefined && goToTab !== null) {
+          currentTab = goToTab;
+        } else {
+          // If I have no curses, go to All courses page
+          currentTab = myCourses && myCourses.length > 0 ? 0 : 2;
+        }
+        this.setState({ myCourses, otherCourses, pendingCourses, finishedCourses, currentTab });
       })
       .catch(() => {
         this.setState({
@@ -164,9 +170,11 @@ class CoursesPage extends React.Component<Props, State> {
                   accepted={course.accepted}
                   onClickGoToCourse={(e, courseId) => this.handleClickGoToCourse(e, courseId)}
                   onClickEnrollToCourse={(e, courseId) =>
-                    this.handleClickEnrollToCourse(e, courseId)}
+                    this.handleClickEnrollToCourse(e, courseId)
+                  }
                   onClickUnenrollToCourse={(e, courseId) =>
-                    this.handleClickUnenrollToCourse(e, courseId)}
+                    this.handleClickUnenrollToCourse(e, courseId)
+                  }
                 />
               </Grid>
             ))}
@@ -193,7 +201,9 @@ class CoursesPage extends React.Component<Props, State> {
     e.preventDefault();
     coursesService
       .enroll(courseId)
-      .then(() => this.loadCourses())
+      .then(() => {
+        this.loadCourses(1); // Go to "Pending courses tab"
+      })
       .catch(() => {
         this.setState({
           error: {
