@@ -12,6 +12,7 @@ const styles = theme => ({
     justifyContent: "space-between",
     alignItems: "center",
     padding: "8px",
+    marginTop: "8px",
   },
   secondHeaderTitle: {
     alignSelf: "center",
@@ -53,20 +54,18 @@ function getLeftTitle(
       </Button>
     );
   }
-  if (canShowOtherSolutions) {
-    return (
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        className={classes.topRightButtons}
-        onClick={() => history.push(`${history.location.pathname}/definitives`)}
-      >
-        Ver otras soluciones
-      </Button>
-    );
-  }
-  return <div />;
+  return (
+    <Button
+      type="submit"
+      variant="contained"
+      color="primary"
+      className={classes.topRightButtons}
+      disabled={!canShowOtherSolutions}
+      onClick={() => history.push(`${history.location.pathname}/definitives`)}
+    >
+      Ver otras soluciones
+    </Button>
+  );
 }
 
 function SolvePageHeader(props: Props) {
