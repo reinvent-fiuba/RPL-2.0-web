@@ -46,7 +46,7 @@ type Props = {
 function ActivityTemplateCodeModal(props: Props) {
   const { classes, open, handleCloseModal, activityCode, activityLanguage } = props;
 
-  const title = "Codigo de la actividad";
+  const title = "Código de la actividad";
   return (
     <div>
       <Dialog
