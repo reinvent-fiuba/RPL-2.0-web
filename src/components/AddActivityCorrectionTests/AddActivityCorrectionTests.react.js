@@ -17,6 +17,7 @@ import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
+import CustomSnackbar from "../../utils/CustomSnackbar.react";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
@@ -24,9 +25,13 @@ import IOTestsCorrection from "./IOTestsCorrection.react";
 import UnitTestsCorrection from "./UnitTestsCorrection.react";
 import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
+import activityTestsService from "../../services/activityTestsService";
 import FilesPermissionTypeCorrection from "./FilesPermissionTypeCorrection.react";
 import type { Activity, FilesMetadata } from "../../types";
 import { getFilesMetadata } from "../../utils/files";
+import ActivityTemplateCodeModal from "./ActivityTemplateCodeModal.react";
+
+const _ = require("lodash");
 
 const drawerWidth = 240;
 
@@ -75,7 +80,13 @@ const styles = theme => ({
   },
   buttons: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
+  },
+  submitButtons: {
+    display: "flex",
+  },
+  initialCodeButton: {
+    alignSelf: "flex-start",
   },
   saveButton: {
     flex: "0 1 auto",
@@ -116,6 +127,9 @@ type State = {
   flags: string,
   activityFilesMetadata: FilesMetadata,
   activity: ?Activity,
+  successSave: boolean,
+  unitTestCode: ?string,
+  activityTemplateCodeModalIsOpen: boolean,
 };
 
 class AddActivityCorrectionTests extends React.Component<Props, State> {
@@ -130,13 +144,13 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     flags: "",
     activity: null,
     activityFilesMetadata: {},
+    successSave: false,
+    unitTestCode: null,
+    activityTemplateCodeModalIsOpen: false,
   };
 
   componentDidMount() {
     const { courseId, activityId } = this.props.match.params;
-
-    this.ioTestCorrection = React.createRef();
-    this.unitTestCorrection = React.createRef();
 
     activitiesService
       .getActivity(courseId, activityId)
@@ -179,8 +193,17 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     }));
   }
 
+  saveAll() {
+    this.handleSaveUnitTest();
+    this.handleSaveFlags();
+    this.handleSaveFilesMetadata();
+  }
+
   handlePublish() {
     const { courseId, activityId } = this.props.match.params;
+
+    this.saveAll();
+
     return activitiesService
       .updateActivity({
         activityId,
@@ -194,19 +217,35 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
   handleSaveFlags() {
     const { courseId, activityId } = this.props.match.params;
-    return activitiesService.updateActivity({
+    const { flags, activity } = this.state;
+
+    if (activity && flags === activity.compilation_flags) {
+      return;
+    }
+
+    activitiesService.updateActivity({
       activityId,
       courseId,
-      compilationFlags: this.state.flags,
+      compilationFlags: flags,
     });
   }
 
   handleSaveFilesMetadata() {
     const { courseId, activityId } = this.props.match.params;
     const { activity, activityFilesMetadata } = this.state;
-    const newFiles = activity.initial_code;
+
+    if (!activity) {
+      return;
+    }
+
+    const newFiles = _.cloneDeep(activity.initial_code);
     newFiles.files_metadata = JSON.stringify(activityFilesMetadata);
-    return activitiesService.updateActivity({
+
+    if (_.isEqual(newFiles, activity.initial_code)) {
+      return;
+    }
+
+    activitiesService.updateActivity({
       activityId,
       courseId,
       code: newFiles,
@@ -222,7 +261,40 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
   handlePreviewClick() {
     const { courseId, activityId } = this.props.match.params;
 
+    this.saveAll();
+
     this.props.history.push(`/courses/${courseId}/activities/${activityId}`);
+  }
+
+  handleSaveUnitTest() {
+    const { courseId, activityId } = this.props.match.params;
+    const { activity, unitTestCode } = this.state;
+
+    if (!unitTestCode) {
+      return;
+    }
+
+    let promise;
+    if (activity && (!activity.is_iotested || activity.activity_unit_tests)) {
+      promise = activityTestsService.updateUnitTest(courseId, activityId, unitTestCode);
+    } else {
+      promise = activityTestsService.createUnitTest(courseId, activityId, unitTestCode);
+    }
+
+    promise
+      .then(updatedActivity => {
+        this.setState({ activity: updatedActivity, successSave: true });
+        setTimeout(() => this.setState({ successSave: false }), 2000);
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al guardar la actividad, Por favor reintenta",
+          },
+        });
+      });
   }
 
   render() {
@@ -234,6 +306,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
       configCompilerFlagsStepExpanded,
       configFilePermissionsForStudentsExpanded,
       activityFilesMetadata,
+      successSave,
+      activityTemplateCodeModalIsOpen,
     } = this.state;
     const { courseId, activityId } = this.props.match.params;
 
@@ -242,6 +316,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
+        {successSave && <CustomSnackbar open={successSave} message="El test se guardó con éxito" />}
         <TopBar
           handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={isSideBarOpen}
@@ -256,6 +331,15 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           <div className={classes.drawerHeader} />
 
           {!activity && <CircularProgress className={classes.circularProgress} />}
+
+          {activity && (
+            <ActivityTemplateCodeModal
+              handleCloseModal={() => this.setState({ activityTemplateCodeModalIsOpen: false })}
+              open={activityTemplateCodeModalIsOpen}
+              activityCode={activity.initial_code}
+              activityLanguage={activity.language}
+            />
+          )}
 
           {activity && (
             <div>
@@ -307,17 +391,14 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 <AccordionDetails>
                   <div>
                     {selectedTestMode === "IO tests" && (
-                      <IOTestsCorrection
-                        ref={this.ioTestCorrection}
-                        courseId={courseId}
-                        activityId={activityId}
-                      />
+                      <IOTestsCorrection courseId={courseId} activityId={activityId} />
                     )}
                     {selectedTestMode === "Unit tests" && (
                       <UnitTestsCorrection
-                        ref={this.unitTestCorrection}
                         courseId={courseId}
                         activityId={activityId}
+                        onSaveUnitTest={unitTestCode => this.handleSaveUnitTest(unitTestCode)}
+                        onChange={unitTestCode => this.setState({ unitTestCode })}
                       />
                     )}
                   </div>
@@ -445,28 +526,43 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                 </AccordionActions>
               </Accordion>
               <Grid container className={classes.buttons}>
-                <Grid item>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.saveButton}
-                    onClick={e => this.handlePreviewClick(e)}
-                  >
-                    Previsualizar como alumno
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.createButton}
-                    onClick={() => this.handlePublish()}
-                  >
-                    Publicar!
-                  </Button>
-                </Grid>
+                <div>
+                  <Grid itemclassName={classes.initialCodeButton}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className={classes.saveButton}
+                      onClick={() => this.setState({ activityTemplateCodeModalIsOpen: true })}
+                    >
+                      Ver código inicial de la actividad
+                    </Button>
+                  </Grid>
+                </div>
+                <div className={classes.submitButtons}>
+                  <Grid item>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className={classes.saveButton}
+                      onClick={e => this.handlePreviewClick(e)}
+                    >
+                      Guardar y Previsualizar como alumno
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className={classes.createButton}
+                      onClick={() => this.handlePublish()}
+                    >
+                      Guardar y Publicar!
+                    </Button>
+                  </Grid>
+                </div>
               </Grid>
             </div>
           )}
