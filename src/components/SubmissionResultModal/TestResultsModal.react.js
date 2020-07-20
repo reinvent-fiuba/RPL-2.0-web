@@ -24,10 +24,11 @@ const styles = () => ({
   modal: {
     minHeight: "200px",
   },
-  circularProgress: {
-    position: "absolute",
-    left: "50%",
-    top: "50%",
+  waitingDialog: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
   dialogTitle: {
     display: "flex",
@@ -186,6 +187,13 @@ class SubmissionResultModal extends React.Component<Props, State> {
       return "textSecondary";
     };
 
+    const getStderrColor = item => {
+      if (item.includes("main") || item.includes("end_BUILD")) {
+        return "secondary";
+      }
+      return "textSecondary";
+    };
+
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -217,11 +225,11 @@ class SubmissionResultModal extends React.Component<Props, State> {
             )}
           </DialogTitle>
           {!results && showWaitingDialog && (
-            <DialogContent dividers>
+            <DialogContent dividers className={classes.waitingDialog}>
               <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
                 Esto puede tardar unos segundos
               </DialogContentText>
-              <CircularProgress className={classes.circularProgress} />
+              <CircularProgress />
             </DialogContent>
           )}
 
@@ -358,7 +366,12 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   </Typography>
                   <br />
                   {results.stderr.split("\n").map((item, key) => (
-                    <Typography key={key} variant="subtitle1" color="textSecondary" component="p">
+                    <Typography
+                      key={key}
+                      variant="subtitle1"
+                      color={getStderrColor(item)}
+                      component="p"
+                    >
                       {item}
                     </Typography>
                   ))}

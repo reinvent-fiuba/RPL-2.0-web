@@ -6,9 +6,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import Fab from "@material-ui/core/Fab";
 import MonacoEditor from "react-monaco-editor";
 import ErrorNotification from "../../utils/ErrorNotification";
-import CustomSnackbar from "../../utils/CustomSnackbar.react";
 import activitiesService from "../../services/activitiesService";
-import activityTestsService from "../../services/activityTestsService";
 import { withState } from "../../utils/State";
 import type { Activity } from "../../types";
 
@@ -95,19 +93,19 @@ type Props = {
   classes: any,
   courseId: number,
   activityId: number,
+  onSaveUnitTest: void => void,
+  onChange: string => void,
 };
 
 type State = {
   error: { open: boolean, message: ?string },
-  successSave: boolean,
   activity: ?Activity,
   unitTestCode: string,
 };
 
-class IOCorrectionTests extends React.Component<Props, State> {
+class UnitTestsCorrection extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    successSave: false,
     activity: null,
     unitTestCode: "",
   };
@@ -134,41 +132,18 @@ class IOCorrectionTests extends React.Component<Props, State> {
   }
 
   handleSaveUnitTest() {
-    const { courseId, activityId } = this.props;
-    const { activity, unitTestCode } = this.state;
-
-    let promise;
-    if (activity && (!activity.is_iotested || activity.activity_unit_tests)) {
-      promise = activityTestsService.updateUnitTest(courseId, activityId, unitTestCode);
-    } else {
-      promise = activityTestsService.createUnitTest(courseId, activityId, unitTestCode);
-    }
-
-    promise
-      .then(updatedActivity => {
-        this.setState({ activity: updatedActivity, successSave: true });
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({
-          error: {
-            open: true,
-            message: "Hubo un error al buscar la actividad, Por favor reintenta",
-          },
-        });
-      });
+    const { onSaveUnitTest } = this.props;
+    onSaveUnitTest();
   }
 
   render() {
-    const { classes } = this.props;
-    // const { courseId, activityId } = this.props;
+    const { classes, onChange } = this.props;
 
-    const { error, successSave, activity, unitTestCode } = this.state;
+    const { error, activity, unitTestCode } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        {successSave && <CustomSnackbar open={successSave} message="El test se guardó con éxito" />}
         {activity && (
           <div>
             <Typography
@@ -213,7 +188,7 @@ class IOCorrectionTests extends React.Component<Props, State> {
 
         {activity && (
           <MonacoEditor
-            height="800"
+            height="500"
             options={{
               renderFinalNewline: true,
             }}
@@ -221,9 +196,10 @@ class IOCorrectionTests extends React.Component<Props, State> {
             theme="vs-dark"
             defaultValue={initialUnitTestCode[activity.language]}
             value={unitTestCode}
-            onChange={codeChanged =>
-              this.setState({ unitTestCode: codeChanged, successSave: false })
-            }
+            onChange={codeChanged => {
+              this.setState({ unitTestCode: codeChanged });
+              onChange(unitTestCode);
+            }}
             editorDidMount={mountedEditor => {
               mountedEditor.changeViewZones(changeAccessor => {
                 changeAccessor.addZone({
@@ -240,4 +216,4 @@ class IOCorrectionTests extends React.Component<Props, State> {
   }
 }
 
-export default withState(withStyles(styles)(IOCorrectionTests));
+export default withState(withStyles(styles)(UnitTestsCorrection));

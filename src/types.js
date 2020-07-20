@@ -18,6 +18,7 @@ export type Activity = {
   language: string,
   points: number,
   is_iotested: boolean,
+  compilation_flags: string,
   active: boolean,
   deleted: boolean,
   initial_code: { [string]: string },
