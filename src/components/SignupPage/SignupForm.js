@@ -1,6 +1,7 @@
 // @flow
 import React from "react";
 import Button from "@material-ui/core/Button";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -44,8 +45,10 @@ type State = {
   name: string,
   surname: string,
   degree: string,
-  university: string,
+  university: any,
   success: boolean,
+  universities: Array<any>,
+  studentId: string,
 };
 
 class Signup extends React.Component<Props, State> {
@@ -57,9 +60,17 @@ class Signup extends React.Component<Props, State> {
     name: "",
     surname: "",
     degree: "",
-    university: "",
+    university: undefined,
     success: false,
+    universities: [],
+    studentId: "",
   };
+
+  componentDidMount() {
+    return authenticationService.getUniversities().then(universities => {
+      this.setState({ universities });
+    });
+  }
 
   handleChange(event, valid) {
     event.persist();
@@ -88,11 +99,11 @@ class Signup extends React.Component<Props, State> {
       surname,
       degree,
       university,
-      student_id: studentId,
+      studentId: student_id,
       error,
     } = this.state;
 
-    if (error.invalidFields.size !== 0) {
+    if (error.invalidFields.size !== 0 || !university || !degree) {
       this.setState(prevState => ({
         error: {
           open: true,
@@ -111,8 +122,8 @@ class Signup extends React.Component<Props, State> {
         name,
         surname,
         degree,
-        university,
-        studentId,
+        university: university && university.name,
+        student_id,
       })
       .then(() => {
         this.setState({ success: true });
@@ -129,7 +140,7 @@ class Signup extends React.Component<Props, State> {
 
   render() {
     const { classes, history } = this.props;
-    const { error, success } = this.state;
+    const { error, success, universities, university } = this.state;
 
     return (
       <div>
@@ -212,40 +223,24 @@ class Signup extends React.Component<Props, State> {
               this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z]+$/, "string"))
             }
           />
-          <TextField
+          <Autocomplete
             margin="normal"
-            required
-            fullWidth
-            id="degree"
-            label="Carrera"
-            name="Degree"
-            autoComplete="degree"
-            error={error.invalidFields.has("degree")}
-            helperText={
-              error.invalidFields.has("degree") && "La carrera debe estar formada por letras"
-            }
-            autoFocus
-            onChange={e =>
-              this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
-            }
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
+            options={universities}
             id="university"
-            label="Universidad"
-            name="University"
+            name="university"
             autoComplete="university"
-            error={error.invalidFields.has("university")}
-            helperText={
-              error.invalidFields.has("university") &&
-              "La universidad debe estar formada por letras"
-            }
-            autoFocus
-            onChange={e =>
-              this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
-            }
+            onChange={(event, newValue) => this.setState({ university: newValue })}
+            getOptionLabel={uni => uni.name}
+            renderInput={params => <TextField {...params} label="Universidad" margin="normal" />}
+          />
+          <Autocomplete
+            margin="normal"
+            options={university ? university.degrees : []}
+            id="degree"
+            name="degree"
+            autoComplete="degree"
+            onChange={(event, newValue) => this.setState({ degree: newValue })}
+            renderInput={params => <TextField {...params} label="Carrera" margin="normal" />}
           />
           <TextField
             margin="normal"

@@ -62,8 +62,14 @@ exports.resendEmailToken = (user: string): Promise<Student> =>
     method: "POST",
   });
 
-exports.getRoles = (): Promise<> =>
+exports.getRoles = (): Promise<any> =>
   request({
     url: `${producer.base_url}/api/auth/roles`,
+    method: "GET",
+  });
+
+exports.getUniversities = (): Promise<Array<any>> =>
+  request({
+    url: `${producer.base_url}/api/auth/universities`,
     method: "GET",
   });
