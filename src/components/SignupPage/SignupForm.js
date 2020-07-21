@@ -48,6 +48,7 @@ type State = {
   university: any,
   success: boolean,
   universities: Array<any>,
+  studentId: string,
 };
 
 class Signup extends React.Component<Props, State> {
@@ -62,6 +63,7 @@ class Signup extends React.Component<Props, State> {
     university: undefined,
     success: false,
     universities: [],
+    studentId: "",
   };
 
   componentDidMount() {
@@ -97,7 +99,7 @@ class Signup extends React.Component<Props, State> {
       surname,
       degree,
       university,
-      student_id: studentId,
+      studentId: student_id,
       error,
     } = this.state;
 
@@ -121,7 +123,7 @@ class Signup extends React.Component<Props, State> {
         surname,
         degree,
         university: university && university.name,
-        studentId,
+        student_id,
       })
       .then(() => {
         this.setState({ success: true });

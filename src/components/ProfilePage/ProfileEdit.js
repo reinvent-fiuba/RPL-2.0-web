@@ -2,6 +2,7 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Avatar from "@material-ui/core/Avatar";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
@@ -11,6 +12,7 @@ import { DropzoneArea } from "material-ui-dropzone";
 import { withState } from "../../utils/State";
 import cloudinaryService from "../../services/cloudinaryService";
 import { validate } from "../../utils/inputValidator";
+import authenticationService from "../../services/authenticationService";
 
 const drawerWidth = 240;
 
@@ -68,19 +70,34 @@ const styles = theme => ({
 });
 
 class ProfileEdit extends React.Component {
-  constructor(props) {
-    super(props);
+  state = {
+    error: { invalidFields: new Set() },
+    email: "",
+    name: "",
+    surname: "",
+    degree: "",
+    studentId: "",
+    university: undefined,
+    universities: [],
+    userImg: undefined,
+  };
+
+  componentDidMount() {
     const { profile } = this.props;
-    this.state = {
-      error: { invalidFields: new Set() },
-      name: profile.name,
-      surname: profile.surname,
-      studentId: profile.student_id,
-      email: profile.email,
-      degree: profile.degree,
-      university: profile.university,
-      userImg: undefined,
-    };
+
+    return authenticationService.getUniversities().then(universities => {
+      this.setState({
+        universities,
+        error: { invalidFields: new Set() },
+        name: profile.name,
+        surname: profile.surname,
+        studentId: profile.student_id,
+        email: profile.email,
+        degree: profile.degree,
+        university: universities.find(university => university.name === profile.university),
+        userImg: undefined,
+      });
+    });
   }
 
   handleChange(event, valid) {
@@ -132,7 +149,7 @@ class ProfileEdit extends React.Component {
         student_id: this.state.studentId,
         email: this.state.email,
         degree: this.state.degree,
-        university: this.state.university,
+        university: this.state.university.name,
         img_uri: userImgAsset && userImgAsset.url,
       })
     );
@@ -140,7 +157,7 @@ class ProfileEdit extends React.Component {
 
   render() {
     const { profile, classes } = this.props;
-    const { error } = this.state;
+    const { error, universities, university, degree } = this.state;
 
     return (
       <div>
@@ -242,38 +259,26 @@ class ProfileEdit extends React.Component {
                     this.handleChange(e, validate(e.target.value, /^\S+@\S+\.\S+$/, "string"))
                   }
                 />
-                <TextField
+                <Autocomplete
                   margin="normal"
-                  required
-                  fullWidth
-                  id="degree"
-                  label="Degree"
-                  name="Degree"
-                  autoComplete="degree"
-                  autoFocus
-                  value={this.state.degree}
-                  error={error.invalidFields.has("degree")}
-                  helperText={
-                    error.invalidFields.has("degree") && "La carrera debe estar formada por letras"
-                  }
-                  onChange={e => this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
+                  options={universities}
                   id="university"
-                  label="University"
-                  name="University"
+                  name="university"
                   autoComplete="university"
-                  autoFocus
-                  value={this.state.university}
-                  error={error.invalidFields.has("university")}
-                  helperText={
-                    error.invalidFields.has("university") &&
-                    "La universidad debe estar formada por letras"
-                  }
-                  onChange={e => this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))}
+                  value={university || {}}
+                  onChange={(event, newValue) => this.setState({ university: newValue })}
+                  getOptionLabel={uni => uni.name}
+                  renderInput={params => <TextField {...params} label="Universidad" margin="normal" />}
+                />
+                <Autocomplete
+                  margin="normal"
+                  options={university ? university.degrees : []}
+                  value={degree}
+                  id="degree"
+                  name="degree"
+                  autoComplete="degree"
+                  onChange={(event, newValue) => this.setState({ degree: newValue })}
+                  renderInput={params => <TextField {...params} label="Carrera" margin="normal" />}
                 />
               </form>
             </Paper>
