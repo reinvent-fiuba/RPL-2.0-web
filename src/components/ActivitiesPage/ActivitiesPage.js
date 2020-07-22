@@ -96,6 +96,7 @@ class ActivitiesPage extends React.Component<Props, State> {
     activitiesService
       .getAllActivities(match.params.courseId)
       .then(response => {
+        this.props.context.set("activities", response);
         this.setState({ activities: response });
       })
       .catch(() => {

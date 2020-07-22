@@ -141,6 +141,7 @@ type Props = {
   match: any,
   classes: any,
   history: any,
+  context: any,
 };
 
 type State = {
@@ -249,6 +250,7 @@ class CreateActivityPage extends React.Component<Props, State> {
   }
 
   saveActivity(): Promise<Activity> {
+    const { context } = this.props;
     const { courseId } = this.props.match.params;
     const { name, points, language, categoryId, code, mdText, activity } = this.state;
     const serviceToCall = !activity
@@ -268,6 +270,7 @@ class CreateActivityPage extends React.Component<Props, State> {
 
     return serviceToCall(data)
       .then(response => {
+        context.invalidateByKeys("activities");
         this.setState({ activity: response });
         return response;
       })
