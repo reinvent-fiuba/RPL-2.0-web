@@ -97,80 +97,80 @@ function ActivitiesTeacherTable(props: Props) {
       </AccordionSummary>
       <AccordionDetails>
         <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow key={0}>
-            <TableCell key={1} width={500}>
-              Nombre
-            </TableCell>
-            <TableCell key={2} align="center">
-              Lenguaje
-            </TableCell>
-            <TableCell key={3} align="center">
-              Puntos
-            </TableCell>
-            <TableCell key={4} align="center">
-              Soluciones Definitivas
-            </TableCell>
-            <TableCell key={5} align="center" />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {activities
-            .sort((a, b) => (a.name > b.name ? 1 : -1))
-            .map(activity => (
-              <TableRow
-                hover={activity.active}
-                key={activity.id}
-                disabled
-                className={activity.active ? classes.tableRowEnabled : classes.tableRowDisabled}
-              >
-                <TableCell
-                  key={1}
-                  component="th"
-                  scope="row"
-                  onClick={event => handleActivityRowClick(event, activity.id)}
+          <TableHead>
+            <TableRow key={0}>
+              <TableCell key={1} width={500}>
+                Nombre
+              </TableCell>
+              <TableCell key={2} align="center">
+                Lenguaje
+              </TableCell>
+              <TableCell key={3} align="center">
+                Puntos
+              </TableCell>
+              <TableCell key={4} align="center">
+                Soluciones Definitivas
+              </TableCell>
+              <TableCell key={5} align="center" />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {activities
+              .sort((a, b) => (a.name > b.name ? 1 : -1))
+              .map(activity => (
+                <TableRow
+                  hover={activity.active}
+                  key={activity.id}
+                  disabled
+                  className={activity.active ? classes.tableRowEnabled : classes.tableRowDisabled}
                 >
-                  {activity.name}
-                </TableCell>
-                <TableCell
-                  key={2}
-                  align="center"
-                  onClick={event => handleActivityRowClick(event, activity.id)}
-                >
-                  {activity.language}
-                </TableCell>
-                <TableCell
-                  key={3}
-                  align="center"
-                  onClick={event => handleActivityRowClick(event, activity.id)}
-                >
-                  {activity.points}
-                </TableCell>
-                <TableCell key={4} align="center">
-                  <div className={classes.submissionsColumn}>
-                    <IconButton onClick={e => onClickActivityResults(e, activity.id)}>
-                      <SearchIcon />
+                  <TableCell
+                    key={1}
+                    component="th"
+                    scope="row"
+                    onClick={event => handleActivityRowClick(event, activity.id)}
+                  >
+                    {activity.name}
+                  </TableCell>
+                  <TableCell
+                    key={2}
+                    align="center"
+                    onClick={event => handleActivityRowClick(event, activity.id)}
+                  >
+                    {activity.language}
+                  </TableCell>
+                  <TableCell
+                    key={3}
+                    align="center"
+                    onClick={event => handleActivityRowClick(event, activity.id)}
+                  >
+                    {activity.points}
+                  </TableCell>
+                  <TableCell key={4} align="center">
+                    <div className={classes.submissionsColumn}>
+                      <IconButton onClick={e => onClickActivityResults(e, activity.id)}>
+                        <SearchIcon />
+                      </IconButton>
+                    </div>
+                  </TableCell>
+                  <TableCell key={5} align="center">
+                    <IconButton
+                      onClick={() => onClickDeleteActivity(activity.id)}
+                      className={classes.actionColumnButton}
+                    >
+                      <DeleteIcon />
                     </IconButton>
-                  </div>
-                </TableCell>
-                <TableCell key={5} align="center">
-                  <IconButton
-                    onClick={() => onClickDeleteActivity(activity.id)}
-                    className={classes.actionColumnButton}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => onClickDisableActivity(activity.id, !activity.active)}
-                    className={classes.actionColumnButton}
-                  >
-                    {activity.active ? <VisibilityOffIcon /> : <VisibilityIcon/> }
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+                    <IconButton
+                      onClick={() => onClickDisableActivity(activity.id, !activity.active)}
+                      className={classes.actionColumnButton}
+                    >
+                      {activity.active ? <VisibilityOffIcon /> : <VisibilityIcon/> }
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
       </AccordionDetails>
     </TableContainer>
   );

@@ -15,6 +15,8 @@ import { Accordion, Grid } from "@material-ui/core";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import IconButton from "@material-ui/core/IconButton";
+import SearchIcon from "@material-ui/icons/Search";
 import getText from "../../utils/messages";
 
 const _ = require("lodash");
@@ -85,7 +87,9 @@ function ActivitiesTable(props: Props) {
               <TableCell key={4} align="right">
                 Estado
               </TableCell>
-              <TableCell key={5} align="right" />
+              <TableCell key={5} align="right">
+                Entregas
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -124,13 +128,9 @@ function ActivitiesTable(props: Props) {
                     {getText(activity.submission_status).toUpperCase() || "SIN EMPEZAR"}
                   </TableCell>
                   <TableCell key={5} align="right">
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => setOpenPanel(activity.id)}
-                    >
-                      Ver entregas
-                    </Button>
+                    <IconButton onClick={() => setOpenPanel(activity.id)}>
+                      <SearchIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
