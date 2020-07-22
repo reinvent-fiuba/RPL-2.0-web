@@ -10,6 +10,11 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import SearchIcon from "@material-ui/icons/Search";
 import type { Activity } from "../../types";
 
 const styles = () => ({
@@ -122,32 +127,24 @@ function ActivitiesTeacherTable(props: Props) {
                 </TableCell>
                 <TableCell key={4} align="center">
                   <div className={classes.submissionsColumn}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={e => onClickActivityResults(e, activity.id)}
-                    >
-                      Explorar
-                    </Button>
+                    <IconButton onClick={e => onClickActivityResults(e, activity.id)}>
+                      <SearchIcon />
+                    </IconButton>
                   </div>
                 </TableCell>
                 <TableCell key={5} align="center">
-                  <Button
-                    variant="outlined"
-                    color="primary"
+                  <IconButton
                     onClick={() => onClickDeleteActivity(activity.id)}
                     className={classes.actionColumnButton}
                   >
-                    Eliminar
-                  </Button>
-                  <Button
-                    variant={activity.active ? "outlined" : "contained"}
-                    color="primary"
+                    <DeleteIcon />
+                  </IconButton>
+                  <IconButton
                     onClick={() => onClickDisableActivity(activity.id, !activity.active)}
                     className={classes.actionColumnButton}
                   >
-                    {activity.active ? "Ocultar" : "Habilitar"}
-                  </Button>
+                    {activity.active ? <VisibilityOffIcon /> : <VisibilityIcon/> }
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
