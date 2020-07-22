@@ -15,7 +15,13 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import SearchIcon from "@material-ui/icons/Search";
+import { Accordion, Grid } from "@material-ui/core";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import type { Activity } from "../../types";
+
+const _ = require("lodash");
 
 const styles = () => ({
   table: {
@@ -66,16 +72,31 @@ function ActivitiesTeacherTable(props: Props) {
   } = props;
 
   return (
-    <TableContainer component={Paper} className={classes.tableContainer}>
-      <Typography
-        variant="h5"
-        color="textSecondary"
-        component="p"
-        className={classes.categoryTableTitle}
-      >
-        {activities[0].category_name}
-      </Typography>
-      <Table className={classes.table} aria-label="simple table">
+    <TableContainer component={Accordion} className={classes.tableContainer}>
+      <AccordionSummary content={{ display: "inline" }} expandIcon={<ExpandMoreIcon />}>
+        <Grid container xs={12}>
+          <Grid item xs={10}>
+            <Typography display="inline" variant="h6" color="textPrimary" component="h1">
+              {activities[0].category_name}
+            </Typography>
+            <br />
+            <Typography display="inline" variant="body1" color="textSecondary" component="body1">
+              {activities[0].category_description}
+            </Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography display="inline" variant="body2" color="textSecondary" component="body1">
+              {`Cantidad de actividades: ${activities.length}`}
+            </Typography>
+            <br />
+            <Typography display="inline" variant="body2" color="textSecondary" component="body1">
+              {`Cantidad de puntos: ${_.sumBy(activities, "points")}`}
+            </Typography>
+          </Grid>
+        </Grid>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow key={0}>
             <TableCell key={1} width={500}>
@@ -150,6 +171,7 @@ function ActivitiesTeacherTable(props: Props) {
             ))}
         </TableBody>
       </Table>
+      </AccordionDetails>
     </TableContainer>
   );
 }
