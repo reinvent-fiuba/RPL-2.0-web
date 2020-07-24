@@ -283,7 +283,11 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
 
     promise
       .then(updatedActivity => {
-        this.setState({ activity: updatedActivity, successSave: true });
+        this.setState(prevState => {
+          const newActivity = updatedActivity;
+          newActivity.initial_code = prevState.activity.initial_code;
+          return { activity: newActivity, successSave: true };
+        });
         setTimeout(() => this.setState({ successSave: false }), 2000);
       })
       .catch(err => {
@@ -373,7 +377,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                     size="small"
                     color="primary"
                     onClick={() =>
-                      this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")}
+                      this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")
+                    }
                   >
                     Siguiente
                   </Button>
@@ -408,7 +413,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                   <Button
                     size="small"
                     onClick={() =>
-                      this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")}
+                      this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")
+                    }
                   >
                     Anterior
                   </Button>
@@ -419,7 +425,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       this.handleClickNext(
                         "configTestStepExpanded",
                         "configCompilerFlagsStepExpanded"
-                      )}
+                      )
+                    }
                   >
                     Siguiente
                   </Button>
@@ -476,7 +483,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       this.handleClickNext(
                         "configCompilerFlagsStepExpanded",
                         "configTestStepExpanded"
-                      )}
+                      )
+                    }
                   >
                     Anterior
                   </Button>
@@ -487,7 +495,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       this.handleClickNext(
                         "configCompilerFlagsStepExpanded",
                         "configFilePermissionsForStudentsExpanded"
-                      )}
+                      )
+                    }
                   >
                     Siguiente
                   </Button>
@@ -508,7 +517,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       handleSaveFilesMetadata={() => this.handleSaveFilesMetadata()}
                       activityFilesMetadata={activityFilesMetadata}
                       onFileMetadataChanged={newMetadata =>
-                        this.setState({ activityFilesMetadata: newMetadata })}
+                        this.setState({ activityFilesMetadata: newMetadata })
+                      }
                     />
                   </div>
                 </AccordionDetails>
@@ -519,7 +529,8 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       this.handleClickNext(
                         "configFilePermissionsForStudentsExpanded",
                         "configCompilerFlagsStepExpanded"
-                      )}
+                      )
+                    }
                   >
                     Anterior
                   </Button>
