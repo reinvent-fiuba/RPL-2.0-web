@@ -38,7 +38,7 @@ type Props = {
 };
 
 type State = {
-  error: { open: boolean, message: ?string },
+  error: { open: boolean, message: ?string, invalidFields: Set<string> },
   username: string,
   password: string,
   email: string,
@@ -89,7 +89,7 @@ class Signup extends React.Component<Props, State> {
     });
   }
 
-  handleClick(event) {
+  handleSignUpClick(event) {
     event.preventDefault();
     const {
       username,
@@ -133,9 +133,39 @@ class Signup extends React.Component<Props, State> {
           error: {
             open: true,
             message: "Hubo un error de sign up, revisa que los datos ingresados sean validos.",
+            invalidFields: new Set(),
           },
         });
       });
+  }
+
+  canSignUp() {
+    const {
+      username,
+      email,
+      password,
+      name,
+      surname,
+      degree,
+      university,
+      studentId,
+      error,
+    } = this.state;
+
+    if (
+      !username ||
+      !email ||
+      !password ||
+      !name ||
+      !surname ||
+      !degree ||
+      !university ||
+      !studentId ||
+      (error.invalidFields && error.invalidFields.size !== 0)
+    ) {
+      return false;
+    }
+    return true;
   }
 
   render() {
@@ -180,9 +210,11 @@ class Signup extends React.Component<Props, State> {
             label="Nombre"
             name="Name"
             autoComplete="name"
-            error={error.invalidFields.has("name")}
+            error={error.invalidFields && error.invalidFields.has("name")}
             helperText={
-              error.invalidFields.has("name") && "El nombre debe estar formado por letras"
+              error.invalidFields &&
+              error.invalidFields.has("name") &&
+              "El nombre debe estar formado por letras"
             }
             autoFocus
             onChange={e =>
@@ -197,9 +229,11 @@ class Signup extends React.Component<Props, State> {
             label="Apellido"
             name="Surname"
             autoComplete="surname"
-            error={error.invalidFields.has("surname")}
+            error={error.invalidFields && error.invalidFields.has("surname")}
             helperText={
-              error.invalidFields.has("surname") && "El apellido debe estar formado por letras"
+              error.invalidFields &&
+              error.invalidFields.has("surname") &&
+              "El apellido debe estar formado por letras"
             }
             autoFocus
             onChange={e =>
@@ -214,9 +248,11 @@ class Signup extends React.Component<Props, State> {
             label="Padron"
             name="Student Id"
             autoComplete="studentId"
-            error={error.invalidFields.has("studentId")}
+            error={error.invalidFields && error.invalidFields.has("studentId")}
             helperText={
-              error.invalidFields.has("studentId") && "El padron debe estar formado por numeros"
+              error.invalidFields &&
+              error.invalidFields.has("studentId") &&
+              "El padron debe estar formado por numeros"
             }
             autoFocus
             onChange={e =>
@@ -250,8 +286,9 @@ class Signup extends React.Component<Props, State> {
             label="Usuario"
             name="Username"
             autoComplete="username"
-            error={error.invalidFields.has("username")}
+            error={error.invalidFields && error.invalidFields.has("username")}
             helperText={
+              error.invalidFields &&
               error.invalidFields.has("username") &&
               "El usuario debe estar formada por letras, guiones (_ ó -) o puntos (.)"
             }
@@ -268,8 +305,12 @@ class Signup extends React.Component<Props, State> {
             label="Email"
             name="Email"
             autoComplete="email"
-            error={error.invalidFields.has("email")}
-            helperText={error.invalidFields.has("email") && "El email debe ser un email valido"}
+            error={error.invalidFields && error.invalidFields.has("email")}
+            helperText={
+              error.invalidFields &&
+              error.invalidFields.has("email") &&
+              "El email debe ser un email valido"
+            }
             autoFocus
             onChange={e =>
               this.handleChange(e, validate(e.target.value, /^\S+@\S+\.\S+$/, "string"))
@@ -283,8 +324,9 @@ class Signup extends React.Component<Props, State> {
             label="Contraseña"
             type="password"
             id="password"
-            error={error.invalidFields.has("password")}
+            error={error.invalidFields && error.invalidFields.has("password")}
             helperText={
+              error.invalidFields &&
               error.invalidFields.has("password") &&
               "La password debe tener un largo minimo de 6 caracteres"
             }
@@ -297,7 +339,8 @@ class Signup extends React.Component<Props, State> {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={e => this.handleClick(e)}
+            onClick={e => this.handleSignUpClick(e)}
+            disabled={!this.canSignUp()}
           >
             Sign Up
           </Button>
