@@ -11,7 +11,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { withState } from "../../utils/State";
 import AddNewFileModal from "./AddNewFileModal.react";
 import type { FilesMetadata } from "../../types";
-import { getFilesMetadata, FILES_METADATA } from "../../utils/files";
+import { getFilesMetadata, FILES_METADATA, getNewSelectedEditor } from "../../utils/files";
 import { FILE_DISPLAY_MODE, READ_ONLY_DISPLAY_MODES, DELETEABLE_DISPLAY_MODES } from "../../types";
 
 const styles = theme => ({
@@ -87,7 +87,7 @@ type Props = {
   initialCode: { [string]: string },
   readOnly: boolean,
   editorDidMount: any,
-  canEditFiles: boolean,
+  forceCanEditFiles: boolean,
 };
 
 type State = {
@@ -105,9 +105,55 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     // eslint-disable-next-line react/destructuring-assignment
     code: this.props.initialCode,
     // eslint-disable-next-line react/destructuring-assignment
-    selectedEditor: Object.keys(this.props.initialCode)[0],
+    selectedEditor: getNewSelectedEditor(this.props.initialCode),
     fileNameModal: { text: null, isNewFileModalOpen: false },
   };
+
+  componentDidUpdate(prevProps) {
+    const { language } = this.props;
+
+    if (language !== prevProps.language) {
+      this.updateFilesForNewLanguageAndMetadata(language);
+    }
+  }
+
+  updateFilesForNewLanguageAndMetadata(language: string) {
+    const { code, filesMetadata } = this.state;
+    const newCode = code;
+    const newMetadata = filesMetadata;
+
+    Object.keys(code).forEach(f => {
+      // Change mains
+      if (language === "c" && f === "assignment_main.py") {
+        newCode["main.c"] = code[f];
+        delete newCode[f];
+        delete filesMetadata[f];
+        return;
+      }
+
+      if (language === "python" && f === "main.c") {
+        newCode["assignment_main.py"] = code[f];
+        delete newCode[f];
+        delete filesMetadata[f];
+        return;
+      }
+
+      // Change filename extensions
+      if (language === "c" && f.includes(".py")) {
+        newCode[`${f.substring(0, f.lastIndexOf(".py"))}.c`] = code[f];
+        delete newCode[f];
+        delete filesMetadata[f];
+      }
+      if (language === "python" && f.includes(".c")) {
+        newCode[`${f.substring(0, f.lastIndexOf(".c"))}.py`] = code[f];
+        delete newCode[f];
+        delete filesMetadata[f];
+      }
+    });
+    const editor = getNewSelectedEditor(newCode);
+
+    this.setState({ code: newCode, filesMetadata: newMetadata, selectedEditor: editor });
+  }
 
   handleTabChange(selectedEditor, event, newSelectedTab, readOnly) {
     if (newSelectedTab === undefined) {
@@ -132,12 +178,9 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     delete newCode[selectedEditorToDelete];
     delete newMetadata[selectedEditorToDelete];
 
-    const editableCodeEditors = Object.keys(newCode).filter(
-      fileName => fileName !== FILES_METADATA
-    );
     let newSelectedEditor = null;
-    if (selectedEditor === selectedEditorToDelete && editableCodeEditors.length > 0) {
-      [newSelectedEditor] = editableCodeEditors; // array destructuring === array[0]
+    if (selectedEditor === selectedEditorToDelete) {
+      newSelectedEditor = getNewSelectedEditor(newCode);
     }
 
     this.setState(prevState => ({
@@ -203,7 +246,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
   }
 
   isReadOnlyFile(filename: ?string) {
-    const { readOnly, canEditFiles } = this.props;
+    const { readOnly, forceCanEditFiles } = this.props;
     const { filesMetadata } = this.state;
 
     if (filename === null || filename === undefined) {
@@ -216,7 +259,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     }
 
     // Mainly for activity creation and edition
-    if (canEditFiles) {
+    if (forceCanEditFiles) {
       return false;
     }
 
@@ -225,7 +268,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
   }
 
   canDeleteFile(filename: ?string) {
-    const { readOnly, canEditFiles } = this.props;
+    const { readOnly, forceCanEditFiles } = this.props;
     const { filesMetadata } = this.state;
 
     if (filename === null || filename === undefined) {
@@ -238,7 +281,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     }
 
     // Mainly for activity creation and edition
-    if (canEditFiles) {
+    if (forceCanEditFiles) {
       return true;
     }
 
@@ -250,14 +293,14 @@ class MultipleTabsEditor extends React.Component<Props, State> {
 
     const { code, fileNameModal, selectedEditor } = this.state;
 
-    if (
-      selectedEditor !== null &&
-      !Object.keys(code).includes(selectedEditor) &&
-      Object.keys(code).filter(fileName => fileName !== FILES_METADATA).length > 0
-    ) {
-      this.setState({ selectedEditor: Object.keys(code)[0] });
-      return [];
-    }
+    // if (
+    //   selectedEditor !== null &&
+    //   !Object.keys(code).includes(selectedEditor) &&
+    //   Object.keys(code).filter(fileName => fileName !== FILES_METADATA).length > 0
+    // ) {
+    //   this.setState({ selectedEditor: Object.keys(code)[0] });
+    //   return [];
+    // }
 
     return (
       <div className={classes.tabsEditorContainer}>
@@ -267,8 +310,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             existingFilenames={Object.keys(code)}
             open={fileNameModal.isNewFileModalOpen}
             handleCloseModal={(prevFileName, newFileName) =>
-              this.handleCloseFileNameModal(prevFileName, newFileName, code)
-            }
+              this.handleCloseFileNameModal(prevFileName, newFileName, code)}
           />
         )}
         <div className={classes.tabsContainer}>
