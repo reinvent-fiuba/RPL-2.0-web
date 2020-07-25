@@ -338,37 +338,6 @@ class CreateActivityPage extends React.Component<Props, State> {
     this.setState({ isCreateCategoryModalOpen: false, categoryId: newCategoryId });
   }
 
-  setLanguage(language: string, code: { [string]: string }) {
-    const newCode = code;
-
-    Object.keys(code).forEach(f => {
-      // Change mains
-      if (language === "c" && f === "assignment_main.py") {
-        newCode["main.c"] = code[f];
-        delete newCode[f];
-        return;
-      }
-
-      if (language === "python" && f === "main.c") {
-        newCode["assignment_main.py"] = code[f];
-        delete newCode[f];
-        return;
-      }
-
-      // Change filename extensions
-      if (language === "c" && f.includes(".py")) {
-        newCode[`${f.substring(0, f.lastIndexOf(".py"))}.c`] = code[f];
-        delete newCode[f];
-      }
-      if (language === "python" && f.includes(".c")) {
-        newCode[`${f.substring(0, f.lastIndexOf(".c"))}.py`] = code[f];
-        delete newCode[f];
-      }
-    });
-
-    this.setState({ language, code: newCode });
-  }
-
   render() {
     const { classes, match } = this.props;
     const { courseId } = match.params;
@@ -465,7 +434,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                     id="language"
                     name="language"
                     value={language || ""}
-                    onChange={event => this.setLanguage(event.target.value, code)}
+                    onChange={event => this.setState({ language: event.target.value })}
                   >
                     400
                     <MenuItem key={0} value="c">
@@ -504,7 +473,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                       initialCode={code}
                       language={language}
                       readOnly={false}
-                      canEditFiles
+                      forceCanEditFiles // we are in teacher mode
                       onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
                       editorDidMount={mountedEditor => {
                         mountedEditor.changeViewZones(changeAccessor => {

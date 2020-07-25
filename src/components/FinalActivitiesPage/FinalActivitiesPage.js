@@ -127,12 +127,16 @@ class FinalActivitiesPage extends React.Component<Props, State> {
         });
         submissionsService
           .getAllFinalSolutionsFilesForStudent(courseId, activityId)
-          .then(files =>
-            this.setState({
-              finalSubmissions: files,
-              selectedSubmissionIdx: 0,
-            })
-          )
+          .then(files => {
+            if (files.length === 0) {
+              this.setState({ finalSubmissions: [], openModal: true });
+            } else {
+              this.setState({
+                finalSubmissions: files,
+                selectedSubmissionIdx: 0,
+              });
+            }
+          })
           .catch(err => {
             if (err.status === 404) {
               return Promise.resolve(this.setState({ finalSubmissions: [], openModal: true }));
@@ -207,7 +211,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       activity,
       isSideBarOpen,
@@ -242,6 +246,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
               open={openModal}
               teacherMode={teacherMode}
               onBackdropClicked={() => this.setState({ openModal: false })}
+              onGoBackClicked={() => history.goBack()}
             />
             {selectedSubmissionIdx !== null && (
               <SplitPane
@@ -277,15 +282,17 @@ class FinalActivitiesPage extends React.Component<Props, State> {
                     handleHeight={false}
                     onResize={() => (editor ? editor.layout : () => {})}
                   >
-                    {selectedSubmissionIdx !== null && selectedSubmissionIdx !== undefined && (
-                      <MultipleTabsEditor
-                        key={selectedSubmissionIdx}
-                        width={editorWidth}
-                        initialCode={finalSubmissions[selectedSubmissionIdx]}
-                        language={activity.language.toLowerCase()}
-                        readOnly
-                      />
-                    )}
+                    {selectedSubmissionIdx !== null &&
+                      selectedSubmissionIdx !== undefined &&
+                      finalSubmissions.length > 0 && (
+                        <MultipleTabsEditor
+                          key={selectedSubmissionIdx}
+                          width={editorWidth}
+                          initialCode={finalSubmissions[selectedSubmissionIdx]}
+                          language={activity.language.toLowerCase()}
+                          readOnly
+                        />
+                      )}
                   </ReactResizeDetector>
                 </div>
               </SplitPane>

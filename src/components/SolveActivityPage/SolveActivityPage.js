@@ -210,7 +210,8 @@ class SolveActivityPage extends React.Component<Props, State> {
             courseId={this.props.match.params.courseId}
             backdropClicked={() => this.setCloseSubmissionsPanel()}
             onSelectSubmission={(submissionId, i) =>
-              this.handleClickOnPastSubmission(submissionId, i)}
+              this.handleClickOnPastSubmission(submissionId, i)
+            }
           />
         )}
 
@@ -264,7 +265,7 @@ class SolveActivityPage extends React.Component<Props, State> {
                     initialCode={code}
                     language={activity.language.toLowerCase()}
                     readOnly={false}
-                    canEditFiles={false}
+                    forceCanEditFiles={false}
                     onCodeChange={newCode => this.onCodeChange(newCode)}
                     editorDidMount={mountedEditor => {
                       mountedEditor.changeViewZones(changeAccessor => {

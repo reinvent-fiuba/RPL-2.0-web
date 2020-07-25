@@ -38,3 +38,11 @@ export function prepareInitialCode(activity: Activity) {
   }
   return code;
 }
+
+export function getNewSelectedEditor(code: { [string]: string }): string {
+  const editableCodeEditors = Object.keys(code).filter(fileName => fileName !== FILES_METADATA);
+  if (editableCodeEditors.length > 0) {
+    return editableCodeEditors[0]; // array destructuring === array[0]
+  }
+  return "main";
+}
