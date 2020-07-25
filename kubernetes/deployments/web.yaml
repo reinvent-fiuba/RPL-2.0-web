@@ -18,5 +18,4 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: rpl-2.0-web
-        imagePullPolicy: IfNotPresent
+        image: gcr.io/fiuba-rpl/rpl-web:latest
