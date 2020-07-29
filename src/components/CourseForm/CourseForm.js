@@ -75,7 +75,7 @@ class CourseForm extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    const course = this.props.course;
+    const { course } = this.props;
     if (course) {
       this.setState({
         name: course.name,
@@ -231,6 +231,34 @@ class CourseForm extends React.Component<Props, State> {
     reader.readAsDataURL(file);
   }
 
+  canSaveCourse() {
+    const {
+      name,
+      university,
+      universityCourseId,
+      semester,
+      semesterStart,
+      semesterEnd,
+      description,
+      courseImg,
+      courseAdminId,
+    } = this.state;
+    if (
+      !name ||
+      !university ||
+      !universityCourseId ||
+      !semester ||
+      !semesterStart ||
+      !semesterEnd ||
+      !description ||
+      !courseImg ||
+      !courseAdminId
+    ) {
+      return false;
+    }
+    return true;
+  }
+
   render() {
     const { classes, course } = this.props;
     const editMode = !!course;
@@ -252,11 +280,11 @@ class CourseForm extends React.Component<Props, State> {
               value={this.state.name}
               error={error.invalidFields.has("name")}
               helperText={
-                error.invalidFields.has("name") && "El nombre del curso estar formado por letras y numeros"
+                error.invalidFields.has("name") &&
+                "El nombre del curso estar formado por letras y numeros"
               }
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))
-              }
+                this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))}
             />
             <TextField
               margin="normal"
@@ -274,8 +302,7 @@ class CourseForm extends React.Component<Props, State> {
               }
               value={this.state.university}
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
-              }
+                this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))}
             />
             <TextField
               margin="normal"
@@ -292,8 +319,7 @@ class CourseForm extends React.Component<Props, State> {
                 "El Id del Curso debe estar formada por letras, numeros, guiones (_ ó -) o puntos (.)"
               }
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))
-              }
+                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))}
             />
             <Grid container className={classes.semesterFields} xs={12} spacing={2}>
               <Grid item xs={6}>
@@ -312,8 +338,7 @@ class CourseForm extends React.Component<Props, State> {
                     "El semestre debe estar formada por letras, numeros, guiones (_ ó -) o puntos (.)"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))
-                  }
+                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))}
                 />
               </Grid>
               <Grid item xs={3}>
@@ -329,7 +354,7 @@ class CourseForm extends React.Component<Props, State> {
                   autoComplete="semesterStart"
                   onChange={date => this.setState({ semesterStart: date })}
                   KeyboardButtonProps={{
-                    'aria-label': 'change date',
+                    "aria-label": "change date",
                   }}
                 />
               </Grid>
@@ -346,7 +371,7 @@ class CourseForm extends React.Component<Props, State> {
                   autoComplete="semesterEnd"
                   onChange={date => this.setState({ semesterEnd: date })}
                   KeyboardButtonProps={{
-                    'aria-label': 'change date',
+                    "aria-label": "change date",
                   }}
                 />
               </Grid>
@@ -377,7 +402,7 @@ class CourseForm extends React.Component<Props, State> {
               id="description"
               autoComplete="description"
               value={this.state.description}
-              onChange={e => this.handleChange(e)}
+              onChange={e => this.handleChange(e, true)}
               variant="outlined"
             />
             <DropzoneArea
@@ -404,6 +429,7 @@ class CourseForm extends React.Component<Props, State> {
                 variant="contained"
                 color="primary"
                 className={classes.createButton}
+                disabled={!this.canSaveCourse()}
                 onClick={e => (editMode ? this.handleSaveClick(e) : this.handleCreateClick(e))}
               >
                 {editMode ? "Guardar" : "Crear"}
