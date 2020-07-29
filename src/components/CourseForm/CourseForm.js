@@ -14,6 +14,7 @@ import coursesService from "../../services/coursesService";
 import usersService from "../../services/usersService";
 import cloudinaryService from "../../services/cloudinaryService";
 import { validate } from "../../utils/inputValidator";
+import authenticationService from "../../services/authenticationService";
 
 const styles = theme => ({
   avatar: {
@@ -52,18 +53,23 @@ type Props = {
 type State = {
   error: { open: boolean, message: ?string },
   name: string,
-  university: string,
+  university: any,
   universityCourseId: string,
   semester: string,
   description: string,
   courseAdminId: string,
+  semesterEnd: Date,
+  semesterStart: Date,
+  users: Array<any>,
+  imgUri: string,
+  universities: Array<any>,
 };
 
 class CourseForm extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null, invalidFields: new Set() },
     name: "",
-    university: "",
+    university: undefined,
     universityCourseId: "",
     semester: "",
     semesterStart: new Date(),
@@ -71,24 +77,36 @@ class CourseForm extends React.Component<Props, State> {
     description: "",
     courseAdminId: "",
     courseImg: undefined,
+    imgUri: "",
     users: [],
+    universities: [],
   };
 
   componentDidMount() {
     const { course } = this.props;
-    if (course) {
+    authenticationService.getUniversities().then(universities => {
+      this.setState({ universities });
+      if (!course) {
+        return this.loadUsers("");
+      }
+
       this.setState({
         name: course.name,
-        university: course.university,
+        university: universities.find(university => university.name === course.university),
         universityCourseId: course.university_course_id,
         semester: course.semester,
         semesterStart: new Date(course.semester_start_date),
         semesterEnd: new Date(course.semester_end_date),
+        imgUri: course.img_uri,
         description: course.description,
       });
-    } else {
-      this.loadUsers(""); // Load users only if we are creating a course
-    }
+    });
+  }
+
+  loadUsers(query) {
+    return usersService.findUsers(query).then(users => {
+      this.setState({ users });
+    });
   }
 
   handleChange(event, valid) {
@@ -125,10 +143,11 @@ class CourseForm extends React.Component<Props, State> {
       description,
       courseAdminId,
       courseImg,
+      imgUri,
       error,
     } = this.state;
 
-    if (error.invalidFields.size !== 0) {
+    if (error.invalidFields.size !== 0 || !university) {
       this.setState(prevState => ({
         error: {
           open: true,
@@ -147,14 +166,14 @@ class CourseForm extends React.Component<Props, State> {
       .then(courseImgAsset => {
         return coursesService.create(
           name,
-          university,
+          university.name,
           universityCourseId,
           semester,
           semesterStart.toLocaleDateString("sv-SE"),
           semesterEnd.toLocaleDateString("sv-SE"),
           courseAdminId,
           description,
-          courseImgAsset && courseImgAsset.url
+          (courseImgAsset && courseImgAsset.url) || imgUri
         );
       })
       .then(() => {
@@ -182,6 +201,7 @@ class CourseForm extends React.Component<Props, State> {
       semesterEnd,
       description,
       courseImg,
+      imgUri,
     } = this.state;
     const { course } = this.props;
     const courseImgPromise = courseImg
@@ -193,13 +213,13 @@ class CourseForm extends React.Component<Props, State> {
         return coursesService.edit(
           course.id,
           name,
-          university,
+          university.name,
           universityCourseId,
           semester,
           semesterStart.toLocaleDateString("sv-SE"),
           semesterEnd.toLocaleDateString("sv-SE"),
           description,
-          courseImgAsset && courseImgAsset.url
+          (courseImgAsset && courseImgAsset.url) || imgUri
         );
       })
       .then(course => {
@@ -215,12 +235,6 @@ class CourseForm extends React.Component<Props, State> {
           },
         });
       });
-  }
-
-  loadUsers(query) {
-    return usersService.findUsers(query).then(users => {
-      this.setState({ users });
-    });
   }
 
   handleAddFile(files) {
@@ -240,9 +254,11 @@ class CourseForm extends React.Component<Props, State> {
       semesterStart,
       semesterEnd,
       description,
-      courseImg,
       courseAdminId,
     } = this.state;
+    const { course } = this.props;
+    const editMode = !!course;
+
     if (
       !name ||
       !university ||
@@ -251,8 +267,7 @@ class CourseForm extends React.Component<Props, State> {
       !semesterStart ||
       !semesterEnd ||
       !description ||
-      !courseImg ||
-      !courseAdminId
+      (!editMode && !courseAdminId)
     ) {
       return false;
     }
@@ -262,7 +277,7 @@ class CourseForm extends React.Component<Props, State> {
   render() {
     const { classes, course } = this.props;
     const editMode = !!course;
-    const { error, users } = this.state;
+    const { error, users, university, universities } = this.state;
 
     return (
       <div>
@@ -286,23 +301,16 @@ class CourseForm extends React.Component<Props, State> {
               onChange={e =>
                 this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))}
             />
-            <TextField
+            <Autocomplete
               margin="normal"
-              required
-              fullWidth
-              name="university"
-              label="Universidad"
-              type="university"
+              options={universities}
               id="university"
+              name="university"
               autoComplete="university"
-              error={error.invalidFields.has("university")}
-              helperText={
-                error.invalidFields.has("university") &&
-                "La universidad debe estar formada por letras"
-              }
-              value={this.state.university}
-              onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))}
+              value={university || {}}
+              onChange={(event, newValue) => this.setState({ university: newValue })}
+              getOptionLabel={uni => uni.name || ""}
+              renderInput={params => <TextField {...params} label="Universidad" margin="normal" />}
             />
             <TextField
               margin="normal"
