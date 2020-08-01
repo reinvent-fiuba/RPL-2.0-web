@@ -412,8 +412,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                     "El nombre de la actividad debe estar formado por letras o numeros"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))
-                  }
+                    this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))}
                   value={name}
                 />
                 <TextField
@@ -443,9 +442,9 @@ class CreateActivityPage extends React.Component<Props, State> {
                     <MenuItem key={1} value="python">
                       Python
                     </MenuItem>
-                    <MenuItem key={2} value="java">
+                    {/* <MenuItem key={2} value="java">
                       Java
-                    </MenuItem>
+                    </MenuItem> */}
                   </Select>
                 </FormControl>
                 <FormControl>
@@ -496,10 +495,10 @@ class CreateActivityPage extends React.Component<Props, State> {
                     onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                     selectedTab={mdEditorTab}
                     onTabChange={mdEditorTabChanged =>
-                      this.setState({ mdEditorTab: mdEditorTabChanged })}
-                    generateMarkdownPreview={markdown =>
-                      Promise.resolve(converter.makeHtml(markdown))
+                      this.setState({ mdEditorTab: mdEditorTabChanged })
                     }
+                    generateMarkdownPreview={markdown =>
+                      Promise.resolve(converter.makeHtml(markdown))}
                   />
                 </Grid>
               </Grid>

@@ -23,24 +23,26 @@ Test(misc, testName2) {
 }
 `,
   python: `import unittest  # No borrar esto!
-import test_api # Modificar con el nombre de la api que se le entrega al alumno!
+import 
+import assignment_main # Modificar con el nombre de la api que se le entrega al alumno!
 
-# Accede a las funciones del alumno desde el modulo test_api
+# Accede a las funciones del alumno desde el modulo assignment_main
 
 
 class TestMethods(unittest.TestCase):
 
+  @timeout_decorator.timeout(5)  # segundos
   def test_1(self):
-    self.assertTrue(test_api.fooNoRepetido())
+    self.assertTrue(assignment_main.hola_mundo())
 
   def test_2(self):
-    self.assertTrue(test_api.barNoRepetido())
+    self.assertTrue(assignment_main.hola_mundo())
 `,
 };
 
 const documentationByLangugage = {
   c: "https://criterion.readthedocs.io/en/master/assert.html",
-  python: "https://docs.python.org/3/library/unittest.html",
+  python: "https://docs.python.org/3/library/unittest.html#assert-methods",
 };
 
 const drawerWidth = 240;

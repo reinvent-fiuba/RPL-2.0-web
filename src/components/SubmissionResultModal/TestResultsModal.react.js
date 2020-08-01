@@ -33,7 +33,6 @@ const styles = () => ({
   dialogTitle: {
     display: "flex",
     justifyContent: "center",
-    // justifyContent: "space-between",
     alignItems: "center",
     padding: "8px",
   },
@@ -95,7 +94,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
           console.log(err);
           if (status === 404) {
             this.setState({
-              getResultsTimerId: setInterval(() => this.pullForResults(activitySubmissionId), 1000),
+              getResultsTimerId: setInterval(() => this.pullForResults(activitySubmissionId), 3000),
             });
             return;
           }

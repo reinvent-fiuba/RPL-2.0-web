@@ -4,6 +4,7 @@ import ThumbUp from "@material-ui/icons/ThumbUp";
 import ThumbDown from "@material-ui/icons/ThumbDown";
 import ThumbsUpDown from "@material-ui/icons/ThumbsUpDown";
 import StarIcon from "@material-ui/icons/StarTwoTone";
+import AlarmOffIcon from "@material-ui/icons/AlarmOff";
 import { green, red, yellow } from "@material-ui/core/colors";
 
 type SubmissionResultStatusProps = {
@@ -23,6 +24,9 @@ function SubmissionResultStatusIcon({
   }
   if (submissionStatus === "FAILURE" || submissionStatus.includes("ERROR")) {
     return <ThumbDown style={{ color: red[500] }} />;
+  }
+  if (submissionStatus === "TIME_OUT") {
+    return <AlarmOffIcon style={{ color: red[500] }} />;
   }
   return <ThumbsUpDown style={{ color: yellow[800] }} />;
 }
