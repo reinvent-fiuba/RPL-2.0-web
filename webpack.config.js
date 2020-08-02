@@ -59,6 +59,7 @@ module.exports = (env, argv) => {
       new HtmlWebPackPlugin({
         template: "./src/index.html",
         filename: "./index.html",
+        favicon: "./src/favicon.ico",
       }),
       new Dotenv({ path: envPath, systemvars: true }),
       new MonacoWebpackPlugin({
