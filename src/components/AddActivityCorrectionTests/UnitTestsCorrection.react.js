@@ -23,7 +23,7 @@ Test(misc, testName2) {
 }
 `,
   python: `import unittest  # No borrar esto!
-import 
+import timeout_decorator
 import assignment_main # Modificar con el nombre de la api que se le entrega al alumno!
 
 # Accede a las funciones del alumno desde el modulo assignment_main
@@ -95,7 +95,7 @@ type Props = {
   classes: any,
   courseId: number,
   activityId: number,
-  onSaveUnitTest: void => void,
+  onSaveUnitTest: string => void,
   onChange: string => void,
 };
 
@@ -135,7 +135,8 @@ class UnitTestsCorrection extends React.Component<Props, State> {
 
   handleSaveUnitTest() {
     const { onSaveUnitTest } = this.props;
-    onSaveUnitTest();
+    const { unitTestCode } = this.state;
+    onSaveUnitTest(unitTestCode);
   }
 
   render() {

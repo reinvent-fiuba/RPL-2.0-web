@@ -194,9 +194,10 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
   }
 
   saveAll() {
-    this.handleSaveUnitTest();
+    const { unitTestCode, activityFilesMetadata } = this.state;
+    this.saveUnitTest(unitTestCode);
     this.handleSaveFlags();
-    this.handleSaveFilesMetadata();
+    this.saveFilesMetadata(activityFilesMetadata);
   }
 
   handlePublish() {
@@ -231,8 +232,13 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
   }
 
   handleSaveFilesMetadata() {
+    const { activityFilesMetadata } = this.state;
+    this.saveFilesMetadata(activityFilesMetadata);
+  }
+
+  saveFilesMetadata(activityFilesMetadata) {
     const { courseId, activityId } = this.props.match.params;
-    const { activity, activityFilesMetadata } = this.state;
+    const { activity } = this.state;
 
     if (!activity) {
       return;
@@ -241,15 +247,27 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     const newFiles = _.cloneDeep(activity.initial_code);
     newFiles.files_metadata = JSON.stringify(activityFilesMetadata);
 
-    if (_.isEqual(newFiles, activity.initial_code)) {
-      return;
-    }
-
-    activitiesService.updateActivity({
-      activityId,
-      courseId,
-      code: newFiles,
-    });
+    activitiesService
+      .updateActivity({
+        activityId,
+        courseId,
+        code: newFiles,
+      })
+      .then(updatedActivity => {
+        const newActivity = updatedActivity;
+        newActivity.initial_code = newFiles;
+        this.setState({ activity: newActivity, successSave: true });
+        setTimeout(() => this.setState({ successSave: false }), 2000);
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al guardar la actividad, Por favor reintenta",
+          },
+        });
+      });
   }
 
   handleChange(event) {
@@ -267,8 +285,13 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
   }
 
   handleSaveUnitTest() {
+    const { unitTestCode } = this.state;
+    this.saveUnitTest(unitTestCode);
+  }
+
+  saveUnitTest(unitTestCode: ?string) {
     const { courseId, activityId } = this.props.match.params;
-    const { activity, unitTestCode } = this.state;
+    const { activity } = this.state;
 
     if (!unitTestCode) {
       return;
@@ -320,7 +343,9 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        {successSave && <CustomSnackbar open={successSave} message="El test se guardó con éxito" />}
+        {successSave && (
+          <CustomSnackbar open={successSave} message="La actividad se guardó con éxito" />
+        )}
         <TopBar
           handleDrawerOpen={() => this.handleSwitchDrawer()}
           open={isSideBarOpen}
@@ -377,8 +402,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                     size="small"
                     color="primary"
                     onClick={() =>
-                      this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")
-                    }
+                      this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")}
                   >
                     Siguiente
                   </Button>
@@ -402,7 +426,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       <UnitTestsCorrection
                         courseId={courseId}
                         activityId={activityId}
-                        onSaveUnitTest={unitTestCode => this.handleSaveUnitTest(unitTestCode)}
+                        onSaveUnitTest={unitTestCode => this.saveUnitTest(unitTestCode)}
                         onChange={unitTestCode => this.setState({ unitTestCode })}
                       />
                     )}
@@ -413,8 +437,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                   <Button
                     size="small"
                     onClick={() =>
-                      this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")
-                    }
+                      this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")}
                   >
                     Anterior
                   </Button>
@@ -425,8 +448,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       this.handleClickNext(
                         "configTestStepExpanded",
                         "configCompilerFlagsStepExpanded"
-                      )
-                    }
+                      )}
                   >
                     Siguiente
                   </Button>
@@ -483,8 +505,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       this.handleClickNext(
                         "configCompilerFlagsStepExpanded",
                         "configTestStepExpanded"
-                      )
-                    }
+                      )}
                   >
                     Anterior
                   </Button>
@@ -495,8 +516,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       this.handleClickNext(
                         "configCompilerFlagsStepExpanded",
                         "configFilePermissionsForStudentsExpanded"
-                      )
-                    }
+                      )}
                   >
                     Siguiente
                   </Button>
@@ -517,8 +537,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       handleSaveFilesMetadata={() => this.handleSaveFilesMetadata()}
                       activityFilesMetadata={activityFilesMetadata}
                       onFileMetadataChanged={newMetadata =>
-                        this.setState({ activityFilesMetadata: newMetadata })
-                      }
+                        this.setState({ activityFilesMetadata: newMetadata })}
                     />
                   </div>
                 </AccordionDetails>
@@ -529,8 +548,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
                       this.handleClickNext(
                         "configFilePermissionsForStudentsExpanded",
                         "configCompilerFlagsStepExpanded"
-                      )
-                    }
+                      )}
                   >
                     Anterior
                   </Button>
