@@ -3,7 +3,6 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import SplitPane from "react-split-pane";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import ReactResizeDetector from "react-resize-detector";
 import { withState } from "../../utils/State";
 import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
@@ -71,7 +70,6 @@ type State = {
   editorWidth: string,
   submittedActivity: boolean,
   selectedSubmissionId: ?number,
-  editor: any,
   pastSubmissionsPanel: { isOpen: boolean, selectedSubmissionId: ?number },
   finalSolutionId: ?number,
 };
@@ -85,7 +83,6 @@ class SolveActivityPage extends React.Component<Props, State> {
     code: { "main.c": "" },
     submittedActivity: false,
     selectedSubmissionId: null,
-    editor: null,
     pastSubmissionsPanel: { isOpen: false, selectedSubmissionId: null },
     finalSolutionId: null,
   };
@@ -192,7 +189,6 @@ class SolveActivityPage extends React.Component<Props, State> {
       editorWidth,
       error,
       code,
-      editor,
       pastSubmissionsPanel,
       finalSolutionId,
     } = this.state;
@@ -253,34 +249,27 @@ class SolveActivityPage extends React.Component<Props, State> {
               split="vertical"
               defaultSize="50%"
               onChange={width => this.handleDrag(width)}
+              style={{
+                display: "flex",
+                flex: "1 1 0%",
+                height: "100%",
+                position: "fixed",
+                "flex-direction": "row",
+                overflow: "visible",
+                left: "0px",
+                right: "0px",
+              }}
             >
               <div className={classes.editor}>
-                <ReactResizeDetector
-                  handleWidth
-                  handleHeight={false}
-                  onResize={() => (editor ? editor.layout : () => {})}
-                >
-                  <MultipleTabsEditor
-                    width={editorWidth}
-                    initialCode={code}
-                    language={activity.language.toLowerCase()}
-                    readOnly={false}
-                    forceCanEditFiles={false}
-                    onCodeChange={newCode => this.onCodeChange(newCode)}
-                    editorDidMount={mountedEditor => {
-                      mountedEditor.changeViewZones(changeAccessor => {
-                        changeAccessor.addZone({
-                          afterLineNumber: 0,
-                          heightInLines: 1,
-                          domNode: document.createElement("span"),
-                        });
-                      });
-                      this.setState({ editor: mountedEditor });
-                    }}
-                  />
-                </ReactResizeDetector>
+                <MultipleTabsEditor
+                  width={editorWidth}
+                  initialCode={code}
+                  language={activity.language.toLowerCase()}
+                  readOnly={false}
+                  forceCanEditFiles={false}
+                  onCodeChange={newCode => this.onCodeChange(newCode)}
+                />
               </div>
-
               <div>
                 <MarkdownRenderer content={activity.description} />
               </div>

@@ -53,6 +53,7 @@
   color: rgb(121, 116, 116);
   font-family: Arial, Verdana, san-serif;
   /* font-family: Questrial; */
+  overflow: auto;
 }
 
 

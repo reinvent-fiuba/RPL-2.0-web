@@ -108,7 +108,7 @@ class AddNewFileModal extends React.Component<Props, State> {
               />
             </div>
             <DialogActions>
-              <Button onClick={() => handleCloseModal(null, "")} color="primary">
+              <Button onClick={() => handleCloseModal(null, "")} color="secondary">
                 Cancelar
               </Button>
               <Button onClick={() => this.handleSubmit()} color="primary">
