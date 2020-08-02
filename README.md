@@ -16,6 +16,43 @@ npm i
 npm start
 ```
 
+## How to run it in PROD in a Docker Image
+
+- Be sure to have all environmental variables defined in .env.production
+    - For the API_BASE_URL, either use localhost:80 and replace the upstream in the nginx config or use the backend URL
+- Build bundle
+
+```
+npm run install
+npm run build
+```
+
+- Modify nginx.conf with the correct upstream 
+- For localhost add:
+
+```
+upstream producer {
+	      server 127.0.0.1:8080;
+	}
+```
+
+- Build docker image
+
+```
+docker build -t rpl-web  -f Dockerfile .
+```
+
+- Run image
+    - [Linux] For localhost make sure to add `--network="host"` flag so that `127.0.0.1:8080` points to the host machine where you are running the server
+    - [Mac OS] Create a docker network
+
+```
+docker run --network="host"  rpl-web:latest
+```
+
+- open localhost:80
+
+
 ## How to run it in PROD in a Kubernetes Cluster
 
 ```
