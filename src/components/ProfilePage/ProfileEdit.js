@@ -1,7 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Avatar from "@material-ui/core/Avatar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -155,6 +154,11 @@ class ProfileEdit extends React.Component {
     );
   }
 
+  canEditProfile() {
+    const { error } = this.state;
+    return error.invalidFields.size === 0 && this.state.university !== undefined;
+  }
+
   render() {
     const { profile, classes } = this.props;
     const { error, universities, university, degree } = this.state;
@@ -165,6 +169,7 @@ class ProfileEdit extends React.Component {
           color="primary"
           aria-label="add"
           className={classes.rightButton}
+          disabled={!this.canEditProfile()}
           onClick={() => this.handleClickSave()}
         >
           <SaveIcon />
@@ -180,7 +185,7 @@ class ProfileEdit extends React.Component {
               />
             </Grid>
             <Grid item>
-              <Typography style={{fontStyle: "italic"}} className={classes.property} variant="h6">
+              <Typography style={{ fontStyle: "italic" }} className={classes.property} variant="h6">
                 {`Usuario: ${profile.username}`}
               </Typography>
             </Grid>
@@ -193,8 +198,8 @@ class ProfileEdit extends React.Component {
                   required
                   fullWidth
                   id="name"
-                  label="Name"
-                  name="Name"
+                  label="Nombre"
+                  name="Nombre"
                   autoComplete="name"
                   autoFocus
                   value={this.state.name}
@@ -203,7 +208,7 @@ class ProfileEdit extends React.Component {
                     error.invalidFields.has("name") && "El nombre debe estar formado por letras"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))
+                    this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
                   }
                 />
                 <TextField
@@ -211,8 +216,8 @@ class ProfileEdit extends React.Component {
                   required
                   fullWidth
                   id="surname"
-                  label="Surname"
-                  name="Surname"
+                  label="Apellido"
+                  name="Apellido"
                   autoComplete="surname"
                   autoFocus
                   value={this.state.surname}
@@ -222,7 +227,7 @@ class ProfileEdit extends React.Component {
                     "El apellido debe estar formado por letras"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[a-zA-Z\s]+$/, "string"))
+                    this.handleChange(e, validate(e.target.value, /^[A-zÀ-ÿ\s]+$/, "string"))
                   }
                 />
                 <TextField
@@ -230,14 +235,15 @@ class ProfileEdit extends React.Component {
                   required
                   fullWidth
                   id="studentId"
-                  label="Student Id"
-                  name="Student Id"
+                  label="Padrón"
+                  name="Padrón"
                   autoComplete="studentId"
                   autoFocus
                   value={this.state.studentId}
                   error={error.invalidFields.has("studentId")}
                   helperText={
-                    error.invalidFields.has("studentId") && "El padron debe estar formado por numeros"
+                    error.invalidFields.has("studentId") &&
+                    "El padron debe estar formado por numeros"
                   }
                   onChange={e =>
                     this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z]+$/, "string"))
@@ -254,7 +260,9 @@ class ProfileEdit extends React.Component {
                   autoFocus
                   value={this.state.email}
                   error={error.invalidFields.has("email")}
-                  helperText={error.invalidFields.has("email") && "El email debe ser un email valido"}
+                  helperText={
+                    error.invalidFields.has("email") && "El email debe ser un email valido"
+                  }
                   onChange={e =>
                     this.handleChange(e, validate(e.target.value, /^\S+@\S+\.\S+$/, "string"))
                   }
@@ -263,12 +271,15 @@ class ProfileEdit extends React.Component {
                   margin="normal"
                   options={universities}
                   id="university"
-                  name="university"
+                  name="Universidad"
+                  label="Universidad"
                   autoComplete="university"
                   value={university || {}}
                   onChange={(event, newValue) => this.setState({ university: newValue })}
                   getOptionLabel={uni => uni.name}
-                  renderInput={params => <TextField {...params} label="Universidad" margin="normal" />}
+                  renderInput={params => (
+                    <TextField {...params} label="Universidad" margin="normal" />
+                  )}
                 />
                 <Autocomplete
                   margin="normal"

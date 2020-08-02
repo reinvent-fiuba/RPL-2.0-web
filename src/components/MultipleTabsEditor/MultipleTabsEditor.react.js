@@ -11,7 +11,12 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { withState } from "../../utils/State";
 import AddNewFileModal from "./AddNewFileModal.react";
 import type { FilesMetadata } from "../../types";
-import { getFilesMetadata, FILES_METADATA, getNewSelectedEditor } from "../../utils/files";
+import {
+  getFilesMetadata,
+  FILES_METADATA,
+  getNewSelectedEditor,
+  NO_EDITORS_LEFT,
+} from "../../utils/files";
 import { FILE_DISPLAY_MODE, READ_ONLY_DISPLAY_MODES, DELETEABLE_DISPLAY_MODES } from "../../types";
 
 const styles = theme => ({
@@ -178,16 +183,16 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     delete newCode[selectedEditorToDelete];
     delete newMetadata[selectedEditorToDelete];
 
-    let newSelectedEditor = null;
+    let newSelectedEditor = selectedEditor;
     if (selectedEditor === selectedEditorToDelete) {
       newSelectedEditor = getNewSelectedEditor(newCode);
     }
 
-    this.setState(prevState => ({
+    this.setState({
       code: newCode,
       filesMetadata: newMetadata,
-      selectedEditor: newSelectedEditor || prevState.selectedEditor,
-    }));
+      selectedEditor: newSelectedEditor,
+    });
     newCode.files_metadata = JSON.stringify(filesMetadata);
     this.props.onCodeChange(newCode);
   }
@@ -249,7 +254,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     const { readOnly, forceCanEditFiles } = this.props;
     const { filesMetadata } = this.state;
 
-    if (filename === null || filename === undefined) {
+    if (filename === null || filename === undefined || filename === NO_EDITORS_LEFT) {
       return true;
     }
 
@@ -271,7 +276,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     const { readOnly, forceCanEditFiles } = this.props;
     const { filesMetadata } = this.state;
 
-    if (filename === null || filename === undefined) {
+    if (filename === null || filename === undefined || filename === NO_EDITORS_LEFT) {
       return true;
     }
 
@@ -292,15 +297,6 @@ class MultipleTabsEditor extends React.Component<Props, State> {
     const { classes, width, editorDidMount, readOnly } = this.props;
 
     const { code, fileNameModal, selectedEditor } = this.state;
-
-    // if (
-    //   selectedEditor !== null &&
-    //   !Object.keys(code).includes(selectedEditor) &&
-    //   Object.keys(code).filter(fileName => fileName !== FILES_METADATA).length > 0
-    // ) {
-    //   this.setState({ selectedEditor: Object.keys(code)[0] });
-    //   return [];
-    // }
 
     return (
       <div className={classes.tabsEditorContainer}>
@@ -355,23 +351,21 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             )}
           </StyledTabs>
         </div>
-        {selectedEditor && (
-          <MonacoEditor
-            width={width}
-            options={{
-              renderFinalNewline: true,
-              readOnly: this.isReadOnlyFile(selectedEditor),
-              scrollBeyondLastLine: false,
-              wordWrap: "on",
-            }}
-            language={this.getLanguageForMonaco()}
-            theme="vs-dark"
-            defaultValue=""
-            value={code[selectedEditor]}
-            onChange={codeChanged => this.handleCodeChange(code, codeChanged, selectedEditor)}
-            editorDidMount={editorDidMount}
-          />
-        )}
+        <MonacoEditor
+          width={width}
+          options={{
+            renderFinalNewline: true,
+            readOnly: this.isReadOnlyFile(selectedEditor),
+            scrollBeyondLastLine: false,
+            wordWrap: "on",
+          }}
+          language={this.getLanguageForMonaco()}
+          theme="vs-dark"
+          defaultValue=""
+          value={selectedEditor !== NO_EDITORS_LEFT ? code[selectedEditor] : ""}
+          onChange={codeChanged => this.handleCodeChange(code, codeChanged, selectedEditor)}
+          editorDidMount={editorDidMount}
+        />
       </div>
     );
   }

@@ -3,6 +3,7 @@ import type { FilesMetadata, Activity } from "../types";
 import { FILE_DISPLAY_MODE } from "../types";
 
 export const FILES_METADATA = "files_metadata";
+export const NO_EDITORS_LEFT = null;
 
 export function buildFilesMetadata(files: { [string]: string }): FilesMetadata {
   const filesMetadata = {};
@@ -39,10 +40,10 @@ export function prepareInitialCode(activity: Activity) {
   return code;
 }
 
-export function getNewSelectedEditor(code: { [string]: string }): string {
+export function getNewSelectedEditor(code: { [string]: string }): ?string {
   const editableCodeEditors = Object.keys(code).filter(fileName => fileName !== FILES_METADATA);
   if (editableCodeEditors.length > 0) {
     return editableCodeEditors[0]; // array destructuring === array[0]
   }
-  return "main";
+  return NO_EDITORS_LEFT;
 }
