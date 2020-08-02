@@ -82,12 +82,12 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    const { context } = this.props;
-    if (context && context.activities) {
-      this.setState({ activities: context.activities });
-    } else {
-      this.getAllActivities();
-    }
+    // const { context } = this.props;
+    // if (context && context.activities) {
+    //   this.setState({ activities: context.activities });
+    // } else {
+    this.getAllActivities();
+    // }
   }
 
   getAllActivities() {
@@ -95,7 +95,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
     activitiesService
       .getAllActivities(match.params.courseId)
       .then(response => {
-        this.props.context.set("activities", response);
+        // this.props.context.set("activities", response);
         this.setState({ activities: response });
       })
       .catch(() => {
@@ -216,13 +216,14 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
                   <ActivitiesTeacherTable
                     activities={activitiesByCategory[category]}
                     onClickActivityResults={(e, activityId) =>
-                      this.handleClickActivityResults(e, activityId)}
+                      this.handleClickActivityResults(e, activityId)
+                    }
                     onClickDeleteActivity={activityId => this.handleClickDeleteActivity(activityId)}
                     onClickDisableActivity={(activityId, newStatus) =>
-                      this.handleDisableActivity(activityId, newStatus)
-                    }
+                      this.handleDisableActivity(activityId, newStatus)}
                     handleActivityRowClick={(event, activityId) =>
-                      this.handleClickOnActivityTitle(event, activityId)}
+                      this.handleClickOnActivityTitle(event, activityId)
+                    }
                   />
                 </div>
               ))}

@@ -88,15 +88,15 @@ class ActivitiesPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    const { match, context } = this.props;
-    if (context && context.activities) {
-      this.setState({ activities: context.activities });
-      return;
-    }
+    const { match } = this.props;
+    // if (context && context.activities) {
+    // this.setState({ activities: context.activities });
+    // return;
+    // }
     activitiesService
       .getAllActivities(match.params.courseId)
       .then(response => {
-        this.props.context.set("activities", response);
+        // this.props.context.set("activities", response);
         this.setState({ activities: response });
       })
       .catch(() => {
@@ -228,7 +228,8 @@ class ActivitiesPage extends React.Component<Props, State> {
                     activities={activitiesByCategory[category]}
                     setOpenPanel={activityId => this.setOpenPanel(activityId)}
                     handleCellClick={(event, activityId) =>
-                      this.handleClickOnActivityTitle(event, activityId)}
+                      this.handleClickOnActivityTitle(event, activityId)
+                    }
                   />
                 </div>
               ))}
