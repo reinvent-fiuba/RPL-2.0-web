@@ -82,12 +82,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    // const { context } = this.props;
-    // if (context && context.activities) {
-    //   this.setState({ activities: context.activities });
-    // } else {
     this.getAllActivities();
-    // }
   }
 
   getAllActivities() {
@@ -95,7 +90,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
     activitiesService
       .getAllActivities(match.params.courseId)
       .then(response => {
-        // this.props.context.set("activities", response);
+        this.props.context.set("activities", response);
         this.setState({ activities: response });
       })
       .catch(() => {
@@ -168,7 +163,10 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
 
     const { activities, isSideBarOpen, error, deleteModal } = this.state;
 
-    const nonDeletedActivities = _.filter(activities, activity => !activity.deleted);
+    const nonDeletedActivities = _.filter(
+      activities || (context && context.activities),
+      activity => !activity.deleted
+    );
     const activitiesByCategory = _.groupBy(nonDeletedActivities, "category_name");
 
     return (

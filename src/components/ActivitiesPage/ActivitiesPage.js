@@ -89,14 +89,10 @@ class ActivitiesPage extends React.Component<Props, State> {
 
   componentDidMount() {
     const { match } = this.props;
-    // if (context && context.activities) {
-    // this.setState({ activities: context.activities });
-    // return;
-    // }
     activitiesService
       .getAllActivities(match.params.courseId)
       .then(response => {
-        // this.props.context.set("activities", response);
+        this.props.context.set("activities", response);
         this.setState({ activities: response });
       })
       .catch(() => {
@@ -165,7 +161,10 @@ class ActivitiesPage extends React.Component<Props, State> {
       selectedSubmissionId,
     } = this.state;
 
-    const activeActivities = _.filter(activities, activity => activity.active && !activity.deleted);
+    const activeActivities = _.filter(
+      activities || (context && context.activities),
+      activity => activity.active && !activity.deleted
+    );
     const activitiesByCategory = _.groupBy(activeActivities, "category_name");
 
     return (
