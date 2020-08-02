@@ -412,7 +412,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                     "El nombre de la actividad debe estar formado por letras o numeros"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))}
+                    this.handleChange(e, validate(e.target.value, /^[()0-9A-zÀ-ÿ\s.-]+$/, "string"))}
                   value={name}
                 />
                 <TextField
