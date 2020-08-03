@@ -14,6 +14,7 @@ import UsersPage from "./components/UsersPage/UsersPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
 import CourseIndex from "./courseIndex";
 import PrivateRoute from "./PrivateRoute";
+import PublicRoute from "./PublicRoute";
 
 showdown.setFlavor("github");
 
@@ -21,10 +22,10 @@ const routing = (
   <StateProvider>
     <BrowserRouter>
       <div>
-        <Route exact path="/" component={LoginPage} />
-        <Route path="/login" component={LoginPage} />
-        <Route path="/signup" component={SignupPage} />
-        <Route path="/forgotPassword" component={ForgotPasswordPage} />
+        <PublicRoute exact path="/" component={LoginPage} />
+        <PublicRoute path="/login" component={LoginPage} />
+        <PublicRoute path="/signup" component={SignupPage} />
+        <PublicRoute path="/forgotPassword" component={ForgotPasswordPage} />
         <Route path="/user/changePassword" component={ResetPasswordPage} />
         <Route path="/user/validateEmail" component={ValidateEmailPage} />
         <PrivateRoute exact path="/users" component={UsersPage} />
