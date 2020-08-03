@@ -110,7 +110,7 @@ class LoginForm extends React.Component<Props, State> {
             required
             fullWidth
             id="username"
-            label="Username"
+            label="Nombre de usuario"
             name="username"
             autoComplete="username"
             autoFocus
@@ -121,7 +121,7 @@ class LoginForm extends React.Component<Props, State> {
             required
             fullWidth
             name="password"
-            label="Password"
+            label="Contraseña"
             type="password"
             id="password"
             autoComplete="current-password"

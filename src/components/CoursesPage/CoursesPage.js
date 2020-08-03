@@ -14,6 +14,7 @@ import TopBar from "../TopBar/TopBar";
 import coursesService from "../../services/coursesService";
 import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
+import EnrollInformationModal from "./EnrollInformationModal";
 import type { Course } from "../../types";
 
 const _ = require("lodash");
@@ -85,6 +86,7 @@ type State = {
   otherCourses: Array<Course>,
   finishedCourses: Array<Course>,
   currentTab: number,
+  enrollModalOpen: boolean,
 };
 
 class CoursesPage extends React.Component<Props, State> {
@@ -96,6 +98,7 @@ class CoursesPage extends React.Component<Props, State> {
     pendingCourses: [],
     finishedCourses: [],
     currentTab: 0,
+    enrollModalOpen: false,
   };
 
   componentDidMount() {
@@ -208,6 +211,7 @@ class CoursesPage extends React.Component<Props, State> {
     coursesService
       .enroll(courseId)
       .then(() => {
+        this.setState({ enrollModalOpen: true })
         this.loadCourses(1); // Go to "Pending courses tab"
       })
       .catch(() => {
@@ -246,6 +250,7 @@ class CoursesPage extends React.Component<Props, State> {
       myCourses,
       pendingCourses,
       finishedCourses,
+      enrollModalOpen,
       isSideBarOpen,
       error,
     } = this.state;
@@ -280,6 +285,10 @@ class CoursesPage extends React.Component<Props, State> {
             ) : (
               <div />
             )}
+            <EnrollInformationModal
+              open={enrollModalOpen}
+              handleCloseModal={() => this.setState({ enrollModalOpen: false })}
+            />
             <Paper>
               <Tabs
                 value={this.state.currentTab}
