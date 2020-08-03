@@ -284,7 +284,7 @@ class Signup extends React.Component<Props, State> {
             fullWidth
             id="username"
             label="Usuario"
-            name="Username"
+            name="Nombre de usuario"
             autoComplete="username"
             error={error.invalidFields && error.invalidFields.has("username")}
             helperText={
