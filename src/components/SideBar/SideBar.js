@@ -62,7 +62,11 @@ class SideBar extends React.PureComponent<Props> {
   handleSignOut() {
     const { context, history } = this.props;
     context.invalidate();
-    history.push("/login");
+    history.push({
+      pathname: "/login",
+      search: "",
+      state: { onSignOut: true },
+    });
   }
 
   render() {
