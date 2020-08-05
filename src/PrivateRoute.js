@@ -10,7 +10,7 @@ function PrivateRoute({ component: Component, context, ...rest }) {
       {...rest}
       render={routeProps => {
         const { location } = routeProps;
-        const shouldGoToLogin = !context.token || (location.state && location.state.onSignOut);
+        const shouldGoToLogin = !context.token || (location.state && location.state.hasJustSignOut);
         history.replaceState(null, ""); // Clean state after deciding whether to go to login or not
         if (shouldGoToLogin) {
           return (

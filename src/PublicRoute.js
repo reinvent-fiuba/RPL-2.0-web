@@ -11,7 +11,7 @@ function PublicRoute({ component: Component, context, ...rest }) {
       render={routeProps => {
         const { location } = routeProps;
         const shouldGoToPublicRoute =
-          !context.token || (location.state && location.state.onSignOut);
+          !context.token || (location.state && location.state.hasJustSignOut);
         history.replaceState(null, ""); // Clean state after deciding whether to go to login or not
         if (shouldGoToPublicRoute) return <Component {...routeProps} />;
         return (

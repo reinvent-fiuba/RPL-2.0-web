@@ -65,7 +65,7 @@ class SideBar extends React.PureComponent<Props> {
     history.push({
       pathname: "/login",
       search: "",
-      state: { onSignOut: true }, // Flag to avoid internal redirections between public and private routes
+      state: { hasJustSignOut: true }, // Flag to avoid internal redirections between public and private routes
     });
   }
 
