@@ -170,7 +170,7 @@ class StudentCategoryStats extends React.Component<Props, State> {
   searchStudentCategoryStats() {
     const { courseId } = this.props;
     const { studentId, categoryId } = this.state;
-    if (!studentId || !categoryId) {
+    if (!studentId) {
       return Promise.resolve();
     }
     return statsService

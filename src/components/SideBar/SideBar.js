@@ -15,7 +15,7 @@ import BarChartIcon from "@material-ui/icons/BarChart";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
 import { withState } from "../../utils/State";
@@ -57,7 +57,18 @@ type Props = {
   handleDrawerClose: () => void,
 };
 
+// eslint-disable-next-line react/no-redundant-should-component-update
 class SideBar extends React.PureComponent<Props> {
+  handleSignOut() {
+    const { context, history } = this.props;
+    context.invalidate();
+    history.push({
+      pathname: "/login",
+      search: "",
+      state: { hasJustSignOut: true }, // Flag to avoid internal redirections between public and private routes
+    });
+  }
+
   render() {
     const { open, classes, courseId, context, handleDrawerClose } = this.props;
 
@@ -125,7 +136,7 @@ class SideBar extends React.PureComponent<Props> {
             );
           })}
 
-          <ListItem button key="Cerrar Sesión" component={Link} to="/login">
+          <ListItem button key="Cerrar Sesión" onClick={() => this.handleSignOut()}>
             <ListItemIcon>
               <ExitToAppIcon />
             </ListItemIcon>
@@ -137,4 +148,4 @@ class SideBar extends React.PureComponent<Props> {
   }
 }
 
-export default withState(withStyles(styles)(SideBar));
+export default withRouter(withState(withStyles(styles)(SideBar)));

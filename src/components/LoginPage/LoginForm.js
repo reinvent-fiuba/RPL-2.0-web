@@ -44,11 +44,6 @@ class LoginForm extends React.Component<Props, State> {
     password: "",
   };
 
-  componentDidMount() {
-    // This is how our logout works JAJA
-    this.props.context.invalidate();
-  }
-
   handleChange(event) {
     event.persist();
     // Close error message
