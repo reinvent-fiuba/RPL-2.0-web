@@ -10,17 +10,19 @@ function PrivateRoute({ component: Component, context, ...rest }) {
       {...rest}
       render={routeProps => {
         const { location } = routeProps;
-        const shouldGoToComponent = context.token && location.state && !location.state.onSignOut;
+        const shouldGoToLogin = !context.token || (location.state && location.state.onSignOut);
         history.replaceState(null, ""); // Clean state after deciding whether to go to login or not
-        if (shouldGoToComponent) return <Component {...routeProps} />;
-        return (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { goTo: routeProps.location.pathname },
-            }}
-          />
-        );
+        if (shouldGoToLogin) {
+          return (
+            <Redirect
+              to={{
+                pathname: "/login",
+                state: { goTo: routeProps.location.pathname },
+              }}
+            />
+          );
+        }
+        return <Component {...routeProps} />;
       }}
     />
   );
