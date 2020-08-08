@@ -1,7 +1,7 @@
 // @flow
 import type { Notification } from "../types";
 
-const _ = require('lodash');
+const _ = require("lodash");
 const coursesService = require("./coursesService");
 
 exports.get = (userId: number, courseId: number, options: any): Promise<Array<Notification>> => {

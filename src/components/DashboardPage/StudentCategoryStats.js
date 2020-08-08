@@ -164,7 +164,12 @@ class StudentCategoryStats extends React.Component<Props, State> {
         students = response;
       })
       .then(() => activitiesService.getActivityCategories(courseId))
-      .then(categories => this.setState({ students, categories }));
+      .then(categories =>
+        this.setState({
+          students: students.sort((a, b) => (a.name > b.name ? 1 : -1)),
+          categories: categories.sort((a, b) => (a.name > b.name ? 1 : -1)),
+        })
+      );
   }
 
   searchStudentCategoryStats() {
@@ -230,6 +235,8 @@ class StudentCategoryStats extends React.Component<Props, State> {
       ...meta,
     }));
 
+    const dataOrderedByActivityName = data.sort((a, b) => (a.name > b.name ? 1 : -1));
+
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table className={classes.table} aria-label="simple table">
@@ -244,7 +251,7 @@ class StudentCategoryStats extends React.Component<Props, State> {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((activity, i) => (
+            {dataOrderedByActivityName.map((activity, i) => (
               <TableRow
                 key={i}
                 hover

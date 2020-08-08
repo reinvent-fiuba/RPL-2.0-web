@@ -15,7 +15,7 @@ import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
 
 import { Grid } from "@material-ui/core";
-import coursesService from "../../services/coursesService";
+import ErrorNotification from "../../utils/ErrorNotification";
 import activitiesService from "../../services/activitiesService";
 import statsService from "../../services/statsService";
 
@@ -137,33 +137,31 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
+  categories: any,
+  categoryId: any,
+  activitiesStats: any,
 };
 
 class CategoryStats extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    students: [],
     categories: [],
-    studentId: undefined,
     categoryId: undefined,
+    activitiesStats: undefined,
   };
 
   componentDidMount() {
     const { courseId } = this.props;
-    let students;
-    return coursesService
-      .getAllStudentsByCourseId(courseId)
-      .then(response => {
-        students = response;
-      })
-      .then(() => activitiesService.getActivityCategories(courseId))
-      .then(categories => this.setState({ students, categories }));
+    return activitiesService
+      .getActivityCategories(courseId)
+      .then(categories =>
+        this.setState({ categories: categories.sort((a, b) => (a.name > b.name ? 1 : -1)) })
+      );
   }
 
   searchCategoryStats() {
     const { courseId } = this.props;
-    const { studentId, categoryId } = this.state;
+    const { categoryId } = this.state;
     if (!categoryId) {
       return Promise.resolve();
     }
@@ -255,6 +253,7 @@ class CategoryStats extends React.Component<Props, State> {
 
     return (
       <div>
+        {error.open && <ErrorNotification open={error.open} message={error.message} />}
         <br />
         <Grid container className={classes.filters} xs={12} spacing={3}>
           <Grid item xs={5}>
