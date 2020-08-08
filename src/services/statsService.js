@@ -1,19 +1,17 @@
 // @flow
-import type { SubmissionResult } from "../types";
-
 const { request } = require("../utils/Request");
 
 const producer = {
   base_url: process.env.API_BASE_URL || "http://localhost:8080",
 };
 
-exports.getMySubmissionsStats = (courseId: number): Promise<> =>
+exports.getMySubmissionsStats = (courseId: number): Promise<any> =>
   request({
     url: `${producer.base_url}/api/stats/courses/${courseId}/submissions/me`,
     method: "GET",
   });
 
-exports.getMyActivitiesStats = (courseId: number): Promise<> =>
+exports.getMyActivitiesStats = (courseId: number): Promise<any> =>
   request({
     url: `${producer.base_url}/api/stats/courses/${courseId}/activities/me`,
     method: "GET",
@@ -27,9 +25,9 @@ exports.getSubmissionStatsByDate = (courseId: number): Promise<Object> =>
 
 exports.getSubmissionStatsByActivity = (
   courseId: number,
-  categoryId: number,
-  studentId: number
-): Promise<> => {
+  categoryId: ?number,
+  studentId: ?number
+): Promise<any> => {
   const categoryIdParam = (categoryId && `&categoryId=${categoryId}`) || "";
   const studentIdParam = (studentId && `&userId=${studentId}`) || "";
   return request({

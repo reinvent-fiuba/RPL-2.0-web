@@ -169,6 +169,8 @@ class StudentStats extends React.Component<Props, State> {
       ...meta,
     }));
 
+    const dataOrderedByQuantityDesc = data.sort((a, b) => (a.total < b.total ? 1 : -1));
+
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table className={classes.table} aria-label="simple table">
@@ -183,8 +185,8 @@ class StudentStats extends React.Component<Props, State> {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((student, i) => (
-              <TableRow>
+            {dataOrderedByQuantityDesc.map((student, i) => (
+              <TableRow key={i}>
                 <TableCell key={1}>{i}</TableCell>
                 <TableCell key={2}>{student.name}</TableCell>
                 <TableCell key={3}>{student.surname}</TableCell>
