@@ -12,6 +12,7 @@ import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import SearchIcon from "@material-ui/icons/Search";
@@ -23,7 +24,7 @@ import type { Activity } from "../../types";
 
 const _ = require("lodash");
 
-const styles = () => ({
+const styles = theme => ({
   table: {
     minWidth: 650,
   },
@@ -40,6 +41,9 @@ const styles = () => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  categoryActions: {
+    marginRight: theme.spacing(3),
+  },
   tableRowDisabled: {
     backgroundColor: "#d0c4c4",
   },
@@ -53,8 +57,10 @@ const styles = () => ({
 });
 
 type Props = {
+  activityCategory: any,
   activities: Array<Activity>,
   classes: any,
+  onClickEditCategory: (e: Event, activityCategory: any) => void,
   onClickActivityResults: (e: Event, activityId: number) => void,
   onClickDeleteActivity: (activityId: number) => void,
   onClickDisableActivity: (activityId: number, newStatus: boolean) => void,
@@ -63,7 +69,9 @@ type Props = {
 
 function ActivitiesTeacherTable(props: Props) {
   const {
+    activityCategory,
     activities,
+    onClickEditCategory,
     onClickActivityResults,
     onClickDeleteActivity,
     onClickDisableActivity,
@@ -75,7 +83,7 @@ function ActivitiesTeacherTable(props: Props) {
     <TableContainer component={Accordion} className={classes.tableContainer}>
       <AccordionSummary content={{ display: "inline" }} expandIcon={<ExpandMoreIcon />}>
         <Grid container xs={12}>
-          <Grid item xs={10}>
+          <Grid item xs={9}>
             <Typography display="inline" variant="h6" color="textPrimary" component="h1">
               {activities[0].category_name}
             </Typography>
@@ -83,6 +91,11 @@ function ActivitiesTeacherTable(props: Props) {
             <Typography display="inline" variant="body1" color="textSecondary" component="body1">
               {activities[0].category_description}
             </Typography>
+          </Grid>
+          <Grid item className={classes.categoryActions}>
+            <IconButton size="medium" onClick={e => onClickEditCategory(e, activityCategory)}>
+              <EditIcon />
+            </IconButton>
           </Grid>
           <Grid item xs={2}>
             <Typography display="inline" variant="body2" color="textSecondary" component="body1">

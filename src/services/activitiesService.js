@@ -86,7 +86,7 @@ exports.getActivityCategories = (courseId: number): Promise<Array<Category>> =>
     method: "GET",
   });
 
-exports.createActivityCategories = (
+exports.createActivityCategory = (
   courseId: number,
   name: string,
   description: string
@@ -94,6 +94,19 @@ exports.createActivityCategories = (
   request({
     url: `${producer.base_url}/api/courses/${courseId}/activityCategories`,
     method: "POST",
+    body: JSON.stringify({ name, description }),
+  });
+
+// TODO: Active/inactive category
+exports.updateActivityCategory = (
+  courseId: number,
+  categoryId: number,
+  name: string,
+  description: string
+): Promise<Category> =>
+  request({
+    url: `${producer.base_url}/api/courses/${courseId}/activityCategories/${categoryId}`,
+    method: "PATCH",
     body: JSON.stringify({ name, description }),
   });
 

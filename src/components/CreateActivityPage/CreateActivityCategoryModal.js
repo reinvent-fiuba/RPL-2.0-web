@@ -23,10 +23,13 @@ const styles = () => ({
 
 type Props = {
   handleCloseModal: number => void,
+  handleClickSave: any => void,
   open: boolean,
   courseId: number,
-  activityId: number,
+  activityCategory: any,
   classes: any,
+  saveButtonText: string,
+  titleText: string,
 };
 
 type State = {
@@ -39,32 +42,9 @@ type State = {
 class CreateActivityCategoryModal extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    name: null,
-    description: null,
+    name: this.props.activityCategory ? this.props.activityCategory.name : null,
+    description: this.props.activityCategory ? this.props.activityCategory.description : null,
   };
-
-  handleSubmit(e) {
-    const { courseId, handleCloseModal } = this.props;
-    const { name, description } = this.state;
-    if (!name) {
-      return this.setState({ error: { open: true, message: "No puede estar en blanco" } });
-    }
-
-    activitiesService
-      .createActivityCategories(courseId, name, description || "")
-      .then(category => {
-        handleCloseModal(category.id);
-      })
-      .catch(() => {
-        // console.log(err);
-        this.setState({
-          error: {
-            open: true,
-            message: "Hubo un error al crear la categoría, Por favor reintenta",
-          },
-        });
-      });
-  }
 
   handleChange(event) {
     event.persist();
@@ -72,7 +52,15 @@ class CreateActivityCategoryModal extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, open, handleCloseModal } = this.props;
+    const {
+      classes,
+      open,
+      handleCloseModal,
+      handleClickSave,
+      titleText,
+      saveButtonText,
+      activityCategory,
+    } = this.props;
     const { error, name, description } = this.state;
 
     return (
@@ -87,7 +75,7 @@ class CreateActivityCategoryModal extends React.Component<Props, State> {
           fullWidth
           maxWidth="sm"
         >
-          <DialogTitle id="scroll-dialog-title">Nueva Categoría</DialogTitle>
+          <DialogTitle id="scroll-dialog-title">{titleText || "Nueva categoría"}</DialogTitle>
 
           <DialogContent dividers>
             <div>
@@ -98,7 +86,7 @@ class CreateActivityCategoryModal extends React.Component<Props, State> {
                 id="name"
                 label="Nombre"
                 name="name"
-                autoComplete="name"
+                value={name}
                 autoFocus
                 onChange={e => this.handleChange(e)}
               />
@@ -109,10 +97,10 @@ class CreateActivityCategoryModal extends React.Component<Props, State> {
                 multiline
                 rows={5}
                 name="description"
+                value={description}
                 label="Descripcion de la Categoría"
                 type="description"
                 id="description"
-                autoComplete="description"
                 onChange={e => this.handleChange(e)}
                 variant="outlined"
               />
@@ -127,8 +115,17 @@ class CreateActivityCategoryModal extends React.Component<Props, State> {
               >
                 Cancelar
               </Button>
-              <Button onClick={e => this.handleSubmit(e)} color="primary">
-                Crear
+              <Button
+                onClick={e =>
+                  handleClickSave({
+                    id: activityCategory && activityCategory.id,
+                    name,
+                    description,
+                  })
+                }
+                color="primary"
+              >
+                {saveButtonText || "Guardar"}
               </Button>
             </DialogActions>
           </DialogContent>

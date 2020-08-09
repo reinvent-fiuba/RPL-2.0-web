@@ -333,6 +333,23 @@ class CreateActivityPage extends React.Component<Props, State> {
     );
   }
 
+  handleCreateCategory(courseId: number, activityCategory: any) {
+    return activitiesService
+      .createActivityCategory(courseId, activityCategory.name, activityCategory.description || "")
+      .then(newActivityCategory => {
+        this.loadActivityCategories();
+        this.handleCloseCategoryModal(newActivityCategory.id);
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al ocultar la actividad, Por favor reintenta",
+          },
+        });
+      });
+  }
+
   handleCloseCategoryModal(newCategoryId: number) {
     this.loadActivityCategories();
     this.setState({ isCreateCategoryModalOpen: false, categoryId: newCategoryId });
@@ -374,6 +391,11 @@ class CreateActivityPage extends React.Component<Props, State> {
           open={isCreateCategoryModalOpen}
           handleCloseModal={newCategoryId => this.handleCloseCategoryModal(newCategoryId)}
           courseId={courseId}
+          handleClickSave={activityCategory =>
+            this.handleCreateCategory(courseId, activityCategory)
+          }
+          titleText="Crear Categoría"
+          saveButtonText="Crear"
         />
         <TopBar
           handleDrawerOpen={() => this.handleSwitchDrawer()}

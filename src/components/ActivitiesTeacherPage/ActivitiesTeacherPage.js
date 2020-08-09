@@ -12,6 +12,7 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import type { Activity } from "../../types";
 import ActivitiesTeacherTable from "./ActivitiesTeacherTable.react";
 import ConfirmDeleteActivityModal from "./ConfirmDeleteActivityModal.react";
+import CreateActivityCategoryModal from "../CreateActivityPage/CreateActivityCategoryModal";
 
 const _ = require("lodash");
 
@@ -71,6 +72,10 @@ type State = {
   isSideBarOpen: boolean,
   activities: Array<Activity>,
   deleteModal: { open: boolean, activityId: ?number },
+  updateCategoryModal: {
+    open: boolean,
+    activityCategory: any,
+  },
 };
 
 class ActivitiesTeacherPage extends React.Component<Props, State> {
@@ -79,6 +84,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
     isSideBarOpen: false,
     activities: [],
     deleteModal: { open: false, activityId: null },
+    updateCategoryModal: { open: false, activityCategory: null },
   };
 
   componentDidMount() {
@@ -153,6 +159,47 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
       });
   }
 
+  handleCloseCategoryModal() {
+    this.setState({
+      updateCategoryModal: {
+        open: false,
+        activityCategory: null,
+      },
+    });
+  }
+
+  handleClickEditCategory(event: Event, activityCategory: any) {
+    event.stopPropagation(); // We don't want to open/close the activity list
+    this.setState({
+      updateCategoryModal: {
+        open: true,
+        activityCategory,
+      },
+    });
+  }
+
+  handleEditCategory(courseId: number, activityCategory: any) {
+    return activitiesService
+      .updateActivityCategory(
+        courseId,
+        activityCategory.id,
+        activityCategory.name,
+        activityCategory.description
+      )
+      .then(() => {
+        this.getAllActivities();
+        this.handleCloseCategoryModal();
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message: "Hubo un error al ocultar la actividad, Por favor reintenta",
+          },
+        });
+      });
+  }
+
   handleClickActivityResults(event: Event, activityId: number) {
     const { history, match } = this.props;
     history.push(`/courses/${match.params.courseId}/activities/${activityId}/definitives`);
@@ -161,7 +208,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
   render() {
     const { classes, match, context } = this.props;
 
-    const { activities, isSideBarOpen, error, deleteModal } = this.state;
+    const { activities, isSideBarOpen, error, deleteModal, updateCategoryModal } = this.state;
 
     const nonDeletedActivities = _.filter(
       activities || (context && context.activities),
@@ -182,6 +229,22 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
           handleDrawerClose={e => this.handleSwitchDrawer(e)}
           open={isSideBarOpen}
           courseId={match.params.courseId}
+        />
+
+        <CreateActivityCategoryModal
+          open={updateCategoryModal.open}
+          key={updateCategoryModal.activityCategory && updateCategoryModal.activityCategory.id}
+          handleCloseModal={() => this.handleCloseCategoryModal()}
+          handleClickSave={activityCategory =>
+            this.handleEditCategory(match.params.courseId, activityCategory)
+          }
+          activityCategory={updateCategoryModal.activityCategory}
+          courseId={match.params.courseId}
+          titleText={
+            updateCategoryModal.activityCategory &&
+            `Editar: ${updateCategoryModal.activityCategory.name}`
+          }
+          saveButtonText="Guardar"
         />
 
         <ConfirmDeleteActivityModal
@@ -212,7 +275,15 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
               .map(category => (
                 <div key={category} className={classes.tableContainerDiv}>
                   <ActivitiesTeacherTable
+                    activityCategory={{
+                      id: activitiesByCategory[category][0].category_id,
+                      name: activitiesByCategory[category][0].category_name,
+                      description: activitiesByCategory[category][0].category_description,
+                    }}
                     activities={activitiesByCategory[category]}
+                    onClickEditCategory={(e, activityCategory) =>
+                      this.handleClickEditCategory(e, activityCategory)
+                    }
                     onClickActivityResults={(e, activityId) =>
                       this.handleClickActivityResults(e, activityId)
                     }
