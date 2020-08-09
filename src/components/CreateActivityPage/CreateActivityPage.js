@@ -17,7 +17,7 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import { withState } from "../../utils/State";
 import TopBar from "../TopBar/TopBar";
 import SideBar from "../SideBar/SideBar";
-import CreateActivityCategoryModal from "./CreateActivityCategoryModal";
+import ActivityCategoryModal from "../ActivityCategoryModal/ActivityCategoryModal";
 import activitiesService from "../../services/activitiesService";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
 import AddMainFileModal from "./AddMainFileModal.react";
@@ -387,7 +387,7 @@ class CreateActivityPage extends React.Component<Props, State> {
           onClickHide={() => this.setState({ isAddMainFileModalActive: false })}
         />
 
-        <CreateActivityCategoryModal
+        <ActivityCategoryModal
           open={isCreateCategoryModalOpen}
           handleCloseModal={newCategoryId => this.handleCloseCategoryModal(newCategoryId)}
           courseId={courseId}

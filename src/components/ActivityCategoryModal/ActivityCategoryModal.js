@@ -39,7 +39,7 @@ type State = {
   description: ?string,
 };
 
-class CreateActivityCategoryModal extends React.Component<Props, State> {
+class ActivityCategoryModal extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     name: this.props.activityCategory ? this.props.activityCategory.name : null,
@@ -135,4 +135,4 @@ class CreateActivityCategoryModal extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(CreateActivityCategoryModal);
+export default withStyles(styles)(ActivityCategoryModal);

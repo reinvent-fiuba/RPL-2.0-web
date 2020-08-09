@@ -12,7 +12,7 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import type { Activity } from "../../types";
 import ActivitiesTeacherTable from "./ActivitiesTeacherTable.react";
 import ConfirmDeleteActivityModal from "./ConfirmDeleteActivityModal.react";
-import CreateActivityCategoryModal from "../CreateActivityPage/CreateActivityCategoryModal";
+import ActivityCategoryModal from "../ActivityCategoryModal/ActivityCategoryModal";
 
 const _ = require("lodash");
 
@@ -231,7 +231,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
           courseId={match.params.courseId}
         />
 
-        <CreateActivityCategoryModal
+        <ActivityCategoryModal
           open={updateCategoryModal.open}
           key={updateCategoryModal.activityCategory && updateCategoryModal.activityCategory.id}
           handleCloseModal={() => this.handleCloseCategoryModal()}
