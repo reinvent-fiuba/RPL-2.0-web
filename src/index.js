@@ -10,7 +10,7 @@ import ValidateEmailPage from "./components/ValidateEmailPage/ValidateEmailPage.
 import { StateProvider } from "./utils/State";
 import CoursesPage from "./components/CoursesPage/CoursesPage";
 import ProfilePage from "./components/ProfilePage/ProfilePage";
-import UsersPage from "./components/UsersPage/UsersPage";
+import UsersAdminPage from "./components/UsersAdminPage/UsersAdminPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
 import CourseIndex from "./courseIndex";
 import PrivateRoute from "./PrivateRoute";
@@ -28,7 +28,7 @@ const routing = (
         <PublicRoute path="/forgotPassword" component={ForgotPasswordPage} />
         <Route path="/user/changePassword" component={ResetPasswordPage} />
         <Route path="/user/validateEmail" component={ValidateEmailPage} />
-        <PrivateRoute exact path="/users" component={UsersPage} />
+        <PrivateRoute exact path="/users" component={UsersAdminPage} />
         <PrivateRoute exact path="/courses" component={CoursesPage} />
         <PrivateRoute exact path="/profile" component={ProfilePage} />
         <PrivateRoute path="/courses/create" component={CreateCoursePage} />
