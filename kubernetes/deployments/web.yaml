@@ -16,11 +16,8 @@ spec:
         tier: frontend
         track: stable
     spec:
-      tolerations:
-      - effect: NoSchedule
-        key: task
-        operator: Equal
-        value: core
+      nodeSelector:
+        task: core
       containers:
       - name: webapp
         image: gcr.io/fiuba-rpl/rpl-web:latest
