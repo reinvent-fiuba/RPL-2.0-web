@@ -201,7 +201,7 @@ class UnitTestsCorrection extends React.Component<Props, State> {
             value={unitTestCode}
             onChange={codeChanged => {
               this.setState({ unitTestCode: codeChanged });
-              onChange(unitTestCode);
+              onChange(codeChanged);
             }}
             editorDidMount={mountedEditor => {
               mountedEditor.changeViewZones(changeAccessor => {
