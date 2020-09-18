@@ -11,6 +11,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { red } from "@material-ui/core/colors";
 import { withStyles } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
+import Palette from 'react-palette'
 import { withState } from "../../utils/State";
 
 const styles = () => ({
@@ -75,11 +76,14 @@ class CourseCard extends React.PureComponent<Props> {
 
         <CardMedia
           className={classes.media}
+          component={Palette}
           image={
             imgUri || "https://www.materialui.co/materialIcons/social/school_black_192x192.png"
           }
           title={name}
-        />
+        >
+          {palette => <div style={{ color: palette.vibrant }} />}
+        </CardMedia>
 
         <CardContent>
           <Tooltip title={description} placement="top">
