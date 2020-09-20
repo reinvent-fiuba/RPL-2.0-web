@@ -55,6 +55,10 @@ const styles = theme => ({
     display: "flex",
     height: "100%",
   },
+  mdDescription: {
+    height: "100%",
+    overflow: "scroll",
+  },
 });
 
 type Props = {
@@ -255,7 +259,8 @@ class SolveActivityPage extends React.Component<Props, State> {
               style={{
                 display: "flex",
                 flex: "1 1 0%",
-                height: "100%",
+                // For now, we set height to 86vh to manage text overflow caused by the header.
+                height: "86vh",
                 "flex-direction": "row",
                 position: "fixed",
                 overflow: "visible",
@@ -290,7 +295,7 @@ class SolveActivityPage extends React.Component<Props, State> {
                 </ReactResizeDetector>
               </div>
 
-              <div>
+              <div className={classes.mdDescription}>
                 <MarkdownRenderer content={activity.description} />
               </div>
             </SplitPane>
