@@ -36,6 +36,7 @@ type Props = {
   handleOpenPastSubmissionsSidePanel: void => void,
   activityName: string,
   classes: any,
+  style: any,
   history: any,
   canShowOtherSolutions: boolean,
   onlyTitle: boolean,
@@ -70,7 +71,7 @@ function getLeftTitle(
 
 function SolvePageHeader(props: Props) {
   return (
-    <div className={props.classes.secondHeader}>
+    <div style={props.style} className={props.classes.secondHeader}>
       {!props.onlyTitle && (
         <div className={props.classes.topLeftButtons}>
           {getLeftTitle(

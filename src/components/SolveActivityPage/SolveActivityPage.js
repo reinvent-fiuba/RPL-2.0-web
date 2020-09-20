@@ -53,8 +53,7 @@ const styles = theme => ({
   },
   editor: {
     display: "flex",
-    // height: "100%",
-    height: "85vh",
+    height: "100%",
   },
 });
 

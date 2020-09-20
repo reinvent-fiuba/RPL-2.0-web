@@ -356,7 +356,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
           options={{
             renderFinalNewline: true,
             readOnly: this.isReadOnlyFile(selectedEditor),
-            scrollBeyondLastLine: false,
+            scrollBeyondLastLine: true,
             wordWrap: "on",
           }}
           language={this.getLanguageForMonaco()}
