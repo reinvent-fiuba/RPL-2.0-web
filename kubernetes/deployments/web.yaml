@@ -20,7 +20,8 @@ spec:
         task: core
       containers:
       - name: webapp
-        image: gcr.io/fiuba-rpl/rpl-web:latest
+        imagePullPolicy: IfNotPresent
+        image: gcr.io/fiuba-rpl/rpl-web
         resources:
           requests:
             cpu: 10m
