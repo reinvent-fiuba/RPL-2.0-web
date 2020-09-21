@@ -7,7 +7,7 @@ import { withState } from "../../utils/State";
 
 const styles = theme => ({
   secondHeader: {
-    backgroundColor: "rgb(244, 243, 243)",
+    backgroundColor: theme.palette.background.default,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -17,7 +17,7 @@ const styles = theme => ({
   secondHeaderTitle: {
     alignSelf: "center",
     margin: "0px",
-    color: "rgb(121, 116, 116)",
+    color: theme.palette.text.primary,
     fontFamily: "Arial, Verdana, san-serif",
   },
   topLeftButtons: {
@@ -36,6 +36,7 @@ type Props = {
   handleOpenPastSubmissionsSidePanel: void => void,
   activityName: string,
   classes: any,
+  style: any,
   history: any,
   canShowOtherSolutions: boolean,
   onlyTitle: boolean,
@@ -70,7 +71,7 @@ function getLeftTitle(
 
 function SolvePageHeader(props: Props) {
   return (
-    <div className={props.classes.secondHeader}>
+    <div style={props.style} className={props.classes.secondHeader}>
       {!props.onlyTitle && (
         <div className={props.classes.topLeftButtons}>
           {getLeftTitle(
@@ -81,7 +82,7 @@ function SolvePageHeader(props: Props) {
           )}
         </div>
       )}
-      <h1 className={props.classes.secondHeaderTitle}>{props.activityName}</h1>
+      <h2 className={props.classes.secondHeaderTitle}>{props.activityName}</h2>
       {!props.onlyTitle && (
         <div className={props.classes.topRightButtons}>
           <Button

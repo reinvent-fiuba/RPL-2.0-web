@@ -1,6 +1,11 @@
-import * as React from "react";
-import { Markdown } from "react-showdown";
+import React from "react";
+import MarkdownView from "react-showdown";
+import "github-markdown-css";
 
 export default function MarkdownRenderer(props) {
-  return <Markdown markup={props.content} />;
+  return (
+    <div className="markdown-body" style={{ margin: "30px" }}>
+      <MarkdownView markdown={props.content} />
+    </div>
+);
 }

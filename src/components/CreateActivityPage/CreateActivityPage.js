@@ -25,7 +25,7 @@ import type { Activity, Category } from "../../types";
 import { validate } from "../../utils/inputValidator";
 
 // Styles
-import "react-mde/lib/styles/css/react-mde-all.css";
+import "github-markdown-css";
 
 const _ = require("lodash");
 
@@ -514,6 +514,7 @@ class CreateActivityPage extends React.Component<Props, State> {
                     minEditorHeight="53vh"
                     name="mdText"
                     value={mdText}
+                    className="markdown-body"
                     onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
                     selectedTab={mdEditorTab}
                     onTabChange={mdEditorTabChanged =>
