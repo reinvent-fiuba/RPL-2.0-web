@@ -20,7 +20,7 @@
     - `bug/*`: If you are fixing a bug.
     - `chore/*`: If you are working on other kind of task.
 3. When the code is ready and was properly tested, create a descriptive Pull Request, assign a reviewer and wait for some feedback.
-4. Once the Pull Request is approved, merge it with _**"Squash and Merge"**_ (please check that everything is working find before merging).
+4. Once the Pull Request is approved, merge it with _**"Squash and Merge"**_ (please check that everything is working fine before merging).
 
 ### Deploying
 
@@ -54,7 +54,7 @@ API_BASE_URL=http://localhost:8080
 Once you have this set, you could start the service running:
 
 ```
-npm start
+npm run start
 ```
 
 Note: For testing image upload features locally, you will need to also set the `CLOUDINARY_UPLOAD_PRESET` and `CLOUDINARY_URL` env variables in `.env.development` file. Ask these values to another contributor.
@@ -131,7 +131,7 @@ npm i
 npm run build-dev # This command is the same as build but using the .env.development instead of the .env.production
 ```
 
-- Build the docker image with:
+- Build the docker image in minikube's docker registry with:
 
 ```shell script
 eval $(minikube docker-env)
@@ -141,7 +141,7 @@ docker build -t gcr.io/fiuba-rpl/rpl-web:latest .
 - Create the kubernetes webapp service and deployment:
 ```shell script
 kubectl apply -f ./kubernetes/services/web.yaml
-kubectl apply -f kubernetes/deployments/web.yaml
+kubectl apply -f ./kubernetes/deployments/web.yaml
 ```
 
 Note: If you are having issues with the Docker image in kubernetes, maybe you should add the `imagePullPolicy: IfNotPresent` to the `kubernetes/deployments/web.yaml`
