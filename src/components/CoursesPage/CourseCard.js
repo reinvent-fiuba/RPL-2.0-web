@@ -11,20 +11,28 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { red } from "@material-ui/core/colors";
 import { withStyles } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
+import { getPalette } from "react-palette";
 import { withState } from "../../utils/State";
 
-const styles = () => ({
+const styles = theme => ({
   card: {
     maxWidth: 345,
+    margin: theme.spacing(1),
   },
   media: {
     height: 0,
     paddingTop: "56.25%", // 16:9
-    backgroundColor: "lightsteelblue",
     backgroundSize: "contain",
   },
+  actionText: {
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    width: "100%",
+    fontSize: "1em",
+  },
   action: {
-    marginLeft: "auto",
+    margin: "auto",
   },
   avatar: {
     backgroundColor: red[500],
@@ -34,6 +42,17 @@ const styles = () => ({
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
+  },
+  cardHeaderRoot: {
+    lineClamp: 2,
+    overflow: "hidden",
+  },
+  cardHeaderContent: {
+    overflow: "hidden",
+    // Wrap second line, this should fail in IE ¯\_(ツ)_/¯
+    display: "-webkit-box",
+    "-webkit-line-clamp": 2,
+    "-webkit-box-orient": "vertical",
   },
 });
 
@@ -45,12 +64,25 @@ type Props = {
   description: string,
   imgUri: string,
   enrolled: Boolean,
+  accepted: Boolean,
   onClickGoToCourse: (e: Event, courseId: number) => void,
   onClickEnrollToCourse: (e: Event, courseId: number) => void,
   onClickUnenrollToCourse: (e: Event, courseId: number) => void,
 };
 
-class CourseCard extends React.PureComponent<Props> {
+class CourseCard extends React.Component<Props, State> {
+  state = {
+    palette: {},
+  };
+
+  componentDidMount() {
+    getPalette(
+      this.props.imgUri || "https://www.materialui.co/materialIcons/social/school_black_192x192.png"
+    ).then(palette => {
+      this.setState({ palette });
+    });
+  }
+
   render() {
     const {
       classes,
@@ -66,21 +98,28 @@ class CourseCard extends React.PureComponent<Props> {
       onClickUnenrollToCourse,
     } = this.props;
 
+    const { palette } = this.state;
+
     return (
       <Card className={classes.card}>
         <CardHeader
           avatar={<Avatar className={classes.avatar}>{universityCourseId}</Avatar>}
+          classes={{
+            root: classes.cardHeaderRoot,
+            content: classes.cardHeaderContent,
+          }}
           title={name}
         />
-
         <CardMedia
           className={classes.media}
+          style={{
+            backgroundColor: palette.lightVibrant,
+          }}
           image={
             imgUri || "https://www.materialui.co/materialIcons/social/school_black_192x192.png"
           }
           title={name}
         />
-
         <CardContent>
           <Tooltip title={description} placement="top">
             <Typography
@@ -97,8 +136,14 @@ class CourseCard extends React.PureComponent<Props> {
         <CardActions disableSpacing>
           {enrolled ? (
             [
-              <Button color="secondary" onClick={e => onClickUnenrollToCourse(e, courseId)}>
-                Desinscribirse
+              <Button
+                color="secondary"
+                className={classes.action}
+                onClick={e => onClickUnenrollToCourse(e, courseId)}
+              >
+                <Typography noWrap className={classes.actionText}>
+                  Desinscribirse
+                </Typography>
               </Button>,
               <Button
                 color="primary"
@@ -106,7 +151,9 @@ class CourseCard extends React.PureComponent<Props> {
                 className={classes.action}
                 disabled={!accepted}
               >
-                Acceder
+                <Typography noWrap className={classes.actionText}>
+                  Acceder
+                </Typography>
               </Button>,
             ]
           ) : (
@@ -115,7 +162,9 @@ class CourseCard extends React.PureComponent<Props> {
               onClick={e => onClickEnrollToCourse(e, courseId)}
               className={classes.action}
             >
-              Inscribirse
+              <Typography noWrap className={classes.actionText}>
+                Inscribirse
+              </Typography>
             </Button>
           )}
         </CardActions>

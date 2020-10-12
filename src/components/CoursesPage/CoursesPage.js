@@ -168,7 +168,7 @@ class CoursesPage extends React.Component<Props, State> {
         {_.chunk(courses, 4).map((row, idx) => (
           <Grid container item xs={12} spacing={3} id={idx} key={idx}>
             {_.map(row, course => (
-              <Grid item xs={3} id={course.id} key={course.id}>
+              <Grid item xs={12} sm={6} md={6} lg={3} xl={3} id={course.id} key={course.id}>
                 <CourseCard
                   courseId={course.id}
                   universityCourseId={course.university_course_id}
@@ -295,6 +295,7 @@ class CoursesPage extends React.Component<Props, State> {
                 onChange={(event, newValue) => this.handleChange(event, newValue)}
                 indicatorColor="primary"
                 textColor="primary"
+                variant="scrollable"
               >
                 <Tab label="Mis cursos" />
                 <Tab label="Mis cursos pendientes" />
