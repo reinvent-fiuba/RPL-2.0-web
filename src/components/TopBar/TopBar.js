@@ -1,22 +1,15 @@
 import React from "react";
-import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
-import Divider from "@material-ui/core/Divider";
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import SchoolIcon from "@material-ui/icons/School";
 import Avatar from "@material-ui/core/Avatar";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import SettingsIcon from "@material-ui/icons/Settings";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import List from "@material-ui/core/List";
 import MenuIcon from "@material-ui/icons/Menu";
 import LockIcon from "@material-ui/icons/Lock";
+import { withRouter } from "react-router-dom";
 import { withState } from "../../utils/State";
 import NotificationsButton from "../SideBar/NotificationsButton";
-import { withRouter } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -57,12 +50,20 @@ class TopBar extends React.PureComponent {
     isNotificationModalOpen: false,
   };
 
-  handleCloseNotificationModal(){
-    this.setState({ isNotificationModalOpen: false })
+  handleCloseNotificationModal() {
+    this.setState({ isNotificationModalOpen: false });
   }
 
   render() {
-    const { open, title, handleDrawerOpen, context, classes, refreshNotifications, match } = this.props;
+    const {
+      open,
+      title,
+      handleDrawerOpen,
+      context,
+      classes,
+      refreshNotifications,
+      match,
+    } = this.props;
     if (!context.profile) return <div />;
     const { name, surname, is_admin, img_uri } = context && context.profile;
     const { courseId } = match.params;
@@ -91,7 +92,9 @@ class TopBar extends React.PureComponent {
             onClick={() => this.setState({ isNotificationModalOpen: !isNotificationModalOpen })}
           />
           <Typography variant="body1" className={classes.user}>
-            {name} {surname}
+            {name} 
+{' '}
+{surname}
           </Typography>
           <div className={classes.adminIcon}>{is_admin ? <LockIcon /> : <div />}</div>
           <Avatar src={img_uri}>

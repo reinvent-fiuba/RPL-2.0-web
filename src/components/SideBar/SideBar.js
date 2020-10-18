@@ -81,9 +81,10 @@ class SideBar extends React.PureComponent<Props> {
     if (courseId) {
       itemsLinks.Dashboard = `/courses/${courseId}/dashboard`;
       itemsLinks.Actividades = `/courses/${courseId}/activities`;
-      itemsLinks.Inscriptos = `/courses/${courseId}/students`;
       if (context.permissions && context.permissions.includes("course_edit")) {
         itemsLinks["Configuracion de Curso"] = `/courses/${courseId}/edit`;
+        itemsLinks.Inscriptos = `/courses/${courseId}/students`;
+        // itemsLinks.Docentes = `/courses/${courseId}/teachers`;
       }
     }
 

@@ -19,7 +19,7 @@ module.exports = (env, argv) => {
     output: {
       publicPath: "/",
       path: path.resolve(__dirname, "./dist"),
-      filename: "index_bundle.[contenthash].js",
+      filename: "index_bundle.[hash].js",
     },
     module: {
       rules: [

@@ -15,16 +15,16 @@ import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Fab from "@material-ui/core/Fab";
+import Select from "@material-ui/core/Select";
+import { MenuItem } from "@material-ui/core";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import coursesService from "../../services/coursesService";
 import authenticationService from "../../services/authenticationService";
 import ErrorNotification from "../../utils/ErrorNotification";
-import Select from "@material-ui/core/Select";
 
 import type { Student } from "../../types";
-import { MenuItem } from "@material-ui/core";
 
 const _ = require("lodash");
 
@@ -120,14 +120,16 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   students: Array<Student>,
+  teachers: Array<Student>,
   refreshStudentsNotification: boolean,
 };
 
-class StudentsPage extends React.Component<Props, State> {
+class StudentsTeachersPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     isSideBarOpen: false,
     students: [],
+    teachers: [],
     refreshStudentsNotification: false,
     editMode: false,
     currentUserId: "",
@@ -143,9 +145,11 @@ class StudentsPage extends React.Component<Props, State> {
   loadStudents() {
     const { match } = this.props;
     coursesService
-      .getAllStudentsByCourseId(match.params.courseId)
+      .getAllStudentsAndTeachersByCourseId(match.params.courseId)
       .then(response => {
-        this.setState({ students: response });
+        const students = response.filter(user => user.role === "student");
+        const teachers = response.filter(user => user.role === "admin");
+        this.setState({ students, teachers });
       })
       .catch(() => {
         this.setState({
@@ -190,7 +194,7 @@ class StudentsPage extends React.Component<Props, State> {
   }
 
   handleEditStudent(courseId: Number, userId: number, event: any) {
-    this.setState((prevState) => ({ editMode: true, currentUserId: userId }));
+    this.setState(prevState => ({ editMode: true, currentUserId: userId }));
   }
 
   handleSaveStudent(courseId: Number, userId: number, event: any) {
@@ -219,7 +223,7 @@ class StudentsPage extends React.Component<Props, State> {
   }
 
   handleSelectRole(event) {
-    this.setState({ currentUserRole : event.target.value });
+    this.setState({ currentUserRole: event.target.value });
   }
 
   renderRolesOptions() {
@@ -374,7 +378,7 @@ class StudentsPage extends React.Component<Props, State> {
   render() {
     const { classes, match } = this.props;
 
-    const { students, isSideBarOpen, refreshStudentsNotification, error } = this.state;
+    const { students, teachers, isSideBarOpen, refreshStudentsNotification, error } = this.state;
 
     return (
       <div>
@@ -395,10 +399,13 @@ class StudentsPage extends React.Component<Props, State> {
           <div className={classes.tableContainerDiv}>
             {students && this.renderStudents(students, classes)}
           </div>
+          <div className={classes.tableContainerDiv}>
+            {students && this.renderStudents(teachers, classes)}
+          </div>
         </main>
       </div>
     );
   }
 }
 
-export default withState(withStyles(styles)(StudentsPage));
+export default withState(withStyles(styles)(StudentsTeachersPage));
