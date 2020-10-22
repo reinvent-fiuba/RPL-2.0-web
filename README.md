@@ -48,7 +48,7 @@ API_BASE_URL=http://www.rpl.codes
 For running RPL-2.0-web against a local environment you should set the local URL where you have the backend running:
 
 ```
-API_BASE_URL=http://www.rpl.codes
+API_BASE_URL=http://localhost:8080
 ```
 
 Once you have this set, you could start the service running:

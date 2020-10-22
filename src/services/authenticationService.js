@@ -4,7 +4,7 @@ import type { Student } from "../types";
 const { request } = require("../utils/Request");
 
 const producer = {
-  base_url: process.env.API_BASE_URL || "http://www.rpl.codes",
+  base_url: process.env.API_BASE_URL || "http://localhost:8080",
 };
 
 exports.login = credentials =>
