@@ -370,12 +370,7 @@ class StudentsTeachersPage extends React.Component<Props, State> {
     return (
       <TableContainer component={Accordion} className={classes.tableContainer}>
         <AccordionSummary content={{ display: "inline" }} expandIcon={<ExpandMoreIcon />}>
-          <Typography
-            variant="h3"
-            color="textSecondary"
-            component="h3"
-            className={classes.titleContainer}
-          >
+          <Typography variant="h4" color="textSecondary" component="h4">
             {tableTitle}
           </Typography>
         </AccordionSummary>
