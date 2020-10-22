@@ -14,7 +14,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
-import Fab from "@material-ui/core/Fab";
+import Typography from "@material-ui/core/Typography";
 import Select from "@material-ui/core/Select";
 import { MenuItem } from "@material-ui/core";
 import SideBar from "../SideBar/SideBar";
@@ -238,7 +238,7 @@ class StudentsTeachersPage extends React.Component<Props, State> {
   renderHeadRow(classes: any) {
     const cells = [
       <TableCell key={1} className={classes.tableAvatarColumn} />,
-      <TableCell key={2}>Alumno</TableCell>,
+      <TableCell key={2}>Usuario</TableCell>,
       <TableCell key={3} align="right">
         Email
       </TableCell>,
@@ -364,9 +364,17 @@ class StudentsTeachersPage extends React.Component<Props, State> {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  renderStudents(students: Array<Student>, classes: any) {
+  renderUsers(tableTitle: string, students: Array<Student>, classes: any) {
     return (
       <TableContainer component={Paper} className={classes.tableContainer}>
+        <Typography
+          variant="h3"
+          color="textSecondary"
+          component="h3"
+          className={classes.titleContainer}
+        >
+          {tableTitle}
+        </Typography>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>{this.renderHeadRow(classes)}</TableHead>
           <TableBody>{students.map(student => this.renderStudentRow(student, classes))}</TableBody>
@@ -397,10 +405,10 @@ class StudentsTeachersPage extends React.Component<Props, State> {
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <div className={classes.tableContainerDiv}>
-            {students && this.renderStudents(students, classes)}
+            {students && this.renderUsers("Alumnos", students, classes)}
           </div>
           <div className={classes.tableContainerDiv}>
-            {students && this.renderStudents(teachers, classes)}
+            {teachers && this.renderUsers("Docentes", teachers, classes)}
           </div>
         </main>
       </div>
