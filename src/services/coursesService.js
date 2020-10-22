@@ -1,5 +1,5 @@
 // @flow
-import type { Course } from "../types";
+import type { Course, Student } from "../types";
 
 const _ = require("lodash");
 const { request } = require("../utils/Request");
@@ -17,7 +17,7 @@ exports.create = (
   semesterEndDate: string,
   courseAdminId: string,
   description: string,
-  imgUri: string,
+  imgUri: string
 ) =>
   request({
     url: `${producer.base_url}/api/courses`,
@@ -61,7 +61,7 @@ exports.edit = (
     method: "PUT",
   });
 
-exports.get = (courseId: number): Promise<Course> => 
+exports.get = (courseId: number): Promise<Course> =>
   request({
     url: `${producer.base_url}/api/courses/${courseId}`,
     method: "GET",
@@ -100,6 +100,12 @@ exports.unenroll = (courseId: number) =>
 exports.getAllStudentsByCourseId = (courseId: number): Promise<Array<Student>> =>
   request({
     url: `${producer.base_url}/api/courses/${courseId}/users?roleName=student`,
+    method: "GET",
+  });
+
+exports.getAllStudentsAndTeachersByCourseId = (courseId: number): Promise<Array<Student>> =>
+  request({
+    url: `${producer.base_url}/api/courses/${courseId}/users`,
     method: "GET",
   });
 

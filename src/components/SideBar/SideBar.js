@@ -43,7 +43,7 @@ const actionIcons = {
   Dashboard: BarChartIcon,
   Cursos: SchoolIcon,
   Actividades: CodeIcon,
-  Inscriptos: PeopleIcon,
+  "Alumnos y Docentes": PeopleIcon,
   Perfil: AccountCircleIcon,
   "Configuracion de Curso": SettingsIcon,
   Usuarios: RecentActorsIcon,
@@ -81,9 +81,9 @@ class SideBar extends React.PureComponent<Props> {
     if (courseId) {
       itemsLinks.Dashboard = `/courses/${courseId}/dashboard`;
       itemsLinks.Actividades = `/courses/${courseId}/activities`;
-      itemsLinks.Inscriptos = `/courses/${courseId}/students`;
       if (context.permissions && context.permissions.includes("course_edit")) {
         itemsLinks["Configuracion de Curso"] = `/courses/${courseId}/edit`;
+        itemsLinks["Alumnos y Docentes"] = `/courses/${courseId}/students`;
       }
     }
 

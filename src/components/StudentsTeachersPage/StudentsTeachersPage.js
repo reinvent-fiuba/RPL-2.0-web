@@ -7,24 +7,26 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
 import EditIcon from "@material-ui/icons/Edit";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
-import Fab from "@material-ui/core/Fab";
+import Typography from "@material-ui/core/Typography";
+import Select from "@material-ui/core/Select";
+import { MenuItem, Accordion } from "@material-ui/core";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import coursesService from "../../services/coursesService";
 import authenticationService from "../../services/authenticationService";
 import ErrorNotification from "../../utils/ErrorNotification";
-import Select from "@material-ui/core/Select";
 
 import type { Student } from "../../types";
-import { MenuItem } from "@material-ui/core";
 
 const _ = require("lodash");
 
@@ -120,14 +122,16 @@ type State = {
   error: { open: boolean, message: ?string },
   isSideBarOpen: boolean,
   students: Array<Student>,
+  teachers: Array<Student>,
   refreshStudentsNotification: boolean,
 };
 
-class StudentsPage extends React.Component<Props, State> {
+class StudentsTeachersPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
     isSideBarOpen: false,
     students: [],
+    teachers: [],
     refreshStudentsNotification: false,
     editMode: false,
     currentUserId: "",
@@ -143,9 +147,11 @@ class StudentsPage extends React.Component<Props, State> {
   loadStudents() {
     const { match } = this.props;
     coursesService
-      .getAllStudentsByCourseId(match.params.courseId)
+      .getAllStudentsAndTeachersByCourseId(match.params.courseId)
       .then(response => {
-        this.setState({ students: response });
+        const students = response.filter(user => user.role === "student");
+        const teachers = response.filter(user => user.role === "admin");
+        this.setState({ students, teachers });
       })
       .catch(() => {
         this.setState({
@@ -190,7 +196,7 @@ class StudentsPage extends React.Component<Props, State> {
   }
 
   handleEditStudent(courseId: Number, userId: number, event: any) {
-    this.setState((prevState) => ({ editMode: true, currentUserId: userId }));
+    this.setState(prevState => ({ editMode: true, currentUserId: userId }));
   }
 
   handleSaveStudent(courseId: Number, userId: number, event: any) {
@@ -219,7 +225,7 @@ class StudentsPage extends React.Component<Props, State> {
   }
 
   handleSelectRole(event) {
-    this.setState({ currentUserRole : event.target.value });
+    this.setState({ currentUserRole: event.target.value });
   }
 
   renderRolesOptions() {
@@ -234,7 +240,7 @@ class StudentsPage extends React.Component<Props, State> {
   renderHeadRow(classes: any) {
     const cells = [
       <TableCell key={1} className={classes.tableAvatarColumn} />,
-      <TableCell key={2}>Alumno</TableCell>,
+      <TableCell key={2}>Usuario</TableCell>,
       <TableCell key={3} align="right">
         Email
       </TableCell>,
@@ -360,13 +366,22 @@ class StudentsPage extends React.Component<Props, State> {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  renderStudents(students: Array<Student>, classes: any) {
+  renderUsers(tableTitle: string, students: Array<Student>, classes: any) {
     return (
-      <TableContainer component={Paper} className={classes.tableContainer}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>{this.renderHeadRow(classes)}</TableHead>
-          <TableBody>{students.map(student => this.renderStudentRow(student, classes))}</TableBody>
-        </Table>
+      <TableContainer component={Accordion} className={classes.tableContainer}>
+        <AccordionSummary content={{ display: "inline" }} expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h4" color="textSecondary" component="h4">
+            {tableTitle}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>{this.renderHeadRow(classes)}</TableHead>
+            <TableBody>
+              {students.map(student => this.renderStudentRow(student, classes))}
+            </TableBody>
+          </Table>
+        </AccordionDetails>
       </TableContainer>
     );
   }
@@ -374,7 +389,7 @@ class StudentsPage extends React.Component<Props, State> {
   render() {
     const { classes, match } = this.props;
 
-    const { students, isSideBarOpen, refreshStudentsNotification, error } = this.state;
+    const { students, teachers, isSideBarOpen, refreshStudentsNotification, error } = this.state;
 
     return (
       <div>
@@ -393,7 +408,10 @@ class StudentsPage extends React.Component<Props, State> {
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <div className={classes.tableContainerDiv}>
-            {students && this.renderStudents(students, classes)}
+            {students && this.renderUsers("Alumnos", students, classes)}
+          </div>
+          <div className={classes.tableContainerDiv}>
+            {teachers && this.renderUsers("Docentes", teachers, classes)}
           </div>
         </main>
       </div>
@@ -401,4 +419,4 @@ class StudentsPage extends React.Component<Props, State> {
   }
 }
 
-export default withState(withStyles(styles)(StudentsPage));
+export default withState(withStyles(styles)(StudentsTeachersPage));
