@@ -7,7 +7,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
 import EditIcon from "@material-ui/icons/Edit";
@@ -16,7 +15,10 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import Select from "@material-ui/core/Select";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem, Accordion } from "@material-ui/core";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import SideBar from "../SideBar/SideBar";
 import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
@@ -366,19 +368,25 @@ class StudentsTeachersPage extends React.Component<Props, State> {
   // eslint-disable-next-line class-methods-use-this
   renderUsers(tableTitle: string, students: Array<Student>, classes: any) {
     return (
-      <TableContainer component={Paper} className={classes.tableContainer}>
-        <Typography
-          variant="h3"
-          color="textSecondary"
-          component="h3"
-          className={classes.titleContainer}
-        >
-          {tableTitle}
-        </Typography>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>{this.renderHeadRow(classes)}</TableHead>
-          <TableBody>{students.map(student => this.renderStudentRow(student, classes))}</TableBody>
-        </Table>
+      <TableContainer component={Accordion} className={classes.tableContainer}>
+        <AccordionSummary content={{ display: "inline" }} expandIcon={<ExpandMoreIcon />}>
+          <Typography
+            variant="h3"
+            color="textSecondary"
+            component="h3"
+            className={classes.titleContainer}
+          >
+            {tableTitle}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>{this.renderHeadRow(classes)}</TableHead>
+            <TableBody>
+              {students.map(student => this.renderStudentRow(student, classes))}
+            </TableBody>
+          </Table>
+        </AccordionDetails>
       </TableContainer>
     );
   }
