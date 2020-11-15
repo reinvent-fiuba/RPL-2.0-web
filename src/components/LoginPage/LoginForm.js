@@ -94,12 +94,12 @@ class LoginForm extends React.Component<Props, State> {
 
     return (
       <div>
-        {error.open && <ErrorNotification open={error.open} message={error.message} />}
+        {/* {error.open && <ErrorNotification open={error.open} message={error.message} />} */}
 
         <Typography component="h1" variant="h5">
-          Log In
+          Estamos haciendo mantenimiento de la plataforma. Disculpen las molestias!
         </Typography>
-        <form noValidate className={classes.form}>
+        {/* <form noValidate className={classes.form}>
           <TextField
             margin="normal"
             required
@@ -144,7 +144,7 @@ class LoginForm extends React.Component<Props, State> {
               No tenés una cuenta? Registrate
             </Link>
           </Grid>
-        </Grid>
+        </Grid> */}
       </div>
     );
   }

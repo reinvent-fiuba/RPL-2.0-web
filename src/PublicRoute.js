@@ -17,7 +17,7 @@ function PublicRoute({ component: Component, context, ...rest }) {
         return (
           <Redirect
             to={{
-              pathname: "/courses",
+              pathname: "/login",
               state: { goTo: routeProps.location.pathname },
             }}
           />
