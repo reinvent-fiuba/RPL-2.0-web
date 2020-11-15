@@ -20,7 +20,7 @@ spec:
         task: core
       containers:
       - name: webapp
-        image: gcr.io/fiuba-rpl/rpl-web:latest
+        image: gcr.io/vigilant-mix-295715/rpl-web:latest
         resources:
           requests:
             cpu: 10m
