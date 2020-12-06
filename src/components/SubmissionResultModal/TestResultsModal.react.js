@@ -52,6 +52,7 @@ const styles = () => ({
     width: "100%",
     display: "flex",
     paddingBottom: "70px",
+    flex: "1 0 auto",
   },
 });
 
