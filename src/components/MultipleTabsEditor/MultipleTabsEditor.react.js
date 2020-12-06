@@ -306,7 +306,8 @@ class MultipleTabsEditor extends React.Component<Props, State> {
             existingFilenames={Object.keys(code)}
             open={fileNameModal.isNewFileModalOpen}
             handleCloseModal={(prevFileName, newFileName) =>
-              this.handleCloseFileNameModal(prevFileName, newFileName, code)}
+              this.handleCloseFileNameModal(prevFileName, newFileName, code)
+            }
           />
         )}
         <div className={classes.tabsContainer}>
