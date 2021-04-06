@@ -273,6 +273,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   const separateNewLines = str => (
                     str.replace(/(\n)\1+/g, str => str.split('').join(' '))
                   );
+                  // Hack to fix issue #97 where '\n\n' is not displayed in diff viewer correctly but '\n \n' does
                   ioResult.run_output = separateNewLines(ioResult.run_output);
                   ioResult.expected_output = separateNewLines(ioResult.expected_output);
                   return (
