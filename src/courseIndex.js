@@ -15,14 +15,18 @@ import EditCoursePage from "./components/EditCoursePage/EditCoursePage";
 class CourseIndex extends React.PureComponent {
   componentDidMount() {
     const courseId = parseInt(this.props.match.params.courseId);
-    if (!isNaN(courseId) &&
-      (!this.props.context.permissions || !this.props.context.course || this.props.context.course.id !== courseId)) {
+    if (
+      !isNaN(courseId) &&
+      (!this.props.context.permissions ||
+        !this.props.context.course ||
+        this.props.context.course.id !== courseId)
+    ) {
       this.props.context.invalidateByKeys("permissions", "course", "activities");
       coursesService
         .getPermissions(courseId)
         .then(permissions => {
           if (permissions.length === 0) return this.props.history.goBack();
-          return this.props.context.set("permissions", permissions)
+          return this.props.context.set("permissions", permissions);
         })
         .then(() => coursesService.get(courseId))
         .then(course => this.props.context.set("course", course))
@@ -45,13 +49,13 @@ class CourseIndex extends React.PureComponent {
         <Route
           exact
           path="/courses/:courseId"
-          render={() => (
-          permissions.includes("activity_manage") ? (
-            <Redirect to={`/courses/${courseId}/dashboard`} />
-          ) : (
-            <Redirect to={`/courses/${courseId}/activities`} />
-          )
-        )}/>
+          render={() =>
+            permissions.includes("activity_manage") ? (
+              <Redirect to={`/courses/${courseId}/dashboard`} />
+            ) : (
+              <Redirect to={`/courses/${courseId}/activities`} />
+            )}
+        />
         <Route exact path="/courses/:courseId/edit" component={EditCoursePage} />
         <Route exact path="/courses/:courseId/activities" component={activityPage} />
         <Route exact path="/courses/:courseId/dashboard" component={DashboardPage} />
