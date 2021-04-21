@@ -51,7 +51,6 @@
     "html-webpack-plugin": "^3.2.0",
     "monaco-editor-webpack-plugin": "^1.9.1",
     "node-env-run": "^4.0.2",
-    "nodemon": "^1.19.4",
     "npm-run-all": "^4.1.5",
     "pino-colada": "^1.5.1",
     "prettier": "^1.19.1",
