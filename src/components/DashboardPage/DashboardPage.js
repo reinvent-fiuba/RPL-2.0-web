@@ -15,7 +15,10 @@ import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
 import StudentCategoryStats from "./StudentCategoryStats";
 import CategoryStats from "./CategoryStats";
+import ActivityStats from "./ActivityStats";
 import Scoreboard from "./Scoreboard";
+
+import Tag from "../commons/Tag";
 
 const drawerWidth = 240;
 
@@ -161,6 +164,7 @@ class ActivitiesPage extends React.Component<Props, State> {
       <TeacherStats courseId={match.params.courseId} />,
       <StudentCategoryStats className={classes.stats} courseId={match.params.courseId} />,
       <CategoryStats className={classes.stats} courseId={match.params.courseId} />,
+      <ActivityStats className={classes.stats} courseId={match.params.courseId} />,
     ];
 
     return (
@@ -192,6 +196,14 @@ class ActivitiesPage extends React.Component<Props, State> {
                     <Tab label="Envios por Fecha" />
                     <Tab label="Envios por Alumno" />
                     <Tab label="Envios por Categoría" />
+                    <Tab
+                      label={(
+                        <div>
+                          Alumnos por Ejercicio
+                          <Tag text="New!" />
+                        </div>
+                      )}
+                    />
                   </Tabs>
                 </Paper>
                 {teacherStats[this.state.current]}

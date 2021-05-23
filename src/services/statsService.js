@@ -43,3 +43,9 @@ exports.getSubmissionStatsByStudent = (courseId: number, date: ?string): Promise
     }`,
     method: "GET",
   });
+
+exports.getActivityStatsByStudent = (courseId: number, activityId: number): Promise<Object> =>
+  request({
+    url: `${producer.base_url}/api/stats/courses/${courseId}/submissions?groupBy=user&activityId=${activityId}`,
+    method: "GET",
+  });
