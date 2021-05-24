@@ -5,6 +5,11 @@ import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { withState } from "../../utils/State";
 
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Link from "@material-ui/core/Link";
+import { Link as RouterLink } from "react-router-dom";
+const LinkRouter = props => <Link {...props} component={RouterLink} />;
+
 const styles = theme => ({
   secondHeader: {
     backgroundColor: theme.palette.background.default,
@@ -26,7 +31,7 @@ const styles = theme => ({
   topRightButtons: {
     alignSelf: "flex-end",
   },
-  mySubmissionsButton: {
+  rightButton: {
     marginRight: "5px",
   },
 });
@@ -34,7 +39,7 @@ const styles = theme => ({
 type Props = {
   handleSubmitActivity: Event => void,
   handleOpenPastSubmissionsSidePanel: void => void,
-  activityName: string,
+  activity: string,
   classes: any,
   style: any,
   history: any,
@@ -50,7 +55,10 @@ function getLeftTitle(
 ) {
   if (permissions.includes("activity_manage")) {
     return (
-      <Button onClick={() => history.push(`${history.location.pathname}/edit`)}>
+      <Button
+        className={classes.rightButton}
+        onClick={() => history.push(`${history.location.pathname}/edit`)}
+      >
         Volver a modo profesor
       </Button>
     );
@@ -59,8 +67,7 @@ function getLeftTitle(
     <Button
       type="submit"
       variant="contained"
-      color="primary"
-      className={classes.topRightButtons}
+      className={classes.rightButton}
       disabled={!canShowOtherSolutions}
       onClick={() => history.push(`${history.location.pathname}/definitives`)}
     >
@@ -70,21 +77,29 @@ function getLeftTitle(
 }
 
 function SolvePageHeader(props: Props) {
+  const { course } = props.context;
+  const { activity } = props;
   return (
     <div style={props.style} className={props.classes.secondHeader}>
+      <Breadcrumbs aria-label="breadcrumb">
+        <LinkRouter color="inherit" to={`/courses/${course.id}/dashboard`}>
+          {props.context.course.name}
+        </LinkRouter>
+        <LinkRouter color="inherit" to={`/courses/${course.id}/activities`}>
+          Actividades
+        </LinkRouter>
+        <LinkRouter color="inherit" to={props.history.location.pathname}>
+          {activity.name}
+        </LinkRouter>
+      </Breadcrumbs>
       {!props.onlyTitle && (
-        <div className={props.classes.topLeftButtons}>
+        <div className={props.classes.topRightButtons}>
           {getLeftTitle(
             props.history,
             props.context.permissions,
             props.classes,
             props.canShowOtherSolutions
           )}
-        </div>
-      )}
-      <h2 className={props.classes.secondHeaderTitle}>{props.activityName}</h2>
-      {!props.onlyTitle && (
-        <div className={props.classes.topRightButtons}>
           <Button
             type="submit"
             variant="contained"

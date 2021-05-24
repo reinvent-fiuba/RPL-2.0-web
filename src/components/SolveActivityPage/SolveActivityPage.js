@@ -248,7 +248,7 @@ class SolveActivityPage extends React.Component<Props, State> {
             <SolvePageHeader
               handleSubmitActivity={e => this.handleSubmitActivity(e)}
               handleOpenPastSubmissionsSidePanel={() => this.setOpenSubmissionsPanel()}
-              activityName={activity.name}
+              activity={activity}
               history={history}
               canShowOtherSolutions={finalSolutionId !== null}
             />

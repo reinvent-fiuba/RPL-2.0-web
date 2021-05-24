@@ -241,7 +241,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
         {activity && (
           <main className={classes.content}>
             <div className={classes.drawerHeader} />
-            <SolvePageHeader activityName={activity.name} onlyTitle />
+            <SolvePageHeader activity={activity} history={history} onlyTitle />
             <SolveActivityFirstModal
               open={openModal}
               teacherMode={teacherMode}
