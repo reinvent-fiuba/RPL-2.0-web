@@ -104,7 +104,7 @@ function SolvePageHeader(props: Props) {
             type="submit"
             variant="contained"
             color="primary"
-            className={props.classes.mySubmissionsButton}
+            className={props.classes.rightButton}
             onClick={e => props.handleOpenPastSubmissionsSidePanel()}
           >
             Mis entregas
