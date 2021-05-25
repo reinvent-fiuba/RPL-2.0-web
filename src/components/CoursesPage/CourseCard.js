@@ -76,7 +76,7 @@ class CourseCard extends React.Component<Props, State> {
 
   state = {
     palette: {},
-    unenrolling: Boolean
+    isUnenrolling: false
   };
 
   componentDidMount() {
@@ -85,25 +85,104 @@ class CourseCard extends React.Component<Props, State> {
     ).then(palette => {
       this.setState({ palette });
     });
-    this.setState({unenrolling: false});
+    this.setState({isUnenrolling: false});
   }
 
-  render() {
+  renderActions(enrolled, isUnrolling) {
     const {
       classes,
-      courseId,
-      universityCourseId,
-      name,
-      description,
-      enrolled,
-      imgUri,
       accepted,
+      courseId,
       onClickGoToCourse,
       onClickEnrollToCourse,
       onClickUnenrollToCourse,
     } = this.props;
 
-    const { palette, unenrolling } = this.state;
+    if (!enrolled) {
+      return (
+        <CardActions disableSpacing>
+          <Button
+            color="primary"
+            onClick={e => onClickEnrollToCourse(e, courseId)}
+            className={classes.action}
+          >
+            <Typography noWrap className={classes.actionText}>
+              Inscribirse
+            </Typography>
+          </Button>
+        </CardActions>);
+    }
+    if (isUnrolling) {
+        return (
+          <CardActions disableSpacing>
+            <Typography noWrap className={classes.actionText}>
+              ¿Estás seguro?
+            </Typography>
+            <Button
+              color="secondary"
+              onClick={e => {
+                onClickUnenrollToCourse(e, courseId);
+                this.setState({isUnenrolling: false});
+              }}
+              className={classes.action}
+              variant="contained"
+              style={{ marginRight: "5px" }}
+            >
+              <Typography noWrap className={classes.actionText}>
+                Si
+              </Typography>
+            </Button> 
+            <Button
+              color="primary"
+              onClick={() => { this.setState({isUnenrolling: false}) }}
+              className={classes.action}
+              variant="contained"
+            >
+              <Typography noWrap className={classes.actionText}>
+                No
+              </Typography>
+            </Button>
+          </CardActions>);
+    }
+    return ( 
+      <CardActions disableSpacing>
+        <Tooltip title="Desinscribirme del curso">
+          <IconButton 
+            aria-label="desinscribirme"
+            color="secondary"
+            className={classes.action}
+            onClick={() => { this.setState({isUnenrolling: true}) }}
+            style={{ marginLeft: "5px", padding: "0px" }}
+          >
+            <ExitToAppIcon />
+          </IconButton>
+        </Tooltip>
+        <Button
+          color="primary"
+          onClick={e => onClickGoToCourse(e, courseId)}
+          className={classes.action}
+          disabled={!accepted}
+          variant="contained"
+          style={{ marginRight: "5px" }}
+        >
+          <Typography noWrap className={classes.actionText}>
+            Acceder
+          </Typography>
+        </Button>
+      </CardActions>);
+  }
+
+  render() {
+    const {
+      classes,
+      universityCourseId,
+      name,
+      description,
+      enrolled,
+      imgUri
+    } = this.props;
+
+    const { palette, isUnenrolling } = this.state;
 
     return (
       <Card className={classes.card}>
@@ -137,73 +216,7 @@ class CourseCard extends React.Component<Props, State> {
             </Typography>
           </Tooltip>
         </CardContent>
-
-        <CardActions disableSpacing>
-          {enrolled ?
-          ( unenrolling ? 
-            ([<Typography noWrap className={classes.actionText}>
-              ¿Estás seguro?
-            </Typography>, 
-            <Button
-              color="secondary"
-              onClick={e => onClickUnenrollToCourse(e, courseId)}
-              className={classes.action}
-              variant="contained"
-              style={{ marginRight: "5px" }}
-            >
-              <Typography noWrap className={classes.actionText}>
-                Si
-              </Typography>
-            </Button>, 
-            <Button
-              color="primary"
-              onClick={() => { 
-                this.setState({unenrolling: false})
-              }}
-              className={classes.action}
-              variant="contained"
-              >
-              <Typography noWrap className={classes.actionText}>
-                No
-              </Typography>
-            </Button>]): 
-            ([
-              <Tooltip title="Desinscribirme del curso">
-                <IconButton 
-                  aria-label="desinscribirme"
-                  color="secondary"
-                  className={classes.action}
-                  onClick={() => { this.setState({unenrolling: true}) }}
-                  style={{ marginLeft: "5px", padding: "0px" }}
-                  >
-                  <ExitToAppIcon />
-                </IconButton>
-              </Tooltip>,
-              <Button
-                color="primary"
-                onClick={e => onClickGoToCourse(e, courseId)}
-                className={classes.action}
-                disabled={!accepted}
-                variant="contained"
-                style={{ marginRight: "5px" }}
-              >
-                <Typography noWrap className={classes.actionText}>
-                  Acceder
-                </Typography>
-              </Button>,
-            ]
-          )) : (
-            <Button
-              color="primary"
-              onClick={e => onClickEnrollToCourse(e, courseId)}
-              className={classes.action}
-            >
-              <Typography noWrap className={classes.actionText}>
-                Inscribirse
-              </Typography>
-            </Button>
-          )}
-        </CardActions>
+        { this.renderActions(enrolled, isUnenrolling) }
       </Card>
     );
   }
