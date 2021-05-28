@@ -12,8 +12,6 @@ import Avatar from "@material-ui/core/Avatar";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import SolveActivityFirstModal from "./SolveActivityFirstModal.react";
 import { withState } from "../../utils/State";
-import TopBar from "../TopBar/TopBar";
-import SideBar from "../SideBar/SideBar";
 import activitiesService from "../../services/activitiesService";
 import submissionsService from "../../services/submissionsService";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
@@ -206,10 +204,6 @@ class FinalActivitiesPage extends React.Component<Props, State> {
     this.setState({ editorWidth: width });
   }
 
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
-  }
-
   render() {
     const { classes, history } = this.props;
     const {
@@ -227,16 +221,6 @@ class FinalActivitiesPage extends React.Component<Props, State> {
       <div className={classes.topDiv}>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
 
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Otras soluciones de estudiantes"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={this.props.match.params.courseId}
-        />
         {!activity && <CircularProgress className={classes.circularProgress} />}
         {activity && (
           <main className={classes.content}>

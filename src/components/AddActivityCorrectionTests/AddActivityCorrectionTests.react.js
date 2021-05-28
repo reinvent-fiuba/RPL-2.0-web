@@ -19,8 +19,6 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import CustomSnackbar from "../../utils/CustomSnackbar.react";
 import ErrorNotification from "../../utils/ErrorNotification";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import IOTestsCorrection from "./IOTestsCorrection.react";
 import UnitTestsCorrection from "./UnitTestsCorrection.react";
 import { withState } from "../../utils/State";
@@ -174,10 +172,6 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
           },
         });
       });
-  }
-
-  handleSwitchDrawer() {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   handleClickNext(currentPanel, nextPanel) {
@@ -346,16 +340,6 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
         {successSave && (
           <CustomSnackbar open={successSave} message="La actividad se guardó con éxito" />
         )}
-        <TopBar
-          handleDrawerOpen={() => this.handleSwitchDrawer()}
-          open={isSideBarOpen}
-          title="Tests y Flags de compilación"
-        />
-        <SideBar
-          handleDrawerClose={() => this.handleSwitchDrawer()}
-          open={isSideBarOpen}
-          courseId={courseId}
-        />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
 

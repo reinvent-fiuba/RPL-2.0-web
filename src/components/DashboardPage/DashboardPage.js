@@ -4,8 +4,6 @@ import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import coursesService from "../../services/coursesService";
 import StudentStats from "./StudentStats";
 import TeacherStats from "./TeacherStats";
@@ -146,10 +144,6 @@ class ActivitiesPage extends React.Component<Props, State> {
       });
   }
 
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
-  }
-
   handleChange(event, newValue) {
     this.setState({ current: newValue });
   }
@@ -170,16 +164,6 @@ class ActivitiesPage extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Dashboard"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={match.params.courseId}
-        />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <div className={classes.dashboardContainer}>

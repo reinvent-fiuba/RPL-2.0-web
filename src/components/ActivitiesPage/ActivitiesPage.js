@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
+import withPageWrapper from "../../utils/PageWrapper";
 import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
 import ErrorNotification from "../../utils/ErrorNotification";
@@ -105,10 +104,6 @@ class ActivitiesPage extends React.Component<Props, State> {
       });
   }
 
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
-  }
-
   // submissions sidepanel
   setOpenPanel(activityId: number) {
     this.setState({ submissionsPanel: { isOpen: true, activityId } });
@@ -190,17 +185,6 @@ class ActivitiesPage extends React.Component<Props, State> {
             courseId={match.params.courseId}
           />
         )}
-
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Actividades"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={match.params.courseId}
-        />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
 

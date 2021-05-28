@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { withState } from "./utils/State";
+import PageWrapper from "./utils/PageWrapper";
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
@@ -22,7 +23,11 @@ function PrivateRoute({ component: Component, context, ...rest }) {
             />
           );
         }
-        return <Component {...routeProps} />;
+        return (
+          <PageWrapper>
+            <Component {...routeProps} />
+          </PageWrapper>
+        );
       }}
     />
   );

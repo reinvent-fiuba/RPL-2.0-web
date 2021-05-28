@@ -15,8 +15,6 @@ import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import submissionsService from "../../services/submissionsService";
 import coursesService from "../../services/coursesService";
 import ativitiesService from "../../services/activitiesService";

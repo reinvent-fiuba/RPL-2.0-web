@@ -9,12 +9,11 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Paper from "@material-ui/core/Paper";
 import CourseCard from "./CourseCard";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import coursesService from "../../services/coursesService";
 import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
 import EnrollInformationModal from "./EnrollInformationModal";
+import withPageWrapper from "../../utils/PageWrapper";
 import type { Course } from "../../types";
 
 const _ = require("lodash");
@@ -193,10 +192,6 @@ class CoursesPage extends React.Component<Props, State> {
     );
   }
 
-  handleSwitchDrawer() {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
-  }
-
   handleCreateCourseClick() {
     this.props.history.push("/courses/create");
   }
@@ -260,16 +255,6 @@ class CoursesPage extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <TopBar
-          handleDrawerOpen={() => this.handleSwitchDrawer()}
-          open={isSideBarOpen}
-          title="Cursos"
-        />
-        <SideBar
-          handleDrawerClose={() => this.handleSwitchDrawer()}
-          open={isSideBarOpen}
-          courseId={this.props.match.params.courseId}
-        />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <div className={classes.dashboardContainer}>

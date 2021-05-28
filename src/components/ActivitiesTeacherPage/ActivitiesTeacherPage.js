@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
 import ErrorNotification from "../../utils/ErrorNotification";
@@ -13,6 +11,7 @@ import type { Activity } from "../../types";
 import ActivitiesTeacherTable from "./ActivitiesTeacherTable.react";
 import ConfirmDeleteActivityModal from "./ConfirmDeleteActivityModal.react";
 import ActivityCategoryModal from "../ActivityCategoryModal/ActivityCategoryModal";
+import withPageWrapper from "../../utils/PageWrapper";
 
 const _ = require("lodash");
 
@@ -107,10 +106,6 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
           },
         });
       });
-  }
-
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   handleClickOnActivityTitle(event: any, activityId: number) {
@@ -219,18 +214,6 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Actividades"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={match.params.courseId}
-        />
-
         <ActivityCategoryModal
           open={updateCategoryModal.open}
           key={updateCategoryModal.activityCategory && updateCategoryModal.activityCategory.id}

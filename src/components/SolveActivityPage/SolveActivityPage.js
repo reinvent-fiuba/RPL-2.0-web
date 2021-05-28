@@ -5,8 +5,6 @@ import SplitPane from "react-split-pane";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ReactResizeDetector from "react-resize-detector";
 import { withState } from "../../utils/State";
-import TopBar from "../TopBar/TopBar";
-import SideBar from "../SideBar/SideBar";
 import activitiesService from "../../services/activitiesService";
 import submissionsService from "../../services/submissionsService";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
@@ -129,10 +127,6 @@ class SolveActivityPage extends React.Component<Props, State> {
     this.setState({ editorWidth: width });
   }
 
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
-  }
-
   onCodeChange(code: { [string]: string }) {
     this.setState({ code });
   }
@@ -231,16 +225,6 @@ class SolveActivityPage extends React.Component<Props, State> {
           />
         )}
 
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Resolver Actividad"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={this.props.match.params.courseId}
-        />
         {!activity && <CircularProgress className={classes.circularProgress} />}
         {activity && (
           <main className={classes.content}>

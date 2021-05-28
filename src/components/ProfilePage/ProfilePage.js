@@ -1,7 +1,5 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import authenticationServer from "../../services/authenticationService";
 import ProfileView from "./ProfileView";
@@ -57,8 +55,6 @@ class ProfilePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.handleDrawerClose = this.handleDrawerClose.bind(this);
-    this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
     this.handleClickEdit = this.handleClickEdit.bind(this);
     this.handleClickSave = this.handleClickSave.bind(this);
   }
@@ -83,14 +79,6 @@ class ProfilePage extends React.Component {
       });
   }
 
-  handleDrawerOpen() {
-    this.setState({ open: true });
-  }
-
-  handleDrawerClose() {
-    this.setState({ open: false });
-  }
-
   handleClickEdit() {
     this.setState({ editMode: true });
   }
@@ -109,12 +97,6 @@ class ProfilePage extends React.Component {
 
     return (
       <div>
-        <TopBar
-          handleDrawerOpen={this.handleDrawerOpen}
-          open={this.state.open}
-          title="Perfil de Usuario"
-        />
-        <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
         <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <div className={classes.form}>

@@ -1,7 +1,5 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import CourseForm from "../CourseForm/CourseForm";
 
@@ -37,28 +35,12 @@ class CreateCoursePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.handleDrawerClose = this.handleDrawerClose.bind(this);
-    this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
-  }
-
-  handleDrawerOpen() {
-    this.setState({ open: true });
-  }
-
-  handleDrawerClose() {
-    this.setState({ open: false });
   }
 
   render() {
     const { classes, history } = this.props;
     return (
       <div>
-        <TopBar
-          handleDrawerOpen={this.handleDrawerOpen}
-          open={this.state.open}
-          title="Crear Curso"
-        />
-        <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
         <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <CourseForm history={history} />

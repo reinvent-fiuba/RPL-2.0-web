@@ -10,8 +10,6 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import usersService from "../../services/usersService";
 import ErrorNotification from "../../utils/ErrorNotification";
@@ -118,10 +116,6 @@ class UsersPage extends React.Component<Props, State> {
       });
   }
 
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
-  }
-
   renderUserRow(user: any, classes: any) {
     return (
       <TableRow hover key={user.student_id}>
@@ -179,23 +173,13 @@ class UsersPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, match } = this.props;
+    const { classes } = this.props;
 
     const { users, isSideBarOpen, error } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Usuarios"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={match.params.courseId}
-        />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <div className={classes.tableContainerDiv}>

@@ -92,9 +92,7 @@ class TopBar extends React.PureComponent {
             onClick={() => this.setState({ isNotificationModalOpen: !isNotificationModalOpen })}
           />
           <Typography variant="body1" className={classes.user}>
-            {name} 
-{' '}
-{surname}
+            {`${name} ${surname}`}
           </Typography>
           <div className={classes.adminIcon}>{is_admin ? <LockIcon /> : <div />}</div>
           <Avatar src={img_uri}>

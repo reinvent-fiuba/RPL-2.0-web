@@ -15,8 +15,6 @@ import * as Showdown from "showdown";
 import ReactResizeDetector from "react-resize-detector";
 import ErrorNotification from "../../utils/ErrorNotification";
 import { withState } from "../../utils/State";
-import TopBar from "../TopBar/TopBar";
-import SideBar from "../SideBar/SideBar";
 import ActivityCategoryModal from "../ActivityCategoryModal/ActivityCategoryModal";
 import activitiesService from "../../services/activitiesService";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
@@ -216,10 +214,6 @@ class CreateActivityPage extends React.Component<Props, State> {
     });
   }
 
-  handleSwitchDrawer() {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
-  }
-
   handleChange(event, valid) {
     event.persist();
     // Close error message
@@ -396,18 +390,6 @@ class CreateActivityPage extends React.Component<Props, State> {
           }
           titleText="Crear Categoría"
           saveButtonText="Crear"
-        />
-        <TopBar
-          handleDrawerOpen={() => this.handleSwitchDrawer()}
-          open={isSideBarOpen}
-          title={
-            activity === null || activity === undefined ? "Crear Actividad" : "Editar Actividad"
-          }
-        />
-        <SideBar
-          handleDrawerClose={() => this.handleSwitchDrawer()}
-          open={isSideBarOpen}
-          courseId={courseId}
         />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />

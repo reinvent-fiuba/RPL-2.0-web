@@ -21,27 +21,25 @@ showdown.setFlavor("github");
 const routing = (
   <StateProvider>
     <BrowserRouter>
-      <div>
-        <PublicRoute exact path="/" component={LoginPage} />
-        <PublicRoute path="/login" component={LoginPage} />
-        <PublicRoute path="/signup" component={SignupPage} />
-        <PublicRoute path="/forgotPassword" component={ForgotPasswordPage} />
-        <Route path="/user/changePassword" component={ResetPasswordPage} />
-        <Route path="/user/validateEmail" component={ValidateEmailPage} />
-        <PrivateRoute exact path="/users" component={UsersPage} />
-        <PrivateRoute exact path="/courses" component={CoursesPage} />
-        <PrivateRoute exact path="/profile" component={ProfilePage} />
-        <PrivateRoute path="/courses/create" component={CreateCoursePage} />
-        <PrivateRoute path="/courses/:courseId/" component={CourseIndex} />
-        {/* CourseIndex fetches permissions and render the following routes:
-              /courses/:courseId/students
-              /courses/:courseId/activity/create
-              /courses/:courseId/activities
-              /courses/:courseId/activities/:activityId
-              /courses/:courseId/activities/:activityId/edit
-              /courses/:courseId/activities/:activityId/edit/correction
-        */}
-      </div>
+      <PublicRoute exact path="/" component={LoginPage} />
+      <PublicRoute path="/login" component={LoginPage} />
+      <PublicRoute path="/signup" component={SignupPage} />
+      <PublicRoute path="/forgotPassword" component={ForgotPasswordPage} />
+      <Route path="/user/changePassword" component={ResetPasswordPage} />
+      <Route path="/user/validateEmail" component={ValidateEmailPage} />
+      <PrivateRoute exact path="/users" component={UsersPage} />
+      <PrivateRoute exact path="/courses" component={CoursesPage} />
+      <PrivateRoute exact path="/profile" component={ProfilePage} />
+      <PrivateRoute path="/courses/create" component={CreateCoursePage} />
+      <PrivateRoute path="/courses/:courseId/" component={CourseIndex} />
+      {/* CourseIndex fetches permissions and render the following routes:
+            /courses/:courseId/students
+            /courses/:courseId/activity/create
+            /courses/:courseId/activities
+            /courses/:courseId/activities/:activityId
+            /courses/:courseId/activities/:activityId/edit
+            /courses/:courseId/activities/:activityId/edit/correction
+      */}
     </BrowserRouter>
   </StateProvider>
 );

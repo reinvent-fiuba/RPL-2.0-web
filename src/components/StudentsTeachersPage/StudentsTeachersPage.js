@@ -19,8 +19,6 @@ import { MenuItem, Accordion } from "@material-ui/core";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import coursesService from "../../services/coursesService";
 import authenticationService from "../../services/authenticationService";
@@ -167,10 +165,6 @@ class StudentsTeachersPage extends React.Component<Props, State> {
     authenticationService.getRoles().then(roles => {
       this.setState({ roles });
     });
-  }
-
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   handleAcceptStudent(courseId: number, userId: number, event: any) {
@@ -394,17 +388,6 @@ class StudentsTeachersPage extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Inscriptos"
-          refreshNotifications={refreshStudentsNotification}
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={match.params.courseId}
-        />
         <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
           <div className={classes.drawerHeader} />
           <div className={classes.tableContainerDiv}>
