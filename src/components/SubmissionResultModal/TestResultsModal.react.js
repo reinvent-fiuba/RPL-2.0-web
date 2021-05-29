@@ -12,12 +12,14 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
 import ReactDiffViewer from "react-diff-viewer";
 import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 import SubmissionResultStatusIcon from "../../utils/icons";
 import type { SubmissionResult } from "../../types";
 import getText from "../../utils/messages";
 import submissionsService from "../../services/submissionsService";
 import ErrorNotification from "../../utils/ErrorNotification";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
+import EnunciadoSection from "./EnunciadoSection";
 import { withState } from "../../utils/State";
 
 const styles = () => ({
@@ -54,6 +56,10 @@ const styles = () => ({
     paddingBottom: "70px",
     flex: "1 0 auto",
   },
+  divider: {
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  }
 });
 
 type Props = {
@@ -170,6 +176,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
       showWaitingDialog,
       activityFinalSubmissionId,
       context,
+      courseId,
     } = this.props;
     const { results, error } = this.state;
 
@@ -250,6 +257,10 @@ class SubmissionResultModal extends React.Component<Props, State> {
                   Marcar como solucion definitiva
                 </Button>
               )}
+              {/* Enunciado */}
+              <Box mb={3}>
+                <EnunciadoSection courseId={courseId} activityId={results.activity_id} />
+              </Box>
               {/* IO test results (if any) */}
               {results.io_test_run_results.length > 0 && (
                 <Typography variant="h5" color="black" component="p">
@@ -270,9 +281,8 @@ class SubmissionResultModal extends React.Component<Props, State> {
                           },
                         }
                       : {};
-                  const separateNewLines = str => (
-                    str.replace(/(\n)\1+/g, str => str.split('').join(' '))
-                  );
+                  const separateNewLines = str =>
+                    str.replace(/(\n)\1+/g, str => str.split("").join(" "));
                   // Hack to fix issue #97 where '\n\n' is not displayed in diff viewer correctly but '\n \n' does
                   ioResult.run_output = separateNewLines(ioResult.run_output);
                   ioResult.expected_output = separateNewLines(ioResult.expected_output);
@@ -341,7 +351,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
               <br />
               {results.submission_status.includes("ERROR") && (
                 <div>
-                  <Divider variant="middle" />
+                  <Divider className={classes.divider} variant="middle" />
                   <br />
                   <Typography variant="h5" color="black" component="p">
                     MENSAJE DE ERROR:
@@ -365,7 +375,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
               )}
               {results.stderr && (
                 <div>
-                  <Divider variant="middle" />
+                  <Divider className={classes.divider} variant="middle" />
                   <br />
                   <Typography variant="h5" color="black" component="p">
                     STDERR:
@@ -384,7 +394,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
                 </div>
               )}
               <br />
-              <Divider variant="middle" />
+              <Divider className={classes.divider} variant="middle" />
               <br />
               <Typography variant="h5" color="black" component="p">
                 STDOUT:
