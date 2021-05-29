@@ -12,9 +12,11 @@ import { withState } from "../../utils/State";
 import NotificationsButton from "../SideBar/NotificationsButton";
 
 const drawerWidth = 240;
+const barHeight = 64;
 
 const styles = theme => ({
   appBar: {
+    height: barHeight,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,

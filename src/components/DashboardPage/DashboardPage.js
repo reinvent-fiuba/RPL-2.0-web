@@ -18,32 +18,7 @@ import Scoreboard from "./Scoreboard";
 
 import Tag from "../commons/Tag";
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   table: {
     minWidth: 650,
   },
@@ -115,13 +90,11 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
 };
 
 class ActivitiesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     current: 0,
   };
 
@@ -151,7 +124,7 @@ class ActivitiesPage extends React.Component<Props, State> {
   render() {
     const { classes, match, context } = this.props;
     const { permissions } = context;
-    const { isSideBarOpen, error, scoreboard } = this.state;
+    const { error, scoreboard } = this.state;
 
     const teacherStats = [
       <Scoreboard courseId={match.params.courseId} />,
@@ -164,42 +137,39 @@ class ActivitiesPage extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
-          <div className={classes.dashboardContainer}>
-            {permissions.includes("user_manage") ? (
-              <div>
-                <Paper className={classes.root}>
-                  <Tabs
-                    value={this.state.current}
-                    onChange={(event, newValue) => this.handleChange(event, newValue)}
-                    indicatorColor="primary"
-                    textColor="primary"
-                  >
-                    <Tab label="Ranking" />
-                    <Tab label="Envios por Fecha" />
-                    <Tab label="Envios por Alumno" />
-                    <Tab label="Envios por Categoría" />
-                    <Tab
-                      label={(
-                        <div>
-                          Alumnos por Ejercicio
-                          <Tag text="New!" />
-                        </div>
-                      )}
-                    />
-                  </Tabs>
-                </Paper>
-                {teacherStats[this.state.current]}
-              </div>
-            ) : (
-              <div>
-                <StudentStats courseId={match.params.courseId} />
-                <Scoreboard courseId={match.params.courseId} />
-              </div>
-            )}
-          </div>
-        </main>
+        <div className={classes.dashboardContainer}>
+          {permissions.includes("user_manage") ? (
+            <div>
+              <Paper className={classes.root}>
+                <Tabs
+                  value={this.state.current}
+                  onChange={(event, newValue) => this.handleChange(event, newValue)}
+                  indicatorColor="primary"
+                  textColor="primary"
+                >
+                  <Tab label="Ranking" />
+                  <Tab label="Envios por Fecha" />
+                  <Tab label="Envios por Alumno" />
+                  <Tab label="Envios por Categoría" />
+                  <Tab
+                    label={(
+                      <div>
+                        Alumnos por Ejercicio
+                        <Tag text="New!" />
+                      </div>
+                    )}
+                  />
+                </Tabs>
+              </Paper>
+              {teacherStats[this.state.current]}
+            </div>
+          ) : (
+            <div>
+              <StudentStats courseId={match.params.courseId} />
+              <Scoreboard courseId={match.params.courseId} />
+            </div>
+          )}
+        </div>
       </div>
     );
   }

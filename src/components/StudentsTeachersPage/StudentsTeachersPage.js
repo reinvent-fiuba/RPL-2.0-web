@@ -28,32 +28,7 @@ import type { Student } from "../../types";
 
 const _ = require("lodash");
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   title: {
     marginTop: 20,
     marginBottom: 20,
@@ -118,7 +93,6 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   students: Array<Student>,
   teachers: Array<Student>,
   refreshStudentsNotification: boolean,
@@ -127,7 +101,6 @@ type State = {
 class StudentsTeachersPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     students: [],
     teachers: [],
     refreshStudentsNotification: false,
@@ -383,20 +356,17 @@ class StudentsTeachersPage extends React.Component<Props, State> {
   render() {
     const { classes, match } = this.props;
 
-    const { students, teachers, isSideBarOpen, refreshStudentsNotification, error } = this.state;
+    const { students, teachers, refreshStudentsNotification, error } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
-          <div className={classes.tableContainerDiv}>
-            {students && this.renderUsers("Alumnos", students, classes)}
-          </div>
-          <div className={classes.tableContainerDiv}>
-            {teachers && this.renderUsers("Docentes", teachers, classes)}
-          </div>
-        </main>
+        <div className={classes.tableContainerDiv}>
+          {students && this.renderUsers("Alumnos", students, classes)}
+        </div>
+        <div className={classes.tableContainerDiv}>
+          {teachers && this.renderUsers("Docentes", teachers, classes)}
+        </div>
       </div>
     );
   }

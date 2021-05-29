@@ -11,36 +11,10 @@ import type { Activity } from "../../types";
 import ActivitiesTeacherTable from "./ActivitiesTeacherTable.react";
 import ConfirmDeleteActivityModal from "./ConfirmDeleteActivityModal.react";
 import ActivityCategoryModal from "../ActivityCategoryModal/ActivityCategoryModal";
-import withPageWrapper from "../../utils/PageWrapper";
 
 const _ = require("lodash");
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   title: {
     marginTop: 20,
     marginBottom: 20,
@@ -68,7 +42,6 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   activities: Array<Activity>,
   deleteModal: { open: boolean, activityId: ?number },
   updateCategoryModal: {
@@ -80,7 +53,6 @@ type State = {
 class ActivitiesTeacherPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     activities: [],
     deleteModal: { open: false, activityId: null },
     updateCategoryModal: { open: false, activityCategory: null },
@@ -203,7 +175,7 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
   render() {
     const { classes, match, context } = this.props;
 
-    const { activities, isSideBarOpen, error, deleteModal, updateCategoryModal } = this.state;
+    const { activities, error, deleteModal, updateCategoryModal } = this.state;
 
     const nonDeletedActivities = _.filter(
       activities || (context && context.activities),
@@ -235,51 +207,48 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
           onDeleteClicked={() => this.handleDeleteActivity(deleteModal.activityId)}
           onCancelClicked={() => this.setState({ deleteModal: { open: false, activityId: null } })}
         />
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
 
-          {context.permissions && context.permissions.includes("activity_manage") ? (
-            <Fab
-              color="primary"
-              aria-label="add"
-              className={classes.rightButton}
-              component={Link}
-              to={`/courses/${match.params.courseId}/activity/create`}
-            >
-              <AddIcon />
-            </Fab>
-          ) : (
-            <div />
-          )}
+        {context.permissions && context.permissions.includes("activity_manage") ? (
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.rightButton}
+            component={Link}
+            to={`/courses/${match.params.courseId}/activity/create`}
+          >
+            <AddIcon />
+          </Fab>
+        ) : (
+          <div />
+        )}
 
-          {nonDeletedActivities &&
-            Object.keys(activitiesByCategory)
-              .sort((a, b) => (a > b ? 1 : -1))
-              .map(category => (
-                <div key={category} className={classes.tableContainerDiv}>
-                  <ActivitiesTeacherTable
-                    activityCategory={{
-                      id: activitiesByCategory[category][0].category_id,
-                      name: activitiesByCategory[category][0].category_name,
-                      description: activitiesByCategory[category][0].category_description,
-                    }}
-                    activities={activitiesByCategory[category]}
-                    onClickEditCategory={(e, activityCategory) =>
-                      this.handleClickEditCategory(e, activityCategory)
-                    }
-                    onClickActivityResults={(e, activityId) =>
-                      this.handleClickActivityResults(e, activityId)
-                    }
-                    onClickDeleteActivity={activityId => this.handleClickDeleteActivity(activityId)}
-                    onClickDisableActivity={(activityId, newStatus) =>
-                      this.handleDisableActivity(activityId, newStatus)}
-                    handleActivityRowClick={(event, activityId) =>
-                      this.handleClickOnActivityTitle(event, activityId)
-                    }
-                  />
-                </div>
-              ))}
-        </main>
+        {nonDeletedActivities &&
+          Object.keys(activitiesByCategory)
+            .sort((a, b) => (a > b ? 1 : -1))
+            .map(category => (
+              <div key={category} className={classes.tableContainerDiv}>
+                <ActivitiesTeacherTable
+                  activityCategory={{
+                    id: activitiesByCategory[category][0].category_id,
+                    name: activitiesByCategory[category][0].category_name,
+                    description: activitiesByCategory[category][0].category_description,
+                  }}
+                  activities={activitiesByCategory[category]}
+                  onClickEditCategory={(e, activityCategory) =>
+                    this.handleClickEditCategory(e, activityCategory)
+                  }
+                  onClickActivityResults={(e, activityId) =>
+                    this.handleClickActivityResults(e, activityId)
+                  }
+                  onClickDeleteActivity={activityId => this.handleClickDeleteActivity(activityId)}
+                  onClickDisableActivity={(activityId, newStatus) =>
+                    this.handleDisableActivity(activityId, newStatus)}
+                  handleActivityRowClick={(event, activityId) =>
+                    this.handleClickOnActivityTitle(event, activityId)
+                  }
+                />
+              </div>
+            ))}
       </div>
     );
   }

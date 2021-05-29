@@ -5,32 +5,7 @@ import authenticationServer from "../../services/authenticationService";
 import ProfileView from "./ProfileView";
 import ProfileEdit from "./ProfileEdit";
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   form: {
     marginTop: theme.spacing(1),
     marginLeft: theme.spacing(40),
@@ -97,16 +72,13 @@ class ProfilePage extends React.Component {
 
     return (
       <div>
-        <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
-          <div className={classes.form}>
-            {editMode ? (
-              <ProfileEdit onClickSave={this.handleClickSave} profile={profile} />
-            ) : (
-              <ProfileView onClickEdit={this.handleClickEdit} profile={profile} />
-            )}
-          </div>
-        </main>
+        <div className={classes.form}>
+          {editMode ? (
+            <ProfileEdit onClickSave={this.handleClickSave} profile={profile} />
+          ) : (
+            <ProfileView onClickEdit={this.handleClickEdit} profile={profile} />
+          )}
+        </div>
       </div>
     );
   }

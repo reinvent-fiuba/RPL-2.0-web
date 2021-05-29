@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
-import withPageWrapper from "../../utils/PageWrapper";
 import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
 import ErrorNotification from "../../utils/ErrorNotification";
@@ -16,32 +15,7 @@ import SubmissionResultModal from "../SubmissionResultModal/TestResultsModal.rea
 
 const _ = require("lodash");
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   title: {
     marginTop: 20,
     marginBottom: 20,
@@ -69,7 +43,6 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   activities: Array<Activity>,
   submissionsPanel: { isOpen: boolean, activityId: ?number },
   isSelectedResult: boolean,
@@ -79,7 +52,6 @@ type State = {
 class ActivitiesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     activities: [],
     submissionsPanel: { isOpen: false, activityId: null },
     isSelectedResult: false,
@@ -149,7 +121,6 @@ class ActivitiesPage extends React.Component<Props, State> {
 
     const {
       activities,
-      isSideBarOpen,
       error,
       submissionsPanel,
       isSelectedResult,
@@ -185,38 +156,35 @@ class ActivitiesPage extends React.Component<Props, State> {
             courseId={match.params.courseId}
           />
         )}
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
 
-          {context.permissions && context.permissions.includes("activity_manage") ? (
-            <Fab
-              color="primary"
-              aria-label="add"
-              className={classes.rightButton}
-              component={Link}
-              to={`/courses/${match.params.courseId}/activity/create`}
-            >
-              <AddIcon />
-            </Fab>
-          ) : (
-            <div />
-          )}
+        {context.permissions && context.permissions.includes("activity_manage") ? (
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.rightButton}
+            component={Link}
+            to={`/courses/${match.params.courseId}/activity/create`}
+          >
+            <AddIcon />
+          </Fab>
+        ) : (
+          <div />
+        )}
 
-          {activeActivities &&
-            Object.keys(activitiesByCategory)
-              .sort((a, b) => (a > b ? 1 : -1))
-              .map(category => (
-                <div key={category} className={classes.tableContainerDiv}>
-                  <ActivitiesTable
-                    activities={activitiesByCategory[category]}
-                    setOpenPanel={activityId => this.setOpenPanel(activityId)}
-                    handleCellClick={(event, activityId) =>
-                      this.handleClickOnActivityTitle(event, activityId)
-                    }
-                  />
-                </div>
-              ))}
-        </main>
+        {activeActivities &&
+          Object.keys(activitiesByCategory)
+            .sort((a, b) => (a > b ? 1 : -1))
+            .map(category => (
+              <div key={category} className={classes.tableContainerDiv}>
+                <ActivitiesTable
+                  activities={activitiesByCategory[category]}
+                  setOpenPanel={activityId => this.setOpenPanel(activityId)}
+                  handleCellClick={(event, activityId) =>
+                    this.handleClickOnActivityTitle(event, activityId)
+                  }
+                />
+              </div>
+            ))}
       </div>
     );
   }

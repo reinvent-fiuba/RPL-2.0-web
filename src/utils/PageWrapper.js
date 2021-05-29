@@ -1,11 +1,36 @@
 import React, { useState } from "react";
+import { withStyles } from "@material-ui/core/styles";
 import { withRouter } from 'react-router-dom'
 import SideBar from "../components/SideBar/SideBar";
 import TopBar from "../components/TopBar/TopBar";
 
 const _ = require("lodash");
 
-const PageWrapper = ({ match, children }) => {
+const drawerWidth = 240;
+const barHeight = 64;
+
+const styles = theme => ({
+  content: {
+    flexGrow: 1,
+    paddingTop: theme.spacing(3),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: 0,
+    marginTop: barHeight,
+  },
+  contentShift: {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: drawerWidth,
+    marginTop: barHeight,
+  },
+});
+
+const PageWrapper = ({ classes, match, children }) => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   const courseId = _.get(match, "params.courseId");
@@ -22,9 +47,11 @@ const PageWrapper = ({ match, children }) => {
         open={isSideBarOpen}
         courseId={courseId}
       />
-      {children}
+      <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
+        {children}
+      </main>
     </div>
   );
 };
 
-export default withRouter(PageWrapper);
+export default withRouter(withStyles(styles)(PageWrapper));

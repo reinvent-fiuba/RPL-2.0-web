@@ -23,31 +23,7 @@ import type { Activity } from "../../types";
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    height: 56,
-  },
-  content: {
-    flexGrow: 1,
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-    height: "100%",
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   circularProgress: {
     position: "absolute",
     left: "50%",
@@ -82,7 +58,6 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   activity: ?Activity,
   editorWidth: string,
   editor: any,
@@ -95,7 +70,6 @@ type State = {
 class FinalActivitiesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     editorWidth: "100%",
     activity: null,
     editor: null,
@@ -208,7 +182,6 @@ class FinalActivitiesPage extends React.Component<Props, State> {
     const { classes, history } = this.props;
     const {
       activity,
-      isSideBarOpen,
       editorWidth,
       error,
       editor,
@@ -223,8 +196,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
 
         {!activity && <CircularProgress className={classes.circularProgress} />}
         {activity && (
-          <main className={classes.content}>
-            <div className={classes.drawerHeader} />
+          <div>
             <SolvePageHeader activity={activity} history={history} onlyTitle />
             <SolveActivityFirstModal
               open={openModal}
@@ -281,7 +253,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
                 </div>
               </SplitPane>
             )}
-          </main>
+          </div>
         )}
       </div>
     );

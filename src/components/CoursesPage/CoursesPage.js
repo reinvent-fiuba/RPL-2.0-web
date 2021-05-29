@@ -13,37 +13,11 @@ import coursesService from "../../services/coursesService";
 import { withState } from "../../utils/State";
 import ErrorNotification from "../../utils/ErrorNotification";
 import EnrollInformationModal from "./EnrollInformationModal";
-import withPageWrapper from "../../utils/PageWrapper";
 import type { Course } from "../../types";
 
 const _ = require("lodash");
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   title: {
     marginTop: 20,
     marginBottom: 20,
@@ -79,7 +53,6 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   myCourses: Array<Course>,
   pendingCourses: Array<Course>,
   otherCourses: Array<Course>,
@@ -91,7 +64,6 @@ type State = {
 class CoursesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     myCourses: [],
     otherCourses: [],
     pendingCourses: [],
@@ -246,7 +218,6 @@ class CoursesPage extends React.Component<Props, State> {
       pendingCourses,
       finishedCourses,
       enrollModalOpen,
-      isSideBarOpen,
       error,
     } = this.state;
 
@@ -255,42 +226,39 @@ class CoursesPage extends React.Component<Props, State> {
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
-          <div className={classes.dashboardContainer}>
-            {context.profile && context.profile.is_admin ? (
-              <Fab
-                color="primary"
-                aria-label="add"
-                className={classes.rightButton}
-                onClick={() => this.handleCreateCourseClick()}
-              >
-                <AddIcon />
-              </Fab>
-            ) : (
-              <div />
-            )}
-            <EnrollInformationModal
-              open={enrollModalOpen}
-              handleCloseModal={() => this.setState({ enrollModalOpen: false })}
-            />
-            <Paper>
-              <Tabs
-                value={this.state.currentTab}
-                onChange={(event, newValue) => this.handleChange(event, newValue)}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="scrollable"
-              >
-                <Tab label="Mis cursos" />
-                <Tab label="Mis cursos pendientes" />
-                <Tab label="Otros cursos" />
-                <Tab label="Cursos terminados" />
-              </Tabs>
-            </Paper>
-            {this.renderCourseCards(tab2courses[this.state.currentTab])}
-          </div>
-        </main>
+        <div className={classes.dashboardContainer}>
+          {context.profile && context.profile.is_admin ? (
+            <Fab
+              color="primary"
+              aria-label="add"
+              className={classes.rightButton}
+              onClick={() => this.handleCreateCourseClick()}
+            >
+              <AddIcon />
+            </Fab>
+          ) : (
+            <div />
+          )}
+          <EnrollInformationModal
+            open={enrollModalOpen}
+            handleCloseModal={() => this.setState({ enrollModalOpen: false })}
+          />
+          <Paper>
+            <Tabs
+              value={this.state.currentTab}
+              onChange={(event, newValue) => this.handleChange(event, newValue)}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="scrollable"
+            >
+              <Tab label="Mis cursos" />
+              <Tab label="Mis cursos pendientes" />
+              <Tab label="Otros cursos" />
+              <Tab label="Cursos terminados" />
+            </Tabs>
+          </Paper>
+          {this.renderCourseCards(tab2courses[this.state.currentTab])}
+        </div>
       </div>
     );
   }

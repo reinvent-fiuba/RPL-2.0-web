@@ -31,33 +31,7 @@ import ActivityTemplateCodeModal from "./ActivityTemplateCodeModal.react";
 
 const _ = require("lodash");
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    margin: "auto",
-    width: "75%",
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   divider: {
     margin: 20,
   },
@@ -116,7 +90,6 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   selectedTestMode: string,
   selectTestStepExpanded: boolean,
   configTestStepExpanded: boolean,
@@ -133,7 +106,6 @@ type State = {
 class AddActivityCorrectionTests extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     selectedTestMode: "IO tests",
     selectTestStepExpanded: true,
     configTestStepExpanded: false,
@@ -332,7 +304,7 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
     } = this.state;
     const { courseId, activityId } = this.props.match.params;
 
-    const { isSideBarOpen, error, selectedTestMode } = this.state;
+    const { error, selectedTestMode } = this.state;
 
     return (
       <div>
@@ -340,246 +312,243 @@ class AddActivityCorrectionTests extends React.Component<Props, State> {
         {successSave && (
           <CustomSnackbar open={successSave} message="La actividad se guardó con éxito" />
         )}
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
 
-          {!activity && <CircularProgress className={classes.circularProgress} />}
+        {!activity && <CircularProgress className={classes.circularProgress} />}
 
-          {activity && (
-            <ActivityTemplateCodeModal
-              handleCloseModal={() => this.setState({ activityTemplateCodeModalIsOpen: false })}
-              open={activityTemplateCodeModalIsOpen}
-              activityCode={activity.initial_code}
-              activityLanguage={activity.language}
-            />
-          )}
+        {activity && (
+          <ActivityTemplateCodeModal
+            handleCloseModal={() => this.setState({ activityTemplateCodeModalIsOpen: false })}
+            open={activityTemplateCodeModalIsOpen}
+            activityCode={activity.initial_code}
+            activityLanguage={activity.language}
+          />
+        )}
 
-          {activity && (
-            <div>
-              <Accordion expanded={selectTestStepExpanded}>
-                <AccordionSummary
-                  onClick={() => this.handleClickPanel("selectTestStepExpanded")}
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography variant="h6" color="textPrimary" component="h1">
-                    Paso 1: Seleccionar modo de testeo de la actividad
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div>
-                    <Typography variant="subtitle1" color="textSecondary" component="h1">
-                      Solo se puede elegir 1 modo!
-                    </Typography>
-                    <RadioGroup
-                      value={selectedTestMode}
-                      onChange={event => this.setState({ selectedTestMode: event.target.value })}
-                    >
-                      <FormControlLabel value="IO tests" control={<Radio />} label="IO tests" />
-                      <FormControlLabel value="Unit tests" control={<Radio />} label="Unit tests" />
-                      {/* <FormControlLabel value="no tests" control={<Radio />} label="No tests" /> */}
-                    </RadioGroup>
-                  </div>
-                </AccordionDetails>
-                <Divider />
-                <AccordionActions>
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() =>
-                      this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")}
-                  >
-                    Siguiente
-                  </Button>
-                </AccordionActions>
-              </Accordion>
-              <Accordion expanded={configTestStepExpanded}>
-                <AccordionSummary
-                  onClick={() => this.handleClickPanel("configTestStepExpanded")}
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography variant="h6" color="textPrimary" component="h1">
-                    {`Paso 2: Definir tests${selectedTestMode ? ` - ${selectedTestMode}` : ""}`}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div>
-                    {selectedTestMode === "IO tests" && (
-                      <IOTestsCorrection courseId={courseId} activityId={activityId} />
-                    )}
-                    {selectedTestMode === "Unit tests" && (
-                      <UnitTestsCorrection
-                        courseId={courseId}
-                        activityId={activityId}
-                        onSaveUnitTest={unitTestCode => this.saveUnitTest(unitTestCode)}
-                        onChange={unitTestCode => this.setState({ unitTestCode })}
-                      />
-                    )}
-                  </div>
-                </AccordionDetails>
-                <Divider />
-                <AccordionActions>
-                  <Button
-                    size="small"
-                    onClick={() =>
-                      this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")}
-                  >
-                    Anterior
-                  </Button>
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() =>
-                      this.handleClickNext(
-                        "configTestStepExpanded",
-                        "configCompilerFlagsStepExpanded"
-                      )}
-                  >
-                    Siguiente
-                  </Button>
-                </AccordionActions>
-              </Accordion>
-              <Accordion expanded={configCompilerFlagsStepExpanded}>
-                <AccordionSummary
-                  onClick={() => this.handleClickPanel("configCompilerFlagsStepExpanded")}
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography variant="h6" color="textPrimary" component="h1">
-                    Paso 3: Definir flags de compilación
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div className={classes.flagsField}>
-                    <Fab
-                      aria-label="add"
-                      size="small"
-                      color="primary"
-                      className={classes.saveFlagsButton}
-                      onClick={() => this.handleSaveFlags()}
-                    >
-                      <SaveIcon />
-                    </Fab>
-                    <Typography variant="subtitle1" color="textSecondary" component="h1">
-                      A continuación se pueden definir los flags de compilación que se usaran para
-                      compilar los ejercicios.
-                    </Typography>
-                    <TextField
-                      margin="normal"
-                      required
-                      fullWidth
-                      multiline
-                      value={this.state.flags}
-                      rows={5}
-                      name="flags"
-                      label="Flags de Compilación"
-                      type="flags"
-                      id="flags"
-                      autoComplete="flags"
-                      inputProps={{
-                        style: { fontFamily: `"Lucida Console", Monaco, monospace` },
-                      }}
-                      onChange={e => this.handleChange(e)}
-                      variant="outlined"
-                    />
-                  </div>
-                </AccordionDetails>
-                <AccordionActions>
-                  <Button
-                    size="small"
-                    onClick={() =>
-                      this.handleClickNext(
-                        "configCompilerFlagsStepExpanded",
-                        "configTestStepExpanded"
-                      )}
-                  >
-                    Anterior
-                  </Button>
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() =>
-                      this.handleClickNext(
-                        "configCompilerFlagsStepExpanded",
-                        "configFilePermissionsForStudentsExpanded"
-                      )}
-                  >
-                    Siguiente
-                  </Button>
-                </AccordionActions>
-              </Accordion>
-              <Accordion expanded={configFilePermissionsForStudentsExpanded}>
-                <AccordionSummary
-                  onClick={() => this.handleClickPanel("configFilePermissionsForStudentsExpanded")}
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography variant="h6" color="textPrimary" component="h1">
-                    Paso 4: Definir permisos de archivos para los alumnos
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div className={classes.flagsField}>
-                    <FilesPermissionTypeCorrection
-                      handleSaveFilesMetadata={() => this.handleSaveFilesMetadata()}
-                      activityFilesMetadata={activityFilesMetadata}
-                      onFileMetadataChanged={newMetadata =>
-                        this.setState({ activityFilesMetadata: newMetadata })}
-                    />
-                  </div>
-                </AccordionDetails>
-                <AccordionActions>
-                  <Button
-                    size="small"
-                    onClick={() =>
-                      this.handleClickNext(
-                        "configFilePermissionsForStudentsExpanded",
-                        "configCompilerFlagsStepExpanded"
-                      )}
-                  >
-                    Anterior
-                  </Button>
-                </AccordionActions>
-              </Accordion>
-              <Grid container className={classes.buttons}>
+        {activity && (
+          <div>
+            <Accordion expanded={selectTestStepExpanded}>
+              <AccordionSummary
+                onClick={() => this.handleClickPanel("selectTestStepExpanded")}
+                expandIcon={<ExpandMoreIcon />}
+              >
+                <Typography variant="h6" color="textPrimary" component="h1">
+                  Paso 1: Seleccionar modo de testeo de la actividad
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
                 <div>
-                  <Grid itemclassName={classes.initialCodeButton}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      className={classes.saveButton}
-                      onClick={() => this.setState({ activityTemplateCodeModalIsOpen: true })}
-                    >
-                      Ver código inicial de la actividad
-                    </Button>
-                  </Grid>
+                  <Typography variant="subtitle1" color="textSecondary" component="h1">
+                    Solo se puede elegir 1 modo!
+                  </Typography>
+                  <RadioGroup
+                    value={selectedTestMode}
+                    onChange={event => this.setState({ selectedTestMode: event.target.value })}
+                  >
+                    <FormControlLabel value="IO tests" control={<Radio />} label="IO tests" />
+                    <FormControlLabel value="Unit tests" control={<Radio />} label="Unit tests" />
+                    {/* <FormControlLabel value="no tests" control={<Radio />} label="No tests" /> */}
+                  </RadioGroup>
                 </div>
-                <div className={classes.submitButtons}>
-                  <Grid item>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      className={classes.saveButton}
-                      onClick={e => this.handlePreviewClick(e)}
-                    >
-                      Guardar y Previsualizar como alumno
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      className={classes.createButton}
-                      onClick={() => this.handlePublish()}
-                    >
-                      Guardar y Publicar!
-                    </Button>
-                  </Grid>
+              </AccordionDetails>
+              <Divider />
+              <AccordionActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() =>
+                    this.handleClickNext("selectTestStepExpanded", "configTestStepExpanded")}
+                >
+                  Siguiente
+                </Button>
+              </AccordionActions>
+            </Accordion>
+            <Accordion expanded={configTestStepExpanded}>
+              <AccordionSummary
+                onClick={() => this.handleClickPanel("configTestStepExpanded")}
+                expandIcon={<ExpandMoreIcon />}
+              >
+                <Typography variant="h6" color="textPrimary" component="h1">
+                  {`Paso 2: Definir tests${selectedTestMode ? ` - ${selectedTestMode}` : ""}`}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div>
+                  {selectedTestMode === "IO tests" && (
+                    <IOTestsCorrection courseId={courseId} activityId={activityId} />
+                  )}
+                  {selectedTestMode === "Unit tests" && (
+                    <UnitTestsCorrection
+                      courseId={courseId}
+                      activityId={activityId}
+                      onSaveUnitTest={unitTestCode => this.saveUnitTest(unitTestCode)}
+                      onChange={unitTestCode => this.setState({ unitTestCode })}
+                    />
+                  )}
                 </div>
-              </Grid>
-            </div>
-          )}
-        </main>
+              </AccordionDetails>
+              <Divider />
+              <AccordionActions>
+                <Button
+                  size="small"
+                  onClick={() =>
+                    this.handleClickNext("configTestStepExpanded", "selectTestStepExpanded")}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() =>
+                    this.handleClickNext(
+                      "configTestStepExpanded",
+                      "configCompilerFlagsStepExpanded"
+                    )}
+                >
+                  Siguiente
+                </Button>
+              </AccordionActions>
+            </Accordion>
+            <Accordion expanded={configCompilerFlagsStepExpanded}>
+              <AccordionSummary
+                onClick={() => this.handleClickPanel("configCompilerFlagsStepExpanded")}
+                expandIcon={<ExpandMoreIcon />}
+              >
+                <Typography variant="h6" color="textPrimary" component="h1">
+                  Paso 3: Definir flags de compilación
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className={classes.flagsField}>
+                  <Fab
+                    aria-label="add"
+                    size="small"
+                    color="primary"
+                    className={classes.saveFlagsButton}
+                    onClick={() => this.handleSaveFlags()}
+                  >
+                    <SaveIcon />
+                  </Fab>
+                  <Typography variant="subtitle1" color="textSecondary" component="h1">
+                    A continuación se pueden definir los flags de compilación que se usaran para
+                    compilar los ejercicios.
+                  </Typography>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    multiline
+                    value={this.state.flags}
+                    rows={5}
+                    name="flags"
+                    label="Flags de Compilación"
+                    type="flags"
+                    id="flags"
+                    autoComplete="flags"
+                    inputProps={{
+                      style: { fontFamily: `"Lucida Console", Monaco, monospace` },
+                    }}
+                    onChange={e => this.handleChange(e)}
+                    variant="outlined"
+                  />
+                </div>
+              </AccordionDetails>
+              <AccordionActions>
+                <Button
+                  size="small"
+                  onClick={() =>
+                    this.handleClickNext(
+                      "configCompilerFlagsStepExpanded",
+                      "configTestStepExpanded"
+                    )}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() =>
+                    this.handleClickNext(
+                      "configCompilerFlagsStepExpanded",
+                      "configFilePermissionsForStudentsExpanded"
+                    )}
+                >
+                  Siguiente
+                </Button>
+              </AccordionActions>
+            </Accordion>
+            <Accordion expanded={configFilePermissionsForStudentsExpanded}>
+              <AccordionSummary
+                onClick={() => this.handleClickPanel("configFilePermissionsForStudentsExpanded")}
+                expandIcon={<ExpandMoreIcon />}
+              >
+                <Typography variant="h6" color="textPrimary" component="h1">
+                  Paso 4: Definir permisos de archivos para los alumnos
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className={classes.flagsField}>
+                  <FilesPermissionTypeCorrection
+                    handleSaveFilesMetadata={() => this.handleSaveFilesMetadata()}
+                    activityFilesMetadata={activityFilesMetadata}
+                    onFileMetadataChanged={newMetadata =>
+                      this.setState({ activityFilesMetadata: newMetadata })}
+                  />
+                </div>
+              </AccordionDetails>
+              <AccordionActions>
+                <Button
+                  size="small"
+                  onClick={() =>
+                    this.handleClickNext(
+                      "configFilePermissionsForStudentsExpanded",
+                      "configCompilerFlagsStepExpanded"
+                    )}
+                >
+                  Anterior
+                </Button>
+              </AccordionActions>
+            </Accordion>
+            <Grid container className={classes.buttons}>
+              <div>
+                <Grid itemclassName={classes.initialCodeButton}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.saveButton}
+                    onClick={() => this.setState({ activityTemplateCodeModalIsOpen: true })}
+                  >
+                    Ver código inicial de la actividad
+                  </Button>
+                </Grid>
+              </div>
+              <div className={classes.submitButtons}>
+                <Grid item>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.saveButton}
+                    onClick={e => this.handlePreviewClick(e)}
+                  >
+                    Guardar y Previsualizar como alumno
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.createButton}
+                    onClick={() => this.handlePublish()}
+                  >
+                    Guardar y Publicar!
+                  </Button>
+                </Grid>
+              </div>
+            </Grid>
+          </div>
+        )}
       </div>
     );
   }
