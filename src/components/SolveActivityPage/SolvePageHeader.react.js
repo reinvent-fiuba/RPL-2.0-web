@@ -17,7 +17,7 @@ const styles = theme => ({
     justifyContent: "space-between",
     alignItems: "center",
     padding: "8px",
-    marginTop: "8px",
+    margin: `-${theme.spacing(3)}px -${theme.spacing(3)}px 0px -${theme.spacing(3)}px`, // Force the second header to override layout
   },
   secondHeaderTitle: {
     alignSelf: "center",

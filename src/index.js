@@ -15,6 +15,8 @@ import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
 import CourseIndex from "./courseIndex";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import PageWrapper from "./utils/PageWrapper";
+
 
 showdown.setFlavor("github");
 
@@ -27,11 +29,11 @@ const routing = (
       <PublicRoute path="/forgotPassword" component={ForgotPasswordPage} />
       <Route path="/user/changePassword" component={ResetPasswordPage} />
       <Route path="/user/validateEmail" component={ValidateEmailPage} />
-      <PrivateRoute exact path="/users" component={UsersPage} />
-      <PrivateRoute exact path="/courses" component={CoursesPage} />
-      <PrivateRoute exact path="/profile" component={ProfilePage} />
-      <PrivateRoute path="/courses/create" component={CreateCoursePage} />
-      <PrivateRoute path="/courses/:courseId/" component={CourseIndex} />
+      <PrivateRoute exact path="/users" component={UsersPage} layout={PageWrapper} />
+      <PrivateRoute exact path="/courses" component={CoursesPage} layout={PageWrapper} />
+      <PrivateRoute exact path="/profile" component={ProfilePage} layout={PageWrapper} />
+      <PrivateRoute path="/courses/create" component={CreateCoursePage} layout={PageWrapper} />
+      <PrivateRoute path="/courses/:courseId/" component={CourseIndex} layout={PageWrapper} />
       {/* CourseIndex fetches permissions and render the following routes:
             /courses/:courseId/students
             /courses/:courseId/activity/create
