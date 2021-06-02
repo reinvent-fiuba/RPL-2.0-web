@@ -5,24 +5,15 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { makeStyles } from "@material-ui/core/styles";
 import MarkdownRenderer from "../commons/MarkdownRenderer";
 import activitiesService from "../../services/activitiesService";
 
-const useStyles = makeStyles({
-  error: {
-    flex: 1,
-  },
-});
-
-const EnunciadoSection = props => {
+const EnunciadoAccordion = props => {
   const { courseId, activityId } = props;
 
   const [content, setContent] = useState("");
   const [error, setError] = useState(false);
   const [expanded, setExpanded] = useState(false);
-
-  const classes = useStyles();
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -35,7 +26,7 @@ const EnunciadoSection = props => {
     };
 
     fetchActivity();
-  });
+  }, [courseId, activityId]);
 
   const handleExpanded = (event, isExpanded) => {
     setExpanded(isExpanded);
@@ -44,7 +35,7 @@ const EnunciadoSection = props => {
   const renderContent = () => {
     if (error) {
       return (
-        <Alert className={classes.error} severity="error">
+        <Alert severity="error">
           Parece que hubo un error al intentar cargar el enunciado. :/
         </Alert>
       );
@@ -69,4 +60,4 @@ const EnunciadoSection = props => {
   );
 };
 
-export default EnunciadoSection;
+export default EnunciadoAccordion;

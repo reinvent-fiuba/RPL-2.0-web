@@ -343,6 +343,7 @@ class StudentCategoryStats extends React.Component<Props, State> {
             open={selectedSubmissionId !== null}
             handleCloseModal={e => this.handleCloseModal(e)}
             showWaitingDialog
+            showEnunciado
             activitySubmissionId={selectedSubmissionId}
             courseId={courseId}
           />
