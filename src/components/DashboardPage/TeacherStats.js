@@ -102,6 +102,7 @@ type Props = {
   courseId: number,
   match: any,
   classes: any,
+  context: any,
 };
 
 type State = {

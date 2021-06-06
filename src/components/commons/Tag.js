@@ -12,7 +12,7 @@ class Tag extends React.PureComponent<{ text: string }> {
           padding: "2px",
           borderRadius: "10%",
           verticalAlign: "middle",
-          backgroundColor: "lightblue"
+          backgroundColor: "lightblue",
         }}
       >
         {text}

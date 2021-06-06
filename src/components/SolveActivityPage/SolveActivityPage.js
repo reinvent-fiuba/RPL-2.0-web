@@ -214,7 +214,8 @@ class SolveActivityPage extends React.Component<Props, State> {
             courseId={this.props.match.params.courseId}
             backdropClicked={() => this.setCloseSubmissionsPanel()}
             onSelectSubmission={(submissionId, i) =>
-              this.handleClickOnPastSubmission(submissionId, i)}
+              this.handleClickOnPastSubmission(submissionId, i)
+            }
           />
         )}
 

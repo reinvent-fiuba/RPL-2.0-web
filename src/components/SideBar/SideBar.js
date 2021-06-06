@@ -55,6 +55,8 @@ type Props = {
   classes: any,
   courseId: ?number,
   handleDrawerClose: () => void,
+  context: any,
+  history: any,
 };
 
 // eslint-disable-next-line react/no-redundant-should-component-update

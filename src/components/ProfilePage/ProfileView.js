@@ -1,3 +1,4 @@
+//@flow
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
@@ -65,7 +66,13 @@ const styles = theme => ({
   },
 });
 
-class ProfileView extends React.Component {
+type Props = {
+  classes: any,
+  profile: any,
+  onClickEdit: any,
+};
+
+class ProfileView extends React.Component<Props> {
   constructor(props) {
     super(props);
     this.state = {};
@@ -92,19 +99,37 @@ class ProfileView extends React.Component {
               </Avatar>
             </Grid>
             <Grid item>
-              <Typography style={{fontStyle: "italic"}} className={classes.property} variant="h6">
+              <Typography style={{ fontStyle: "italic" }} className={classes.property} variant="h6">
                 {`Usuario: ${profile.username}`}
               </Typography>
             </Grid>
           </Grid>
           <Grid item xs={8}>
             <Paper className={classes.paperContainer}>
-              <Typography className={classes.property} variant="h6">{`Nombre: ${profile.name}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Apellido: ${profile.surname}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Id de Universidad: ${profile.student_id}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Email: ${profile.email}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Universidad: ${profile.university}`}</Typography>
-              <Typography className={classes.property} variant="h6">{`Carrera: ${profile.degree}`}</Typography>
+              <Typography
+                className={classes.property}
+                variant="h6"
+              >{`Nombre: ${profile.name}`}</Typography>
+              <Typography
+                className={classes.property}
+                variant="h6"
+              >{`Apellido: ${profile.surname}`}</Typography>
+              <Typography
+                className={classes.property}
+                variant="h6"
+              >{`Id de Universidad: ${profile.student_id}`}</Typography>
+              <Typography
+                className={classes.property}
+                variant="h6"
+              >{`Email: ${profile.email}`}</Typography>
+              <Typography
+                className={classes.property}
+                variant="h6"
+              >{`Universidad: ${profile.university}`}</Typography>
+              <Typography
+                className={classes.property}
+                variant="h6"
+              >{`Carrera: ${profile.degree}`}</Typography>
             </Paper>
           </Grid>
         </Grid>

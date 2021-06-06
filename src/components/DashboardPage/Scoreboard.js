@@ -23,7 +23,6 @@ import ativitiesService from "../../services/activitiesService";
 import StudentStats from "./StudentStats";
 import TeacherStats from "./TeacherStats";
 
-
 import { withState } from "../../utils/State";
 
 import ErrorNotification from "../../utils/ErrorNotification";
@@ -86,6 +85,7 @@ type Props = {
   match: any,
   classes: any,
   context: any,
+  courseId: number,
 };
 
 type State = {

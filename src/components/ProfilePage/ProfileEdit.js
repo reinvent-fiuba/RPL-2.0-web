@@ -1,3 +1,4 @@
+//@flow
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
@@ -68,7 +69,13 @@ const styles = theme => ({
   },
 });
 
-class ProfileEdit extends React.Component {
+type Props = {
+  classes: any,
+  profile: any,
+  onClickSave: any,
+};
+
+class ProfileEdit extends React.Component<Props> {
   state = {
     error: { invalidFields: new Set() },
     email: "",

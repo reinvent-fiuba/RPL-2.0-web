@@ -289,7 +289,8 @@ class ActivitiesTeacherPage extends React.Component<Props, State> {
                     }
                     onClickDeleteActivity={activityId => this.handleClickDeleteActivity(activityId)}
                     onClickDisableActivity={(activityId, newStatus) =>
-                      this.handleDisableActivity(activityId, newStatus)}
+                      this.handleDisableActivity(activityId, newStatus)
+                    }
                     handleActivityRowClick={(event, activityId) =>
                       this.handleClickOnActivityTitle(event, activityId)
                     }

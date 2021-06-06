@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 // @flow
 import React from "react";
 import Button from "@material-ui/core/Button";
@@ -45,6 +44,7 @@ type Props = {
   history: any,
   canShowOtherSolutions: boolean,
   onlyTitle: boolean,
+  context: any,
 };
 
 function getLeftTitle(

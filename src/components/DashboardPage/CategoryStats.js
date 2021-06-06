@@ -195,7 +195,7 @@ class CategoryStats extends React.Component<Props, State> {
           </TableHead>
           <TableBody>
             {data.map((activity, i) => (
-              <TableRow>
+              <TableRow key={activity.id}>
                 <TableCell key={1}>{i}</TableCell>
                 <TableCell key={2}>{activity.category_name}</TableCell>
                 <TableCell key={3}>{activity.name}</TableCell>

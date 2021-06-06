@@ -80,6 +80,7 @@ type Props = {
   match: any,
   classes: any,
   history: any,
+  context: any,
 };
 
 type State = {

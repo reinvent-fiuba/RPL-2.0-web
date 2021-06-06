@@ -1,5 +1,5 @@
 // @flow
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -13,8 +13,8 @@ import { withStyles } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
 import { getPalette } from "react-palette";
 import { withState } from "../../utils/State";
-import IconButton from '@material-ui/core/IconButton';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import IconButton from "@material-ui/core/IconButton";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 const styles = theme => ({
   card: {
@@ -73,10 +73,9 @@ type Props = {
 };
 
 class CourseCard extends React.Component<Props, State> {
-
   state = {
     palette: {},
-    isUnenrolling: false
+    isUnenrolling: false,
   };
 
   componentDidMount() {
@@ -85,7 +84,7 @@ class CourseCard extends React.Component<Props, State> {
     ).then(palette => {
       this.setState({ palette });
     });
-    this.setState({isUnenrolling: false});
+    this.setState({ isUnenrolling: false });
   }
 
   renderActions(enrolled, isUnrolling) {
@@ -110,48 +109,54 @@ class CourseCard extends React.Component<Props, State> {
               Inscribirse
             </Typography>
           </Button>
-        </CardActions>);
+        </CardActions>
+      );
     }
     if (isUnrolling) {
-        return (
-          <CardActions disableSpacing>
+      return (
+        <CardActions disableSpacing>
+          <Typography noWrap className={classes.actionText}>
+            ¿Estás seguro?
+          </Typography>
+          <Button
+            color="secondary"
+            onClick={e => {
+              onClickUnenrollToCourse(e, courseId);
+              this.setState({ isUnenrolling: false });
+            }}
+            className={classes.action}
+            variant="contained"
+            style={{ marginRight: "5px" }}
+          >
             <Typography noWrap className={classes.actionText}>
-              ¿Estás seguro?
+              Si
             </Typography>
-            <Button
-              color="secondary"
-              onClick={e => {
-                onClickUnenrollToCourse(e, courseId);
-                this.setState({isUnenrolling: false});
-              }}
-              className={classes.action}
-              variant="contained"
-              style={{ marginRight: "5px" }}
-            >
-              <Typography noWrap className={classes.actionText}>
-                Si
-              </Typography>
-            </Button> 
-            <Button
-              color="primary"
-              onClick={() => { this.setState({isUnenrolling: false}) }}
-              className={classes.action}
-              variant="contained"
-            >
-              <Typography noWrap className={classes.actionText}>
-                No
-              </Typography>
-            </Button>
-          </CardActions>);
+          </Button>
+          <Button
+            color="primary"
+            onClick={() => {
+              this.setState({ isUnenrolling: false });
+            }}
+            className={classes.action}
+            variant="contained"
+          >
+            <Typography noWrap className={classes.actionText}>
+              No
+            </Typography>
+          </Button>
+        </CardActions>
+      );
     }
-    return ( 
+    return (
       <CardActions disableSpacing>
         <Tooltip title="Desinscribirme del curso">
-          <IconButton 
+          <IconButton
             aria-label="desinscribirme"
             color="secondary"
             className={classes.action}
-            onClick={() => { this.setState({isUnenrolling: true}) }}
+            onClick={() => {
+              this.setState({ isUnenrolling: true });
+            }}
             style={{ marginLeft: "5px", padding: "0px" }}
           >
             <ExitToAppIcon />
@@ -169,18 +174,12 @@ class CourseCard extends React.Component<Props, State> {
             Acceder
           </Typography>
         </Button>
-      </CardActions>);
+      </CardActions>
+    );
   }
 
   render() {
-    const {
-      classes,
-      universityCourseId,
-      name,
-      description,
-      enrolled,
-      imgUri
-    } = this.props;
+    const { classes, universityCourseId, name, description, enrolled, imgUri } = this.props;
 
     const { palette, isUnenrolling } = this.state;
 
@@ -216,7 +215,7 @@ class CourseCard extends React.Component<Props, State> {
             </Typography>
           </Tooltip>
         </CardContent>
-        { this.renderActions(enrolled, isUnenrolling) }
+        {this.renderActions(enrolled, isUnenrolling)}
       </Card>
     );
   }

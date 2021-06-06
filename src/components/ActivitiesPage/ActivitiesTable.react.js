@@ -110,7 +110,8 @@ function ActivitiesTable(props: Props) {
                     align="right"
                     onClick={event => handleCellClick(event, activity.id)}
                   >
-                    {(activity.last_submission_date && activity.last_submission_date.split("T")[0]) ||
+                    {(activity.last_submission_date &&
+                      activity.last_submission_date.split("T")[0]) ||
                       "-"}
                   </TableCell>
                   <TableCell

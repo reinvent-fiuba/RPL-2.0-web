@@ -27,9 +27,10 @@ export default function EnrollInformationModal(props: Props) {
       <DialogTitle id="scroll-dialog-title">Solicitud de inscripción enviada</DialogTitle>
       <DialogContent>
         <Typography variant="body1" color="textSecondary" component="p">
-          Esperá a que los profesores del curso te acepten! Cuando seas aceptado vás a recibir un mail de notificación.
+          Esperá a que los profesores del curso te acepten! Cuando seas aceptado vás a recibir un
+          mail de notificación.
         </Typography>
-        <br/>
+        <br />
       </DialogContent>
     </Dialog>
   );

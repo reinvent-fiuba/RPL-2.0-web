@@ -1,3 +1,4 @@
+//@flow
 import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -38,7 +39,13 @@ const styles = theme => ({
   },
 });
 
-class HomePage extends React.Component {
+type Props = {
+  classes: any,
+  context: any,
+  history: any,
+  Form: any,
+};
+class HomePage extends React.Component<Props> {
   constructor(props, defaultProps) {
     super(props, defaultProps);
     this.state = {};
@@ -60,9 +67,9 @@ class HomePage extends React.Component {
               component="body1"
             >
               <span> RPL 2.0: Trabajo Profesional de Cano, Matías José y Levinas, Alejandro </span>
-              <br/>
+              <br />
               <span> Tutor: Dr. Mendez, Mariano - Co-tutor: Lic. Camejo, Manuel </span>
-              <br/>
+              <br />
               <span> Facultad de Ingeniería de la Universidad de Buenos Aires </span>
             </Typography>
           </div>

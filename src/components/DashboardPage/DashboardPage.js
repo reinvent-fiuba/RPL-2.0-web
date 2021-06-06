@@ -160,11 +160,15 @@ class ActivitiesPage extends React.Component<Props, State> {
     const { isSideBarOpen, error, scoreboard } = this.state;
 
     const teacherStats = [
-      <Scoreboard courseId={match.params.courseId} />,
-      <TeacherStats courseId={match.params.courseId} />,
-      <StudentCategoryStats className={classes.stats} courseId={match.params.courseId} />,
-      <CategoryStats className={classes.stats} courseId={match.params.courseId} />,
-      <ActivityStats className={classes.stats} courseId={match.params.courseId} />,
+      <Scoreboard key="scoreboard" courseId={match.params.courseId} />,
+      <TeacherStats key="teacher" courseId={match.params.courseId} />,
+      <StudentCategoryStats
+        key="studentCategory"
+        className={classes.stats}
+        courseId={match.params.courseId}
+      />,
+      <CategoryStats key="category" className={classes.stats} courseId={match.params.courseId} />,
+      <ActivityStats key="acyivity" className={classes.stats} courseId={match.params.courseId} />,
     ];
 
     return (
@@ -197,12 +201,12 @@ class ActivitiesPage extends React.Component<Props, State> {
                     <Tab label="Envios por Alumno" />
                     <Tab label="Envios por Categoría" />
                     <Tab
-                      label={(
+                      label={
                         <div>
                           Alumnos por Ejercicio
                           <Tag text="New!" />
                         </div>
-                      )}
+                      }
                     />
                   </Tabs>
                 </Paper>

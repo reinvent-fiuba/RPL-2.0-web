@@ -1,3 +1,4 @@
+//@flow
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import SideBar from "../SideBar/SideBar";
@@ -33,7 +34,13 @@ const styles = theme => ({
   },
 });
 
-class EditCoursePage extends React.Component {
+type Props = {
+  classes: any,
+  context: any,
+  history: any,
+};
+
+class EditCoursePage extends React.Component<Props> {
   constructor(props) {
     super(props);
     this.state = {};

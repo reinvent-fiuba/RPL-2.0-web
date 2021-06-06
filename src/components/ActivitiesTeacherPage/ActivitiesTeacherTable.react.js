@@ -177,7 +177,7 @@ function ActivitiesTeacherTable(props: Props) {
                       onClick={() => onClickDisableActivity(activity.id, !activity.active)}
                       className={classes.actionColumnButton}
                     >
-                      {activity.active ? <VisibilityOffIcon /> : <VisibilityIcon/> }
+                      {activity.active ? <VisibilityOffIcon /> : <VisibilityIcon />}
                     </IconButton>
                   </TableCell>
                 </TableRow>

@@ -1,3 +1,4 @@
+//@flow
 import React from "react";
 import IconButton from "@material-ui/core/IconButton";
 import { withStyles } from "@material-ui/core/styles";
@@ -45,7 +46,17 @@ const styles = theme => ({
   },
 });
 
-class TopBar extends React.PureComponent {
+type Props = {
+  open: any,
+  title: string,
+  handleDrawerOpen: any,
+  context: any,
+  classes: any,
+  refreshNotifications: any,
+  match: any,
+};
+
+class TopBar extends React.PureComponent<Props> {
   state = {
     isNotificationModalOpen: false,
   };
@@ -92,9 +103,7 @@ class TopBar extends React.PureComponent {
             onClick={() => this.setState({ isNotificationModalOpen: !isNotificationModalOpen })}
           />
           <Typography variant="body1" className={classes.user}>
-            {name} 
-{' '}
-{surname}
+            {name} {surname}
           </Typography>
           <div className={classes.adminIcon}>{is_admin ? <LockIcon /> : <div />}</div>
           <Avatar src={img_uri}>

@@ -211,7 +211,7 @@ class CoursesPage extends React.Component<Props, State> {
     coursesService
       .enroll(courseId)
       .then(() => {
-        this.setState({ enrollModalOpen: true })
+        this.setState({ enrollModalOpen: true });
         this.loadCourses(1); // Go to "Pending courses tab"
       })
       .catch(() => {
