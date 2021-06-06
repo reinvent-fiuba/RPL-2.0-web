@@ -29,11 +29,34 @@ const routing = (
       <PublicRoute path="/forgotPassword" component={ForgotPasswordPage} />
       <Route path="/user/changePassword" component={ResetPasswordPage} />
       <Route path="/user/validateEmail" component={ValidateEmailPage} />
-      <PrivateRoute exact path="/users" component={UsersPage} layout={PageWrapper} />
-      <PrivateRoute exact path="/courses" component={CoursesPage} layout={PageWrapper} />
-      <PrivateRoute exact path="/profile" component={ProfilePage} layout={PageWrapper} />
-      <PrivateRoute path="/courses/create" component={CreateCoursePage} layout={PageWrapper} />
-      <PrivateRoute path="/courses/:courseId/" component={CourseIndex} layout={PageWrapper} />
+      <PrivateRoute
+        exact
+        path="/users"
+        component={UsersPage}
+        layout={PageWrapper}
+        title="Usuarios"
+      />
+      <PrivateRoute
+        exact
+        path="/courses"
+        component={CoursesPage}
+        layout={PageWrapper}
+        title="Cursos"
+      />
+      <PrivateRoute
+        exact
+        path="/profile"
+        component={ProfilePage}
+        layout={PageWrapper}
+        title="Perfil"
+      />
+      <PrivateRoute
+        path="/courses/create"
+        component={CreateCoursePage}
+        layout={PageWrapper}
+        title="Crear Curso"
+      />
+      <Route path="/courses/:courseId/" component={CourseIndex} />
       {/* CourseIndex fetches permissions and render the following routes:
             /courses/:courseId/students
             /courses/:courseId/activity/create

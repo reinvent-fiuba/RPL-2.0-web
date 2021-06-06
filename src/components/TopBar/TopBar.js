@@ -69,11 +69,15 @@ class TopBar extends React.PureComponent {
     if (!context.profile) return <div />;
     const { name, surname, is_admin, img_uri } = context && context.profile;
     const { courseId } = match.params;
-    const courseName = context.course && courseId == context.course.id && context.course.name;
+    const courseName = context.course && courseId === context.course.id && context.course.name;
     const { isNotificationModalOpen } = this.state;
 
     return (
-      <AppBar position="fixed" className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}>
+      <AppBar
+        position="fixed"
+        elevation={0}
+        className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}
+      >
         <Toolbar>
           <IconButton
             color="inherit"

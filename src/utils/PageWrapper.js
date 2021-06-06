@@ -30,7 +30,7 @@ const styles = theme => ({
   },
 });
 
-const PageWrapper = ({ classes, match, children }) => {
+const PageWrapper = ({ classes, match, title, children }) => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   const courseId = _.get(match, "params.courseId");
@@ -40,7 +40,7 @@ const PageWrapper = ({ classes, match, children }) => {
       <TopBar
         handleDrawerOpen={() => setIsSideBarOpen(!isSideBarOpen)}
         open={isSideBarOpen}
-        title="Cursos"
+        title={title}
       />
       <SideBar
         handleDrawerClose={() => setIsSideBarOpen(!isSideBarOpen)}
