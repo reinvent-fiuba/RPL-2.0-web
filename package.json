@@ -4,6 +4,7 @@
   "description": "",
   "main": "webpack.config.js",
   "scripts": {
+    "prepare": "husky install",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "babel src/ -d lib/ && webpack-dev-server -e --open --hot --mode development --host 0.0.0.0 --port 8088 --config webpack.config.js",
     "build": "babel src/ -d lib/ && webpack --optimize-minimize --mode production --config webpack.config.js",
@@ -48,6 +49,7 @@
     "flow-bin": "^0.116.1",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^6.0.0",
     "monaco-editor-webpack-plugin": "^1.9.1",
     "node-env-run": "^4.0.2",
     "npm-run-all": "^4.1.5",
