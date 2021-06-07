@@ -7,20 +7,15 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 type Props = {
-  stderr: string,
-}
+  title: string,
+  std: string,
+  getColor(string): string,
+};
 
-const StderrAccordion = (props: Props) => {
-  const { stderr = "" } = props;
+const StdAccordion = (props: Props) => {
+  const { title, std = "", getColor } = props;
 
   const [expanded, setExpanded] = useState(false);
-
-  const getStderrColor = (item: string) => {
-    if (item.includes("main") || item.includes("end_BUILD")) {
-      return "secondary";
-    }
-    return "textSecondary";
-  };
 
   const handleExpanded = (event: Event, isExpanded: boolean) => {
     setExpanded(isExpanded);
@@ -29,8 +24,8 @@ const StderrAccordion = (props: Props) => {
   const renderContent = () => {
     return (
       <div>
-        {stderr.split("\n").map((item, key) => (
-          <Typography key={key} variant="subtitle1" color={getStderrColor(item)} component="p">
+        {std.split("\n").map((item, key) => (
+          <Typography key={key} variant="subtitle1" color={getColor(item)} component="p">
             {item}
           </Typography>
         ))}
@@ -41,12 +36,12 @@ const StderrAccordion = (props: Props) => {
   return (
     <Accordion expanded={expanded} onChange={handleExpanded}>
       <AccordionSummary
-        id="stderr-header"
-        aria-controls="stderr-content"
+        id="stdout-header"
+        aria-controls="stdout-content"
         expandIcon={<ExpandMoreIcon />}
       >
         <Typography variant="h5" color="black" component="p">
-          Stderr
+          {title}
         </Typography>
       </AccordionSummary>
       <AccordionDetails>{renderContent()}</AccordionDetails>
@@ -54,4 +49,4 @@ const StderrAccordion = (props: Props) => {
   );
 };
 
-export default StderrAccordion;
+export default StdAccordion;
