@@ -5,28 +5,14 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Box from "@material-ui/core/Box";
-import { makeStyles } from "@material-ui/core/styles";
 import IOTestSection from "./IOTestSection";
 import UnitTestSection from "./UnitTestSection";
 import ErrorMessageSection from "./ErrorMessageSection";
-import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
-
-const useStyles = makeStyles({
-  codeEditor: {
-    height: "500px",
-    width: "100%",
-    display: "flex",
-    paddingBottom: "70px",
-    flex: "1 0 auto",
-  },
-});
 
 const TestAccordion = props => {
   const { results } = props;
 
   const [expanded, setExpanded] = useState(true);
-
-  const classes = useStyles();
 
   const handleExpanded = (event, isExpanded) => {
     setExpanded(isExpanded);
@@ -37,8 +23,6 @@ const TestAccordion = props => {
       io_test_run_results: ioTestResults,
       unit_test_run_results: unitTestResults,
       submission_status: status,
-      submited_code: submitedCode,
-      activity_language: language,
       exit_message: exitMessage,
     } = results;
 
@@ -61,17 +45,6 @@ const TestAccordion = props => {
           <Box mb={3}>
             <ErrorMessageSection exitMessage={exitMessage} />
           </Box>
-        )}
-        {/* Editor */}
-        {submitedCode && (
-          <div className={classes.codeEditor}>
-            <MultipleTabsEditor
-              width="100%"
-              initialCode={submitedCode}
-              language={language}
-              readOnly
-            />
-          </div>
         )}
       </>
     );
