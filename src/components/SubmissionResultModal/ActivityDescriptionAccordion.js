@@ -1,3 +1,4 @@
+// @flow
 import React, { useState, useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
 import Alert from "@material-ui/lab/Alert";
@@ -8,7 +9,12 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MarkdownRenderer from "../commons/MarkdownRenderer";
 import activitiesService from "../../services/activitiesService";
 
-const ActivityDescriptionAccordion = props => {
+type Props = {
+  courseId: number,
+  activityId: number,
+};
+
+const ActivityDescriptionAccordion = (props: Props) => {
   const { courseId, activityId } = props;
 
   const [content, setContent] = useState("");
@@ -19,7 +25,7 @@ const ActivityDescriptionAccordion = props => {
     const fetchActivity = async () => {
       try {
         const res = await activitiesService.getActivityForStudent(courseId, activityId);
-        setContent(res?.description);
+        setContent(res.description);
       } catch (err) {
         setError(true);
       }
@@ -28,7 +34,7 @@ const ActivityDescriptionAccordion = props => {
     fetchActivity();
   }, [courseId, activityId]);
 
-  const handleExpanded = (event, isExpanded) => {
+  const handleExpanded = (event: Event, isExpanded: boolean) => {
     setExpanded(isExpanded);
   };
 

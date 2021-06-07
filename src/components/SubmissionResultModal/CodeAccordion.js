@@ -1,3 +1,4 @@
+// @flow
 import React, { useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import Accordion from "@material-ui/core/Accordion";
@@ -6,6 +7,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { makeStyles } from "@material-ui/core/styles";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
+import type { SubmissionResult } from "../../types";
 
 const useStyles = makeStyles({
   codeEditor: {
@@ -17,14 +19,18 @@ const useStyles = makeStyles({
   },
 });
 
-const TestAccordion = props => {
+type Props = {
+  results: SubmissionResult,
+};
+
+const TestAccordion = (props: Props) => {
   const { results } = props;
 
   const [expanded, setExpanded] = useState(false);
 
   const classes = useStyles();
 
-  const handleExpanded = (event, isExpanded) => {
+  const handleExpanded = (event: Event, isExpanded: boolean) => {
     setExpanded(isExpanded);
   };
 

@@ -1,7 +1,12 @@
+// @flow
 import React from "react";
 import Typography from "@material-ui/core/Typography";
 
-const ErrorMessageSection = props => {
+type Props = {
+  exitMessage: string,
+};
+
+const ErrorMessageSection = (props: Props) => {
   const { exitMessage } = props;
 
   return (
@@ -14,6 +19,6 @@ const ErrorMessageSection = props => {
       </Typography>
     </>
   );
-}
+};
 
 export default ErrorMessageSection;
