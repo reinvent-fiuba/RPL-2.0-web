@@ -8,7 +8,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MarkdownRenderer from "../commons/MarkdownRenderer";
 import activitiesService from "../../services/activitiesService";
 
-const EnunciadoAccordion = props => {
+const ActivityDescriptionAccordion = props => {
   const { courseId, activityId } = props;
 
   const [content, setContent] = useState("");
@@ -47,8 +47,8 @@ const EnunciadoAccordion = props => {
   return (
     <Accordion expanded={expanded} onChange={handleExpanded}>
       <AccordionSummary
-        id="enunciado-header"
-        aria-controls="enunciado-content"
+        id="activity-description-header"
+        aria-controls="activity-description-content"
         expandIcon={<ExpandMoreIcon />}
       >
         <Typography variant="h5" color="black" component="p">
@@ -60,4 +60,4 @@ const EnunciadoAccordion = props => {
   );
 };
 
-export default EnunciadoAccordion;
+export default ActivityDescriptionAccordion;

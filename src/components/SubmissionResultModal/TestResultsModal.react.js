@@ -15,7 +15,7 @@ import type { SubmissionResult } from "../../types";
 import getText from "../../utils/messages";
 import submissionsService from "../../services/submissionsService";
 import ErrorNotification from "../../utils/ErrorNotification";
-import EnunciadoAccordion from "./EnunciadoAccordion";
+import ActivityDescriptionAccordion from "./ActivityDescriptionAccordion";
 import StderrAccordion from "./StderrAccordion";
 import StdoutAccordion from "./StdoutAccordion";
 import TestAccordion from "./TestAccordion";
@@ -57,7 +57,7 @@ type Props = {
   classes: any,
   context: any,
   showWaitingDialog: boolean,
-  showEnunciado: boolean,
+  showActivityDescription: boolean,
   activitySubmissionId: number,
   courseId: number,
   activityFinalSubmissionId: ?number,
@@ -167,7 +167,7 @@ class SubmissionResultModal extends React.Component<Props, State> {
       activityFinalSubmissionId,
       context,
       courseId,
-      showEnunciado,
+      showActivityDescription,
     } = this.props;
 
     const { results, error } = this.state;
@@ -235,9 +235,12 @@ class SubmissionResultModal extends React.Component<Props, State> {
                 </Box>
               )}
               {/* Enunciado */}
-              {showEnunciado && (
+              {showActivityDescription && (
                 <Box mb={3}>
-                  <EnunciadoAccordion courseId={courseId} activityId={results.activity_id} />
+                  <ActivityDescriptionAccordion
+                    courseId={courseId}
+                    activityId={results.activity_id}
+                  />
                 </Box>
               )}
               {/* IO/Unit tests results and code */}
