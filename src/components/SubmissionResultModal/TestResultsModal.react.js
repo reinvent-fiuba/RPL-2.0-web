@@ -19,6 +19,7 @@ import ActivityDescriptionAccordion from "./ActivityDescriptionAccordion";
 import StderrAccordion from "./StderrAccordion";
 import StdoutAccordion from "./StdoutAccordion";
 import TestAccordion from "./TestAccordion";
+import CodeAccordion from "./CodeAccordion";
 import { withState } from "../../utils/State";
 import "./styles.css";
 
@@ -246,6 +247,10 @@ class SubmissionResultModal extends React.Component<Props, State> {
               {/* IO/Unit tests results and code */}
               <Box mb={3}>
                 <TestAccordion results={results} />
+              </Box>
+              {/* Code */}
+              <Box mb={3}>
+                <CodeAccordion results={results} />
               </Box>
               {/* Stderr */}
               {results.stderr && (
