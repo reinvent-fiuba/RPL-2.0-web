@@ -16,8 +16,7 @@ import getText from "../../utils/messages";
 import submissionsService from "../../services/submissionsService";
 import ErrorNotification from "../../utils/ErrorNotification";
 import ActivityDescriptionAccordion from "./ActivityDescriptionAccordion";
-import StderrAccordion from "./StderrAccordion";
-import StdoutAccordion from "./StdoutAccordion";
+import StdAccordion from "./StdAccordion";
 import TestAccordion from "./TestAccordion";
 import CodeAccordion from "./CodeAccordion";
 import { withState } from "../../utils/State";
@@ -186,6 +185,23 @@ class SubmissionResultModal extends React.Component<Props, State> {
       ? `Resultado de la corrida: ${getText(results.submission_status).toUpperCase()}`
       : "Corriendo pruebas";
 
+    const getStderrColor = (item: string) => {
+      if (item.includes("main") || item.includes("end_BUILD")) {
+        return "secondary";
+      }
+      return "textSecondary";
+    };
+
+    const getStdoutColor = (item: string) => {
+      if (item.includes("start_BUILD") || item.includes("end_BUILD")) {
+        return "secondary";
+      }
+      if (item.includes("start_RUN") || item.includes("end_RUN")) {
+        return "primary";
+      }
+      return "textSecondary";
+    };
+
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -264,13 +280,13 @@ class SubmissionResultModal extends React.Component<Props, State> {
               {/* Stderr */}
               {results.stderr && (
                 <Box mb={3}>
-                  <StderrAccordion stderr={results.stderr} />
+                  <StdAccordion title="Stderr" std={results.stderr} getColor={getStderrColor} />
                 </Box>
               )}
               {/* Stdout */}
               {results.stdout && (
                 <Box mb={3}>
-                  <StdoutAccordion stdout={results.stdout} />
+                  <StdAccordion title="Stdout" std={results.stdout} getColor={getStdoutColor} />
                 </Box>
               )}
               <DialogActions>
