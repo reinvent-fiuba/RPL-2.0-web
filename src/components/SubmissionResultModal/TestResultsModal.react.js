@@ -21,7 +21,6 @@ import StdoutAccordion from "./StdoutAccordion";
 import TestAccordion from "./TestAccordion";
 import CodeAccordion from "./CodeAccordion";
 import { withState } from "../../utils/State";
-import "./styles.css";
 
 const styles = () => ({
   modal: {
@@ -49,6 +48,16 @@ const styles = () => ({
   dialogContent: {
     display: "flex",
     flexDirection: "column",
+    "& .MuiAccordionDetails-root": {
+      flexWrap: "wrap",
+      "& > *": {
+        flex: 1,
+      },
+    },
+    "& #scroll-dialog-description .MuiAlert-root": {
+      marginBottom: "0.8rem",
+      fontSize: "1rem",
+    },
   },
 });
 
