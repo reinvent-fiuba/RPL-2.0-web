@@ -1,3 +1,4 @@
+// @flow
 import React, { useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import Accordion from "@material-ui/core/Accordion";
@@ -8,13 +9,18 @@ import Box from "@material-ui/core/Box";
 import IOTestSection from "./IOTestSection";
 import UnitTestSection from "./UnitTestSection";
 import ErrorMessageSection from "./ErrorMessageSection";
+import type { SubmissionResult } from "../../types";
 
-const TestAccordion = props => {
+type Props = {
+  results: SubmissionResult,
+};
+
+const TestAccordion = (props: Props) => {
   const { results } = props;
 
   const [expanded, setExpanded] = useState(true);
 
-  const handleExpanded = (event, isExpanded) => {
+  const handleExpanded = (event: Event, isExpanded: boolean) => {
     setExpanded(isExpanded);
   };
 

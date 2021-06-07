@@ -1,10 +1,16 @@
+// @flow
 import React from "react";
 import Typography from "@material-ui/core/Typography";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import { Alert } from "@material-ui/lab";
 import ReactDiffViewer from "react-diff-viewer";
+import type { IOTestRunResult } from "../../types";
 
-const IOTestSection = props => {
+type Props = {
+  ioTestResults: Array<IOTestRunResult>,
+};
+
+const IOTestSection = (props: Props) => {
   const { ioTestResults } = props;
 
   const renderContent = () => {

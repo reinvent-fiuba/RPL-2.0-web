@@ -1,3 +1,4 @@
+// @flow
 import React, { useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import Accordion from "@material-ui/core/Accordion";
@@ -5,19 +6,23 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-const StderrAccordion = props => {
+type Props = {
+  stderr: string,
+}
+
+const StderrAccordion = (props: Props) => {
   const { stderr = "" } = props;
 
   const [expanded, setExpanded] = useState(false);
 
-  const getStderrColor = item => {
+  const getStderrColor = (item: string) => {
     if (item.includes("main") || item.includes("end_BUILD")) {
       return "secondary";
     }
     return "textSecondary";
   };
 
-  const handleExpanded = (event, isExpanded) => {
+  const handleExpanded = (event: Event, isExpanded: boolean) => {
     setExpanded(isExpanded);
   };
 
