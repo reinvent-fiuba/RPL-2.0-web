@@ -35,7 +35,7 @@ env:
 
 jobs:
   setup-build-publish-deploy:
-    if: github.event.label.name == 'deploy-test' || github.head_ref == 'master'
+    if: ${{ github.event.label.name == 'deploy-test' || github.ref == 'refs/heads/master' }}
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
     steps:
