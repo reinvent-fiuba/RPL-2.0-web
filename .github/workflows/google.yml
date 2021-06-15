@@ -14,9 +14,7 @@ name: Build and Deploy to GKE
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    types: [ labeled ]
+    branches: [ master, test/** ]
 
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -35,7 +33,6 @@ env:
 
 jobs:
   setup-build-publish-deploy:
-    if: ${{ github.event.label.name == 'deploy-test' || github.ref == 'refs/heads/master' }}
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
     steps:
