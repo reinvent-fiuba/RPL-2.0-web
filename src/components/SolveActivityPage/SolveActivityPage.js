@@ -10,7 +10,7 @@ import SideBar from "../SideBar/SideBar";
 import activitiesService from "../../services/activitiesService";
 import submissionsService from "../../services/submissionsService";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
-import MarkdownRenderer from "./MarkdownRenderer";
+import MarkdownRenderer from "../commons/MarkdownRenderer";
 import ErrorNotification from "../../utils/ErrorNotification";
 import SolvePageHeader from "./SolvePageHeader.react";
 import SubmissionsSidePanel from "../ActivitiesPage/SubmissionsSidePanel.react";

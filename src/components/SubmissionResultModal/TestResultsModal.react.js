@@ -1,23 +1,24 @@
 // @flow
 import React from "react";
-import { Alert, AlertTitle } from "@material-ui/lab";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import Divider from "@material-ui/core/Divider";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
-import ReactDiffViewer from "react-diff-viewer";
 import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 import SubmissionResultStatusIcon from "../../utils/icons";
 import type { SubmissionResult } from "../../types";
 import getText from "../../utils/messages";
 import submissionsService from "../../services/submissionsService";
 import ErrorNotification from "../../utils/ErrorNotification";
-import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
+import ActivityDescriptionAccordion from "./ActivityDescriptionAccordion";
+import StdAccordion from "./StdAccordion";
+import TestAccordion from "./TestAccordion";
+import CodeAccordion from "./CodeAccordion";
 import { withState } from "../../utils/State";
 
 const styles = () => ({
@@ -46,13 +47,16 @@ const styles = () => ({
   dialogContent: {
     display: "flex",
     flexDirection: "column",
-  },
-  codeEditor: {
-    height: "500px",
-    width: "100%",
-    display: "flex",
-    paddingBottom: "70px",
-    flex: "1 0 auto",
+    "& .MuiAccordionDetails-root": {
+      flexWrap: "wrap",
+      "& > *": {
+        flex: 1,
+      },
+    },
+    "& #scroll-dialog-description .MuiAlert-root": {
+      marginBottom: "0.8rem",
+      fontSize: "1rem",
+    },
   },
 });
 
@@ -62,6 +66,7 @@ type Props = {
   classes: any,
   context: any,
   showWaitingDialog: boolean,
+  showActivityDescription: boolean,
   activitySubmissionId: number,
   courseId: number,
   activityFinalSubmissionId: ?number,
@@ -170,26 +175,29 @@ class SubmissionResultModal extends React.Component<Props, State> {
       showWaitingDialog,
       activityFinalSubmissionId,
       context,
+      courseId,
+      showActivityDescription,
     } = this.props;
+
     const { results, error } = this.state;
 
     const title = results
       ? `Resultado de la corrida: ${getText(results.submission_status).toUpperCase()}`
       : "Corriendo pruebas";
 
-    const getStdoutColor = item => {
+    const getStderrColor = (item: string) => {
+      if (item.includes("main") || item.includes("end_BUILD")) {
+        return "secondary";
+      }
+      return "textSecondary";
+    };
+
+    const getStdoutColor = (item: string) => {
       if (item.includes("start_BUILD") || item.includes("end_BUILD")) {
         return "secondary";
       }
       if (item.includes("start_RUN") || item.includes("end_RUN")) {
         return "primary";
-      }
-      return "textSecondary";
-    };
-
-    const getStderrColor = item => {
-      if (item.includes("main") || item.includes("end_BUILD")) {
-        return "secondary";
       }
       return "textSecondary";
     };
@@ -237,170 +245,50 @@ class SubmissionResultModal extends React.Component<Props, State> {
             <DialogContent dividers className={classes.dialogContent}>
               {/* Mark as definitive (if success) */}
               {!context.permissions.includes("activity_manage") && (
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={
-                    results.submission_status !== "SUCCESS" || activityFinalSubmissionId !== null
-                  }
-                  className={classes.markAsDefinitiveButton}
-                  onClick={() => this.onClickMarkAsFinalSolution(results.activity_id, results.id)}
-                >
-                  Marcar como solucion definitiva
-                </Button>
-              )}
-              {/* IO test results (if any) */}
-              {results.io_test_run_results.length > 0 && (
-                <Typography variant="h5" color="black" component="p">
-                  Tests de entrada/salida:
-                </Typography>
-              )}
-              {results.io_test_run_results &&
-                results.io_test_run_results.map((ioResult, idx) => {
-                  const result =
-                    ioResult.expected_output === ioResult.run_output ? "success" : "error";
-                  const allGoodStyle =
-                    result === "success"
-                      ? {
-                          variables: {
-                            light: {
-                              diffViewerBackground: "#fff",
-                            },
-                          },
-                        }
-                      : {};
-                  const separateNewLines = str => (
-                    str.replace(/(\n)\1+/g, str => str.split('').join(' '))
-                  );
-                  // Hack to fix issue #97 where '\n\n' is not displayed in diff viewer correctly but '\n \n' does
-                  ioResult.run_output = separateNewLines(ioResult.run_output);
-                  ioResult.expected_output = separateNewLines(ioResult.expected_output);
-                  return (
-                    <DialogContentText
-                      key={idx}
-                      id="scroll-dialog-description"
-                      tabIndex={-1}
-                      component="div"
-                    >
-                      <Alert severity={result}>
-                        <AlertTitle>{ioResult.name}</AlertTitle>
-                      </Alert>
-                      <ReactDiffViewer
-                        styles={allGoodStyle}
-                        key={ioResult.id}
-                        leftTitle="Resultado de la corrida"
-                        oldValue={ioResult.run_output}
-                        rightTitle="Resultado esperado"
-                        newValue={ioResult.expected_output}
-                        showDiffOnly={false}
-                        splitView
-                      />
-                      <br />
-                    </DialogContentText>
-                  );
-                })}
-              {/* Unit test results (if any) */}
-              {results.unit_test_run_results.length > 0 && (
-                <Typography variant="h5" color="black" component="p">
-                  Tests unitarios:
-                </Typography>
-              )}
-              {results.unit_test_run_results &&
-                results.unit_test_run_results
-                  .sort((a, b) => (a.test_name > b.test_name ? 1 : -1))
-                  .map((unitTestResult, idx) => {
-                    const result = unitTestResult.passed ? "success" : "error";
-                    return (
-                      <DialogContentText
-                        key={idx}
-                        id="scroll-dialog-description"
-                        tabIndex={-1}
-                        component="div"
-                      >
-                        <Alert severity={result}>
-                          <AlertTitle>{unitTestResult.test_name.replace(/_/g, " ")}</AlertTitle>
-                          {unitTestResult.error_messages &&
-                            unitTestResult.error_messages.split("\n").map((line, key) => {
-                              if (
-                                key === 0 ||
-                                key === unitTestResult.error_messages.split("\n").length - 2
-                              ) {
-                                return <span>{line}</span>;
-                              }
-                              return (
-                                <span>
-                                  <blockquote>{line}</blockquote>
-                                </span>
-                              );
-                            })}
-                        </Alert>
-                      </DialogContentText>
-                    );
-                  })}
-              <br />
-              {results.submission_status.includes("ERROR") && (
-                <div>
-                  <Divider variant="middle" />
-                  <br />
-                  <Typography variant="h5" color="black" component="p">
-                    MENSAJE DE ERROR:
-                  </Typography>
-                  <br />
-                  <Typography variant="subtitle1" color="textSecondary" component="p">
-                    {results.exit_message}
-                  </Typography>
-                  <br />
-                </div>
-              )}
-              {results.submited_code && (
-                <div className={classes.codeEditor}>
-                  <MultipleTabsEditor
-                    width="100%"
-                    initialCode={results.submited_code}
-                    language={results.activity_language}
-                    readOnly
-                  />
-                </div>
-              )}
-              {results.stderr && (
-                <div>
-                  <Divider variant="middle" />
-                  <br />
-                  <Typography variant="h5" color="black" component="p">
-                    STDERR:
-                  </Typography>
-                  <br />
-                  {results.stderr.split("\n").map((item, key) => (
-                    <Typography
-                      key={key}
-                      variant="subtitle1"
-                      color={getStderrColor(item)}
-                      component="p"
-                    >
-                      {item}
-                    </Typography>
-                  ))}
-                </div>
-              )}
-              <br />
-              <Divider variant="middle" />
-              <br />
-              <Typography variant="h5" color="black" component="p">
-                STDOUT:
-              </Typography>
-              <br />
-              {results.stdout &&
-                results.stdout.split("\n").map((item, key) => (
-                  <Typography
-                    key={key}
-                    variant="subtitle1"
-                    color={getStdoutColor(item)}
-                    component="p"
+                <Box mb={3} display="flex" justifyContent="flex-end">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={
+                      results.submission_status !== "SUCCESS" || activityFinalSubmissionId !== null
+                    }
+                    className={classes.markAsDefinitiveButton}
+                    onClick={() => this.onClickMarkAsFinalSolution(results.activity_id, results.id)}
                   >
-                    {item}
-                  </Typography>
-                ))}
+                    Marcar como solucion definitiva
+                  </Button>
+                </Box>
+              )}
+              {/* Enunciado */}
+              {showActivityDescription && (
+                <Box mb={3}>
+                  <ActivityDescriptionAccordion
+                    courseId={courseId}
+                    activityId={results.activity_id}
+                  />
+                </Box>
+              )}
+              {/* IO/Unit tests results and code */}
+              <Box mb={3}>
+                <TestAccordion results={results} />
+              </Box>
+              {/* Code */}
+              <Box mb={3}>
+                <CodeAccordion results={results} />
+              </Box>
+              {/* Stderr */}
+              {results.stderr && (
+                <Box mb={3}>
+                  <StdAccordion title="Stderr" std={results.stderr} getColor={getStderrColor} />
+                </Box>
+              )}
+              {/* Stdout */}
+              {results.stdout && (
+                <Box mb={3}>
+                  <StdAccordion title="Stdout" std={results.stdout} getColor={getStdoutColor} />
+                </Box>
+              )}
               <DialogActions>
                 <Button onClick={e => handleCloseModal(e)} color="primary">
                   Cerrar
