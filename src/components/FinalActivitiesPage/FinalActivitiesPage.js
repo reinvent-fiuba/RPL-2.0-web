@@ -12,8 +12,6 @@ import Avatar from "@material-ui/core/Avatar";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import SolveActivityFirstModal from "./SolveActivityFirstModal.react";
 import { withState } from "../../utils/State";
-import TopBar from "../TopBar/TopBar";
-import SideBar from "../SideBar/SideBar";
 import activitiesService from "../../services/activitiesService";
 import submissionsService from "../../services/submissionsService";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
@@ -25,31 +23,7 @@ import type { Activity } from "../../types";
 // Styles
 import "react-mde/lib/styles/css/react-mde-all.css";
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    height: 56,
-  },
-  content: {
-    flexGrow: 1,
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-    height: "100%",
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   circularProgress: {
     position: "absolute",
     left: "50%",
@@ -84,7 +58,6 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   activity: ?Activity,
   editorWidth: string,
   editor: any,
@@ -97,7 +70,6 @@ type State = {
 class FinalActivitiesPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     editorWidth: "100%",
     activity: null,
     editor: null,
@@ -206,15 +178,10 @@ class FinalActivitiesPage extends React.Component<Props, State> {
     this.setState({ editorWidth: width });
   }
 
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
-  }
-
   render() {
     const { classes, history } = this.props;
     const {
       activity,
-      isSideBarOpen,
       editorWidth,
       error,
       editor,
@@ -227,20 +194,9 @@ class FinalActivitiesPage extends React.Component<Props, State> {
       <div className={classes.topDiv}>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
 
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Otras soluciones de estudiantes"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={this.props.match.params.courseId}
-        />
         {!activity && <CircularProgress className={classes.circularProgress} />}
         {activity && (
-          <main className={classes.content}>
-            <div className={classes.drawerHeader} />
+          <div>
             <SolvePageHeader activity={activity} history={history} onlyTitle />
             <SolveActivityFirstModal
               open={openModal}
@@ -297,7 +253,7 @@ class FinalActivitiesPage extends React.Component<Props, State> {
                 </div>
               </SplitPane>
             )}
-          </main>
+          </div>
         )}
       </div>
     );

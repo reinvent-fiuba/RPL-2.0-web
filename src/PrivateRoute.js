@@ -4,7 +4,7 @@ import { withState } from "./utils/State";
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-function PrivateRoute({ component: Component, context, ...rest }) {
+function PrivateRoute({ component: Component, layout: Layout, title, context, ...rest }) {
   return (
     <Route
       {...rest}
@@ -22,7 +22,11 @@ function PrivateRoute({ component: Component, context, ...rest }) {
             />
           );
         }
-        return <Component {...routeProps} />;
+        return (
+          <Layout title={title}>
+            <Component {...routeProps} />
+          </Layout>
+        );
       }}
     />
   );

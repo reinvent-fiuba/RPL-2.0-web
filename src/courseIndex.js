@@ -1,6 +1,8 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { withState } from "./utils/State";
+import PrivateRoute from "./PrivateRoute";
+import PageWrapper from "./utils/PageWrapper";
 import CreateActivityPage from "./components/CreateActivityPage/CreateActivityPage";
 import AddActivityCorrectionTests from "./components/AddActivityCorrectionTests/AddActivityCorrectionTests.react";
 import SolveActivityPage from "./components/SolveActivityPage/SolveActivityPage";
@@ -35,6 +37,7 @@ class CourseIndex extends React.PureComponent {
   }
 
   render() {
+    const { courseId } = this.props.match.params;
     const { permissions } = this.props.context;
     if (!permissions) {
       return null;
@@ -43,42 +46,73 @@ class CourseIndex extends React.PureComponent {
       ? ActivitiesTeacherPage
       : ActivitiesPage;
 
-    const { courseId } = this.props.match.params;
+    const mainCourseRoute = permissions.includes("activity_manage")
+      ? `/courses/${courseId}/dashboard`
+      : `/courses/${courseId}/activities`;
+
     return (
       <>
-        <Route
+        <Route exact path="/courses/:courseId" render={() => <Redirect to={mainCourseRoute} />} />
+        <PrivateRoute
           exact
-          path="/courses/:courseId"
-          render={() =>
-            permissions.includes("activity_manage") ? (
-              <Redirect to={`/courses/${courseId}/dashboard`} />
-            ) : (
-              <Redirect to={`/courses/${courseId}/activities`} />
-            )}
+          path="/courses/:courseId/edit"
+          component={EditCoursePage}
+          layout={PageWrapper}
+          title="Editar Curso"
         />
-        <Route exact path="/courses/:courseId/edit" component={EditCoursePage} />
-        <Route exact path="/courses/:courseId/activities" component={activityPage} />
-        <Route exact path="/courses/:courseId/dashboard" component={DashboardPage} />
-        <Route exact path="/courses/:courseId/students" component={StudentsTeachersPage} />
-        <Route path="/courses/:courseId/activity/create" component={CreateActivityPage} />
-        <Route
+        <PrivateRoute
+          exact
+          path="/courses/:courseId/activities"
+          component={activityPage}
+          layout={PageWrapper}
+          title="Actividades"
+        />
+        <PrivateRoute
+          exact
+          path="/courses/:courseId/dashboard"
+          component={DashboardPage}
+          layout={PageWrapper}
+          title="Dashboard"
+        />
+        <PrivateRoute
+          exact
+          path="/courses/:courseId/students"
+          component={StudentsTeachersPage}
+          layout={PageWrapper}
+          title="Incriptos"
+        />
+        <PrivateRoute
+          path="/courses/:courseId/activity/create"
+          component={CreateActivityPage}
+          layout={PageWrapper}
+          title="Crear Actividad"
+        />
+        <PrivateRoute
           exact
           path="/courses/:courseId/activities/:activityId/edit"
           component={CreateActivityPage}
+          layout={PageWrapper}
+          title="Editar Actividad"
         />
-        <Route
+        <PrivateRoute
           path="/courses/:courseId/activities/:activityId/edit/correction"
           component={AddActivityCorrectionTests}
+          layout={PageWrapper}
+          title="Editar Actividad"
         />
-        <Route
+        <PrivateRoute
           exact
           path="/courses/:courseId/activities/:activityId"
           component={SolveActivityPage}
+          layout={PageWrapper}
+          title="Resolver Actividad"
         />
-        <Route
+        <PrivateRoute
           exact
           path="/courses/:courseId/activities/:activityId/definitives"
           component={FinalActivitiesPage}
+          layout={PageWrapper}
+          title="Actividades Definitivas"
         />
       </>
     );

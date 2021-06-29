@@ -15,8 +15,6 @@ import * as Showdown from "showdown";
 import ReactResizeDetector from "react-resize-detector";
 import ErrorNotification from "../../utils/ErrorNotification";
 import { withState } from "../../utils/State";
-import TopBar from "../TopBar/TopBar";
-import SideBar from "../SideBar/SideBar";
 import ActivityCategoryModal from "../ActivityCategoryModal/ActivityCategoryModal";
 import activitiesService from "../../services/activitiesService";
 import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
@@ -36,32 +34,7 @@ const converter = new Showdown.Converter({
   tasklists: true,
 });
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   title: {
     flexGrow: 1,
     marginLeft: 0,
@@ -146,7 +119,6 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   activity: ?Activity,
   categories: ?Array<Category>,
   language: string,
@@ -166,7 +138,6 @@ const mainFileByLanguage = { c: "main.c", python: "assignment_main.py", java: "m
 class CreateActivityPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null, invalidFields: new Set() },
-    isSideBarOpen: false,
     activity: null,
     categories: [],
     language: "",
@@ -214,10 +185,6 @@ class CreateActivityPage extends React.Component<Props, State> {
     activitiesService.getActivityCategories(courseId).then(response => {
       this.setState({ categories: response });
     });
-  }
-
-  handleSwitchDrawer() {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   handleChange(event, valid) {
@@ -369,7 +336,6 @@ class CreateActivityPage extends React.Component<Props, State> {
       code,
       mdText,
       mdEditorTab,
-      isSideBarOpen,
       error,
       editor,
       isCreateCategoryModalOpen,
@@ -397,173 +363,158 @@ class CreateActivityPage extends React.Component<Props, State> {
           titleText="Crear Categoría"
           saveButtonText="Crear"
         />
-        <TopBar
-          handleDrawerOpen={() => this.handleSwitchDrawer()}
-          open={isSideBarOpen}
-          title={
-            activity === null || activity === undefined ? "Crear Actividad" : "Editar Actividad"
-          }
-        />
-        <SideBar
-          handleDrawerClose={() => this.handleSwitchDrawer()}
-          open={isSideBarOpen}
-          courseId={courseId}
-        />
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
 
-          {!this.isCreatingActivity() && !activity && (
-            <CircularProgress className={classes.circularProgress} />
-          )}
-          {(this.isCreatingActivity() || activity) && (
-            <div>
-              <form className={classes.form}>
-                <TextField
-                  className={classes.formActivityName}
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Nombre de Actividad"
-                  name="name"
-                  autoComplete="name"
-                  error={error.invalidFields && error.invalidFields.has("name")}
-                  helperText={
-                    error.invalidFields &&
-                    error.invalidFields.has("name") &&
-                    "El nombre de la actividad debe estar formado por letras o numeros"
-                  }
-                  onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[()0-9A-zÀ-ÿ\s.-]+$/, "string"))}
-                  value={name}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="points"
-                  label="Puntaje"
-                  name="points"
-                  autoComplete="points"
-                  type="number"
-                  onChange={e => this.handleChange(e, true)}
-                  value={points}
-                />
-                <FormControl>
-                  <InputLabel id="language">Lenguaje</InputLabel>
-                  <Select
-                    id="language"
-                    name="language"
-                    value={language || ""}
-                    onChange={event => this.setState({ language: event.target.value })}
-                  >
-                    400
-                    <MenuItem key={0} value="c">
-                      C
-                    </MenuItem>
-                    <MenuItem key={1} value="python">
-                      Python
-                    </MenuItem>
-                    {/* <MenuItem key={2} value="java">
-                      Java
-                    </MenuItem> */}
-                  </Select>
-                </FormControl>
-                <FormControl>
-                  <InputLabel id="category">Categoría</InputLabel>
-                  <Select
-                    labelId="category"
-                    id="category"
-                    value={categoryId !== -1 ? categoryId : ""}
-                    onChange={event => this.setState({ categoryId: event.target.value })}
-                  >
-                    {this.renderCategoriesDropdown()}
-                  </Select>
-                </FormControl>
-              </form>
+        {!this.isCreatingActivity() && !activity && (
+          <CircularProgress className={classes.circularProgress} />
+        )}
+        {(this.isCreatingActivity() || activity) && (
+          <div>
+            <form className={classes.form}>
+              <TextField
+                className={classes.formActivityName}
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                label="Nombre de Actividad"
+                name="name"
+                autoComplete="name"
+                error={error.invalidFields && error.invalidFields.has("name")}
+                helperText={
+                  error.invalidFields &&
+                  error.invalidFields.has("name") &&
+                  "El nombre de la actividad debe estar formado por letras o numeros"
+                }
+                onChange={e =>
+                  this.handleChange(e, validate(e.target.value, /^[()0-9A-zÀ-ÿ\s.-]+$/, "string"))}
+                value={name}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="points"
+                label="Puntaje"
+                name="points"
+                autoComplete="points"
+                type="number"
+                onChange={e => this.handleChange(e, true)}
+                value={points}
+              />
+              <FormControl>
+                <InputLabel id="language">Lenguaje</InputLabel>
+                <Select
+                  id="language"
+                  name="language"
+                  value={language || ""}
+                  onChange={event => this.setState({ language: event.target.value })}
+                >
+                  400
+                  <MenuItem key={0} value="c">
+                    C
+                  </MenuItem>
+                  <MenuItem key={1} value="python">
+                    Python
+                  </MenuItem>
+                  {/* <MenuItem key={2} value="java">
+                    Java
+                  </MenuItem> */}
+                </Select>
+              </FormControl>
+              <FormControl>
+                <InputLabel id="category">Categoría</InputLabel>
+                <Select
+                  labelId="category"
+                  id="category"
+                  value={categoryId !== -1 ? categoryId : ""}
+                  onChange={event => this.setState({ categoryId: event.target.value })}
+                >
+                  {this.renderCategoriesDropdown()}
+                </Select>
+              </FormControl>
+            </form>
 
-              <Grid container spacing={3} className={classes.grid}>
-                <Grid item xs={6} className={classes.codeEditor}>
-                  <ReactResizeDetector
-                    handleWidth
-                    handleHeight
-                    onResize={_.throttle(() => (editor ? editor.layout : () => {}))}
-                  >
-                    <MultipleTabsEditor
-                      key={activity ? activity.id : null}
-                      initialCode={code}
-                      language={language}
-                      readOnly={false}
-                      forceCanEditFiles // we are in teacher mode
-                      onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
-                      editorDidMount={mountedEditor => {
-                        mountedEditor.changeViewZones(changeAccessor => {
-                          changeAccessor.addZone({
-                            afterLineNumber: 0,
-                            heightInLines: 1,
-                            domNode: document.createElement("span"),
-                          });
+            <Grid container spacing={3} className={classes.grid}>
+              <Grid item xs={6} className={classes.codeEditor}>
+                <ReactResizeDetector
+                  handleWidth
+                  handleHeight
+                  onResize={_.throttle(() => (editor ? editor.layout : () => {}))}
+                >
+                  <MultipleTabsEditor
+                    key={activity ? activity.id : null}
+                    initialCode={code}
+                    language={language}
+                    readOnly={false}
+                    forceCanEditFiles // we are in teacher mode
+                    onCodeChange={_.throttle(newCode => this.setState({ code: newCode }))}
+                    editorDidMount={mountedEditor => {
+                      mountedEditor.changeViewZones(changeAccessor => {
+                        changeAccessor.addZone({
+                          afterLineNumber: 0,
+                          heightInLines: 1,
+                          domNode: document.createElement("span"),
                         });
-                        this.setState({ editor: mountedEditor });
-                      }}
-                    />
-                  </ReactResizeDetector>
-                </Grid>
-                <Grid item xs={6} className={classes.mdEditor}>
-                  <ReactMde
-                    minEditorHeight="53vh"
-                    name="mdText"
-                    value={mdText}
-                    className="markdown-body"
-                    onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
-                    selectedTab={mdEditorTab}
-                    onTabChange={mdEditorTabChanged =>
-                      this.setState({ mdEditorTab: mdEditorTabChanged })
-                    }
-                    generateMarkdownPreview={markdown =>
-                      Promise.resolve(converter.makeHtml(markdown))}
+                      });
+                      this.setState({ editor: mountedEditor });
+                    }}
                   />
-                </Grid>
+                </ReactResizeDetector>
               </Grid>
-              <Grid container>
-                <Grid item xs className={classes.buttons}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    className={classes.cancelButton}
-                    onClick={() => this.handleCancel()}
-                  >
-                    Cancelar
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.saveButton}
-                    onClick={e => this.handleCreateClick(e)}
-                    disabled={!this.canSaveActivity()}
-                  >
-                    Guardar
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.createButton}
-                    onClick={e => this.handleGotToTestClick(e)}
-                    disabled={!this.canSaveActivity()}
-                  >
-                    Guardar y Agregar Pruebas
-                  </Button>
-                </Grid>
+              <Grid item xs={6} className={classes.mdEditor}>
+                <ReactMde
+                  minEditorHeight="53vh"
+                  name="mdText"
+                  value={mdText}
+                  className="markdown-body"
+                  onChange={mdTextChanged => this.setState({ mdText: mdTextChanged })}
+                  selectedTab={mdEditorTab}
+                  onTabChange={mdEditorTabChanged =>
+                    this.setState({ mdEditorTab: mdEditorTabChanged })
+                  }
+                  generateMarkdownPreview={markdown =>
+                    Promise.resolve(converter.makeHtml(markdown))}
+                />
               </Grid>
-            </div>
-          )}
-        </main>
+            </Grid>
+            <Grid container>
+              <Grid item xs className={classes.buttons}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className={classes.cancelButton}
+                  onClick={() => this.handleCancel()}
+                >
+                  Cancelar
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className={classes.saveButton}
+                  onClick={e => this.handleCreateClick(e)}
+                  disabled={!this.canSaveActivity()}
+                >
+                  Guardar
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className={classes.createButton}
+                  onClick={e => this.handleGotToTestClick(e)}
+                  disabled={!this.canSaveActivity()}
+                >
+                  Guardar y Agregar Pruebas
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+        )}
       </div>
     );
   }

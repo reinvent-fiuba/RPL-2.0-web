@@ -10,40 +10,13 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import usersService from "../../services/usersService";
 import ErrorNotification from "../../utils/ErrorNotification";
 
 import type { Student } from "../../types";
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   title: {
     marginTop: 20,
     marginBottom: 20,
@@ -87,14 +60,12 @@ type Props = {
 
 type State = {
   error: { open: boolean, message: ?string },
-  isSideBarOpen: boolean,
   users: Array<Student>,
 };
 
 class UsersPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null },
-    isSideBarOpen: false,
     users: [],
   };
 
@@ -116,10 +87,6 @@ class UsersPage extends React.Component<Props, State> {
           },
         });
       });
-  }
-
-  handleSwitchDrawer(event: any) {
-    this.setState(prevState => ({ isSideBarOpen: !prevState.isSideBarOpen }));
   }
 
   renderUserRow(user: any, classes: any) {
@@ -179,29 +146,14 @@ class UsersPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, match } = this.props;
+    const { classes } = this.props;
 
-    const { users, isSideBarOpen, error } = this.state;
+    const { users, error } = this.state;
 
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
-        <TopBar
-          handleDrawerOpen={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          title="Usuarios"
-        />
-        <SideBar
-          handleDrawerClose={e => this.handleSwitchDrawer(e)}
-          open={isSideBarOpen}
-          courseId={match.params.courseId}
-        />
-        <main className={`${classes.content} ${isSideBarOpen ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
-          <div className={classes.tableContainerDiv}>
-            {users && this.renderUsers(users, classes)}
-          </div>
-        </main>
+        <div className={classes.tableContainerDiv}>{users && this.renderUsers(users, classes)}</div>
       </div>
     );
   }

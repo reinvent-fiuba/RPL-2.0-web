@@ -12,9 +12,11 @@ import { withState } from "../../utils/State";
 import NotificationsButton from "../SideBar/NotificationsButton";
 
 const drawerWidth = 240;
+const barHeight = 64;
 
 const styles = theme => ({
   appBar: {
+    height: barHeight,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -67,11 +69,15 @@ class TopBar extends React.PureComponent {
     if (!context.profile) return <div />;
     const { name, surname, is_admin, img_uri } = context && context.profile;
     const { courseId } = match.params;
-    const courseName = context.course && courseId == context.course.id && context.course.name;
+    const courseName = context.course && courseId === context.course.id && context.course.name;
     const { isNotificationModalOpen } = this.state;
 
     return (
-      <AppBar position="fixed" className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}>
+      <AppBar
+        position="fixed"
+        elevation={0}
+        className={`${classes.appBar} ${open ? classes.appBarShift : ""}`}
+      >
         <Toolbar>
           <IconButton
             color="inherit"
@@ -92,9 +98,7 @@ class TopBar extends React.PureComponent {
             onClick={() => this.setState({ isNotificationModalOpen: !isNotificationModalOpen })}
           />
           <Typography variant="body1" className={classes.user}>
-            {name} 
-{' '}
-{surname}
+            {`${name} ${surname}`}
           </Typography>
           <div className={classes.adminIcon}>{is_admin ? <LockIcon /> : <div />}</div>
           <Avatar src={img_uri}>

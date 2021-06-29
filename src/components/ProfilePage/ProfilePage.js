@@ -1,38 +1,11 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import SideBar from "../SideBar/SideBar";
-import TopBar from "../TopBar/TopBar";
 import { withState } from "../../utils/State";
 import authenticationServer from "../../services/authenticationService";
 import ProfileView from "./ProfileView";
 import ProfileEdit from "./ProfileEdit";
 
-const drawerWidth = 240;
-
 const styles = theme => ({
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
   form: {
     marginTop: theme.spacing(1),
     marginLeft: theme.spacing(40),
@@ -57,8 +30,6 @@ class ProfilePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.handleDrawerClose = this.handleDrawerClose.bind(this);
-    this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
     this.handleClickEdit = this.handleClickEdit.bind(this);
     this.handleClickSave = this.handleClickSave.bind(this);
   }
@@ -83,14 +54,6 @@ class ProfilePage extends React.Component {
       });
   }
 
-  handleDrawerOpen() {
-    this.setState({ open: true });
-  }
-
-  handleDrawerClose() {
-    this.setState({ open: false });
-  }
-
   handleClickEdit() {
     this.setState({ editMode: true });
   }
@@ -109,22 +72,13 @@ class ProfilePage extends React.Component {
 
     return (
       <div>
-        <TopBar
-          handleDrawerOpen={this.handleDrawerOpen}
-          open={this.state.open}
-          title="Perfil de Usuario"
-        />
-        <SideBar handleDrawerClose={this.handleDrawerClose} open={this.state.open} />
-        <main className={`${classes.content} ${this.state.open ? classes.contentShift : ""}`}>
-          <div className={classes.drawerHeader} />
-          <div className={classes.form}>
-            {editMode ? (
-              <ProfileEdit onClickSave={this.handleClickSave} profile={profile} />
-            ) : (
-              <ProfileView onClickEdit={this.handleClickEdit} profile={profile} />
-            )}
-          </div>
-        </main>
+        <div className={classes.form}>
+          {editMode ? (
+            <ProfileEdit onClickSave={this.handleClickSave} profile={profile} />
+          ) : (
+            <ProfileView onClickEdit={this.handleClickEdit} profile={profile} />
+          )}
+        </div>
       </div>
     );
   }
