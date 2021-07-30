@@ -56,7 +56,7 @@ jobs:
         run: npm run build
 
       # Setup gcloud CLI
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@master
         with:
           service_account_email: ${{ secrets.GKE_ALE_FIUBA_EMAIL }}
           service_account_key: ${{ secrets.GKE_ALE_FIUBA_KEY }}
