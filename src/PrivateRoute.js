@@ -23,7 +23,7 @@ function PrivateRoute({ component: Component, layout: Layout, title, context, ..
           );
         }
         return (
-          <Layout title={title}>
+          <Layout title={title} key={location.pathname}>
             <Component {...routeProps} />
           </Layout>
         );
