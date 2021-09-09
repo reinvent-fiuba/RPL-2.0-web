@@ -5,10 +5,9 @@ import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { withState } from "../../utils/State";
 import activitiesService from "../../services/activitiesService";
-import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import type { Activity } from "../../types";
 
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "@material-ui/core/Link";
@@ -54,7 +53,7 @@ type Props = {
 
 type State = {
   activityMenu: { isOpen: boolean, anchorEl: ?string },
-  activityOptions: Array<any>
+  activityOptions: Array<Activity>
 };
 
 function getLeftTitle(
@@ -96,11 +95,12 @@ class SolvePageHeader extends React.Component<Props, State> {
     activitiesService
       .getAllActivities(this.props.context.course.id)
       .then(activitiesResponse => {
+        // filter active activities and those which belong to the same category as the current one
         let activities = activitiesResponse
           .filter(activity => (activity.category_id === this.props.activity.category_id && activity.active))
           .sort((a, b) => a.name > b.name);
         this.setState({
-          activityOptions: activities.map(activity => ({id: activity.id, name: activity.name}))
+          activityOptions: activities
         })
       })
       .catch(err => {
