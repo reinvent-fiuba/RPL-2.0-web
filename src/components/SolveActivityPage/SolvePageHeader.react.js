@@ -133,16 +133,13 @@ class SolvePageHeader extends React.Component<Props, State> {
             Actividades
           </LinkRouter>
           <LinkRouter color="inherit" to={this.props.history.location.pathname}>
-            {activity.name}
-            <IconButton
-              id="activity-menu"
-              aria-label="more"
+            <Button
+              color="inherit"
               aria-haspopup="true"
               onClick={(e) => this.handleOpenActivityMenu(e)}
-              style={{ padding: "6px" }}
-            >
-              <MoreVertIcon/>
-            </IconButton>
+              variant='outlined'>
+              {activity.name}
+            </Button>
             <Menu
               anchorEl={activityMenu.anchorEl}
               open={activityMenu.isOpen}
