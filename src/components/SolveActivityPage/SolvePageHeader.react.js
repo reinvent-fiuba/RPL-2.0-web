@@ -4,6 +4,7 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { withState } from "../../utils/State";
+import activitiesService from "../../services/activitiesService";
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -48,10 +49,11 @@ type Props = {
   style: any,
   history: any,
   canShowOtherSolutions: boolean,
-  onlyTitle: boolean,
-  handleOpenActivityMenu: Event => void,
-  handleCloseActivityMenu: Event => void,
-  activityMenu: any,
+  onlyTitle: boolean
+};
+
+type State = {
+  activityMenu: { isOpen: boolean, anchorEl: ?string },
   activityOptions: Array<any>
 };
 
@@ -84,79 +86,112 @@ function getLeftTitle(
   );
 }
 
-function SolvePageHeader(props: Props) {
-  const { course } = props.context;
-  const { activity, activityOptions, activityMenu } = props;
-  return (
-    <div style={props.style} className={props.classes.secondHeader}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <LinkRouter color="inherit" to={`/courses/${course.id}/dashboard`}>
-          {props.context.course.name}
-        </LinkRouter>
-        <LinkRouter color="inherit" to={`/courses/${course.id}/activities`}>
-          Actividades
-        </LinkRouter>
-        <LinkRouter color="inherit" to={props.history.location.pathname}>
-          {activity.name}
-          {activityOptions?.length > 0 && (
+class SolvePageHeader extends React.Component<Props, State> {
+  state = {
+    activityMenu: { isOpen: false, anchorEl: null },
+    activityOptions: []
+  };
+
+  componentDidMount() {
+    activitiesService
+      .getAllActivities(this.props.context.course.id)
+      .then(activitiesResponse => {
+        let activities = activitiesResponse
+          .filter(activity => (activity.category_id === this.props.activity.category_id && activity.active))
+          .sort((a, b) => a.name > b.name);
+        this.setState({
+          activityOptions: activities.map(activity => ({id: activity.id, name: activity.name}))
+        })
+      })
+      .catch(err => {
+        if (err.status === 404) {
+          return Promise.resolve(this.setState({ activityOptions: [] }));
+        }
+        return Promise.reject(err);
+      });
+  }
+
+  handleOpenActivityMenu(event: any) {
+    this.setState({ activityMenu: { isOpen: true, anchorEl: event.currentTarget } });
+  }
+
+  handleCloseActivityMenu() {
+    this.setState({ activityMenu: { isOpen: false, anchorEl: null } });
+  }
+
+  render() {
+    const { course } = this.props.context;
+    const { activityMenu, activityOptions } = this.state;
+    const { activity } = this.props;
+    return (
+      <div style={this.props.style} className={this.props.classes.secondHeader}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <LinkRouter color="inherit" to={`/courses/${course.id}/dashboard`}>
+            {this.props.context.course.name}
+          </LinkRouter>
+          <LinkRouter color="inherit" to={`/courses/${course.id}/activities`}>
+            Actividades
+          </LinkRouter>
+          <LinkRouter color="inherit" to={this.props.history.location.pathname}>
+            {activity.name}
             <IconButton
               id="activity-menu"
               aria-label="more"
               aria-haspopup="true"
-              onClick={props.handleOpenActivityMenu}
+              onClick={(e) => this.handleOpenActivityMenu(e)}
               style={{ padding: "6px" }}
             >
               <MoreVertIcon/>
             </IconButton>
-          )}
-          <Menu
-            anchorEl={activityMenu.anchorEl}
-            open={activityMenu.isOpen}
-            onClose={props.handleCloseActivityMenu}
-            PaperProps={{ style: { maxHeight: 320 }}}
-          >
-            {activityOptions.map((option) => (
-              <MenuItem
-                selected={option.id === activity.id}
-                component={RouterLink}
-                to={`/courses/${course.id}/activities/${option.id}`}
-                key={option.id}
-              >
-                {option.name}
-              </MenuItem>
-            ))}
-          </Menu>
-        </LinkRouter>
-      </Breadcrumbs>
-      {!props.onlyTitle && (
-        <div className={props.classes.topRightButtons}>
-          {getLeftTitle(
-            props.history,
-            props.context.permissions,
-            props.classes,
-            props.canShowOtherSolutions
-          )}
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            className={props.classes.rightButton}
-            onClick={e => props.handleOpenPastSubmissionsSidePanel()}
-          >
-            Mis entregas
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            color="secondary"
-            onClick={e => props.handleSubmitActivity(e)}
-          >
-            Entregar
-          </Button>
-        </div>
-      )}
-    </div>
-  );
+            <Menu
+              anchorEl={activityMenu.anchorEl}
+              open={activityMenu.isOpen}
+              onClose={() => this.handleCloseActivityMenu()}
+              PaperProps={{ style: { maxHeight: 320 }}}
+            >
+              {activityOptions.map((option) => (
+                <MenuItem
+                  selected={option.id === activity.id}
+                  component={RouterLink}
+                  to={`/courses/${course.id}/activities/${option.id}`}
+                  key={option.id}
+                >
+                  {option.name}
+                </MenuItem>
+              ))}
+            </Menu>
+          </LinkRouter>
+        </Breadcrumbs>
+        {!this.props.onlyTitle && (
+          <div className={this.props.classes.topRightButtons}>
+            {getLeftTitle(
+              this.props.history,
+              this.props.context.permissions,
+              this.props.classes,
+              this.props.canShowOtherSolutions
+            )}
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={this.props.classes.rightButton}
+              onClick={e => this.props.handleOpenPastSubmissionsSidePanel()}
+            >
+              Mis entregas
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="secondary"
+              onClick={e => this.props.handleSubmitActivity(e)}
+            >
+              Entregar
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  }
 }
 
 export default withState(withStyles(styles)(SolvePageHeader));
