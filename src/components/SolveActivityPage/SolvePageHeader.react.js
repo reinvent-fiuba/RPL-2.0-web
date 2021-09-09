@@ -4,6 +4,10 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { withState } from "../../utils/State";
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "@material-ui/core/Link";
@@ -45,6 +49,10 @@ type Props = {
   history: any,
   canShowOtherSolutions: boolean,
   onlyTitle: boolean,
+  handleOpenActivityMenu: Event => void,
+  handleCloseActivityMenu: Event => void,
+  activityMenu: any,
+  activityOptions: Array<any>
 };
 
 function getLeftTitle(
@@ -78,7 +86,7 @@ function getLeftTitle(
 
 function SolvePageHeader(props: Props) {
   const { course } = props.context;
-  const { activity } = props;
+  const { activity, activityOptions, activityMenu } = props;
   return (
     <div style={props.style} className={props.classes.secondHeader}>
       <Breadcrumbs aria-label="breadcrumb">
@@ -90,6 +98,34 @@ function SolvePageHeader(props: Props) {
         </LinkRouter>
         <LinkRouter color="inherit" to={props.history.location.pathname}>
           {activity.name}
+          {activityOptions?.length > 0 && (
+            <IconButton
+              id="activity-menu"
+              aria-label="more"
+              aria-haspopup="true"
+              onClick={props.handleOpenActivityMenu}
+              style={{ padding: "6px" }}
+            >
+              <MoreVertIcon/>
+            </IconButton>
+          )}
+          <Menu
+            anchorEl={activityMenu.anchorEl}
+            open={activityMenu.isOpen}
+            onClose={props.handleCloseActivityMenu}
+            PaperProps={{ style: { maxHeight: 320 }}}
+          >
+            {activityOptions.map((option) => (
+              <MenuItem
+                selected={option.id === activity.id}
+                component={RouterLink}
+                to={`/courses/${course.id}/activities/${option.id}`}
+                key={option.id}
+              >
+                {option.name}
+              </MenuItem>
+            ))}
+          </Menu>
         </LinkRouter>
       </Breadcrumbs>
       {!props.onlyTitle && (

@@ -52,6 +52,8 @@ type State = {
   editor: any,
   pastSubmissionsPanel: { isOpen: boolean, selectedSubmissionId: ?number },
   finalSolutionId: ?number,
+  activityMenu: { isOpen: boolean, anchorEl: ?string },
+  activityOptions: { options: Array<any> }
 };
 
 class SolveActivityPage extends React.Component<Props, State> {
@@ -65,6 +67,8 @@ class SolveActivityPage extends React.Component<Props, State> {
     editor: null,
     pastSubmissionsPanel: { isOpen: false, selectedSubmissionId: null },
     finalSolutionId: null,
+    activityMenu: { isOpen: false, anchorEl: null },
+    activityOptions: []
   };
 
   componentDidMount() {
@@ -86,6 +90,22 @@ class SolveActivityPage extends React.Component<Props, State> {
             }
             return Promise.reject(err);
           });
+        activitiesService
+          .getAllActivities(this.props.match.params.courseId)
+          .then(activitiesResponse => {
+            let activities = activitiesResponse
+              .filter(activity => (activity.category_id === activityResponse.category_id && activity.active))
+              .sort((a, b) => a.name > b.name);
+            this.setState({
+              activityOptions: activities.map(activity => ({id: activity.id, name: activity.name}))
+            })
+            .catch(err => {
+              if (err.status === 404) {
+                return Promise.resolve(this.setState({ activityOptions: [] }));
+              }
+              return Promise.reject(err);
+            });
+          })
       })
       .catch(err => {
         console.log(err);
@@ -155,6 +175,14 @@ class SolveActivityPage extends React.Component<Props, State> {
     this.setState({ finalSolutionId: submissionId });
   }
 
+  handleOpenActivityMenu(event: any) {
+    this.setState({ activityMenu: { isOpen: true, anchorEl: event.currentTarget } });
+  }
+
+  handleCloseActivityMenu() {
+    this.setState({ activityMenu: { isOpen: false, anchorEl: null } });
+  }
+
   render() {
     const { classes, history } = this.props;
     const {
@@ -167,6 +195,7 @@ class SolveActivityPage extends React.Component<Props, State> {
       editor,
       pastSubmissionsPanel,
       finalSolutionId,
+      activityOptions
     } = this.state;
     return (
       <div>
@@ -200,7 +229,7 @@ class SolveActivityPage extends React.Component<Props, State> {
         )}
 
         {!activity && <CircularProgress className={classes.circularProgress} />}
-        {activity && (
+        {activity && activityOptions && (
           <div>
             <SolvePageHeader
               handleSubmitActivity={e => this.handleSubmitActivity(e)}
@@ -208,6 +237,10 @@ class SolveActivityPage extends React.Component<Props, State> {
               activity={activity}
               history={history}
               canShowOtherSolutions={finalSolutionId !== null}
+              handleOpenActivityMenu={e => this.handleOpenActivityMenu(e)}
+              handleCloseActivityMenu={() => this.handleCloseActivityMenu()}
+              activityMenu={this.state.activityMenu}
+              activityOptions={activityOptions}
             />
             <SplitPane
               split="vertical"
