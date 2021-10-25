@@ -192,6 +192,9 @@ class SubmissionResultModal extends React.Component<Props, State> {
       return "textSecondary";
     };
 
+    const expandStd = results
+      && (results.submission_status === "BUILD_ERROR" || results.submission_status === "RUNTIME_ERROR")
+
     const getStdoutColor = (item: string) => {
       if (item.includes("start_BUILD") || item.includes("end_BUILD")) {
         return "secondary";
@@ -201,7 +204,6 @@ class SubmissionResultModal extends React.Component<Props, State> {
       }
       return "textSecondary";
     };
-
     return (
       <div>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
@@ -280,13 +282,21 @@ class SubmissionResultModal extends React.Component<Props, State> {
               {/* Stderr */}
               {results.stderr && (
                 <Box mb={3}>
-                  <StdAccordion title="Stderr" std={results.stderr} getColor={getStderrColor} />
+                  <StdAccordion
+                    title="Stderr"
+                    std={results.stderr}
+                    getColor={getStderrColor}
+                    startExpanded={expandStd} />
                 </Box>
               )}
               {/* Stdout */}
               {results.stdout && (
                 <Box mb={3}>
-                  <StdAccordion title="Stdout" std={results.stdout} getColor={getStdoutColor} />
+                  <StdAccordion
+                    title="Stdout"
+                    std={results.stdout}
+                    getColor={getStdoutColor}
+                    startExpanded={expandStd} />
                 </Box>
               )}
               <DialogActions>
