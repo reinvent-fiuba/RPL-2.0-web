@@ -13,9 +13,9 @@ type Props = {
 };
 
 const StdAccordion = (props: Props) => {
-  const { title, std = "", getColor } = props;
+  const { title, std = "", getColor, startExpanded = false } = props;
 
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(startExpanded);
 
   const handleExpanded = (event: Event, isExpanded: boolean) => {
     setExpanded(isExpanded);
