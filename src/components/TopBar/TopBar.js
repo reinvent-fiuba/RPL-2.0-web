@@ -10,6 +10,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import { withRouter } from "react-router-dom";
 import { withState } from "../../utils/State";
 import NotificationsButton from "../SideBar/NotificationsButton";
+import logo from "../../logo_white_large.png";
 
 const drawerWidth = 240;
 const barHeight = 64;
@@ -32,6 +33,10 @@ const styles = theme => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
+  },
+  logo: {
+    marginRight: theme.spacing(2),
+    height: "50%",
   },
   hide: {
     display: "none",
@@ -88,6 +93,7 @@ class TopBar extends React.PureComponent {
           >
             <MenuIcon />
           </IconButton>
+          <img className={classes.logo} src={logo} alt="logo" />
           <Typography variant="h6" className={classes.title} noWrap>
             {courseId && courseName ? `${title} - ${courseName}` : title}
           </Typography>

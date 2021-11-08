@@ -37,6 +37,13 @@ const styles = theme => ({
     ...theme.mixins.toolbar,
     justifyContent: "flex-end",
   },
+  bottomPush: {
+    position: "fixed",
+    bottom: 0,
+    textAlign: "center",
+    paddingBottom: 10,
+    marginLeft: theme.spacing(2),
+  },
 });
 
 const actionIcons = {
@@ -143,6 +150,15 @@ class SideBar extends React.PureComponent<Props> {
             <ListItemText primary="Cerrar Sesión" />
           </ListItem>
         </List>
+        <div className={classes.bottomPush}>
+          <a href="https://cafecito.app/rpl" rel="noopener noreferrer" target="_blank">
+            <img
+              srcset="https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x"
+              src="https://cdn.cafecito.app/imgs/buttons/button_5.png"
+              alt="Invitame un café en cafecito.app"
+            />
+          </a>
+        </div>
       </Drawer>
     );
   }
