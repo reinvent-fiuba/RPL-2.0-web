@@ -18,22 +18,11 @@ const UnitTestSection = (props: Props) => {
       .map((unitTestResult, idx) => {
         const { test_name: testName, error_messages: errorMessages } = unitTestResult;
         const result = unitTestResult.passed ? "success" : "error";
-
         return (
           <DialogContentText key={idx} id="scroll-dialog-description" tabIndex={-1} component="div">
             <Alert severity={result}>
               <AlertTitle>{testName.replace(/_/g, " ")}</AlertTitle>
-              {errorMessages &&
-                errorMessages.split("\n").map((line, key) => {
-                  if (key === 0 || key === errorMessages.split("\n").length - 2) {
-                    return <span>{line}</span>;
-                  }
-                  return (
-                    <span>
-                      <blockquote>{line}</blockquote>
-                    </span>
-                  );
-                })}
+              <pre>{errorMessages}</pre>
             </Alert>
           </DialogContentText>
         );
