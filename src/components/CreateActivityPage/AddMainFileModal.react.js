@@ -25,7 +25,7 @@ export default function AddMainFileModal(props: Props) {
     >
       <DialogTitle id="scroll-dialog-title">Tenes que agregar el archivo main</DialogTitle>
       <DialogContent>
-        <span style={{ paddingLeft: "35%" }}>{mainFileByLanguage[language || "c"]}</span>
+        <span style={{ paddingLeft: "35%" }}>{mainFileByLanguage[language || "c"].main}</span>
         <DialogActions>
           <Button onClick={() => onClickHide()} color="primary">
             OK

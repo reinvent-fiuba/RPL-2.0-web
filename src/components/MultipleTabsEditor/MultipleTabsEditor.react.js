@@ -18,6 +18,7 @@ import {
   NO_EDITORS_LEFT,
 } from "../../utils/files";
 import { FILE_DISPLAY_MODE, READ_ONLY_DISPLAY_MODES, DELETEABLE_DISPLAY_MODES } from "../../types";
+import constants from "../../utils/constants";
 
 const styles = theme => ({
   addFileButton: {
@@ -102,8 +103,6 @@ type State = {
   filesMetadata: FilesMetadata,
 };
 
-const commentByLanguage = { c: "//", python: "#" };
-
 class MultipleTabsEditor extends React.Component<Props, State> {
   state = {
     filesMetadata: getFilesMetadata(this.props.initialCode),
@@ -124,36 +123,24 @@ class MultipleTabsEditor extends React.Component<Props, State> {
 
   updateFilesForNewLanguageAndMetadata(language: string) {
     const { code, filesMetadata } = this.state;
-    const newCode = code;
+    const newCode = { ...code };
     const newMetadata = filesMetadata;
 
+    const mainFiles = Object.values(constants.languages).map(({ main }) => main);
     Object.keys(code).forEach(f => {
-      // Change mains
-      if (language === "c" && f === "assignment_main.py") {
-        newCode["main.c"] = code[f];
+      Object.entries(constants.languages).forEach(([currentLanguage, { main, extension }]) => {
+        // Skip metadata file
+        if (f.lastIndexOf(".") === -1) return;
+        if (language === currentLanguage && f in mainFiles && f !== main) {
+          // Change mains
+          newCode[main] = code[f];
+        } else if (language === currentLanguage && !f.includes(extension)) {
+          // Change filename extensions
+          newCode[`${f.substring(0, f.lastIndexOf("."))}${extension}`] = code[f];
+        }
         delete newCode[f];
         delete filesMetadata[f];
-        return;
-      }
-
-      if (language === "python" && f === "main.c") {
-        newCode["assignment_main.py"] = code[f];
-        delete newCode[f];
-        delete filesMetadata[f];
-        return;
-      }
-
-      // Change filename extensions
-      if (language === "c" && f.includes(".py")) {
-        newCode[`${f.substring(0, f.lastIndexOf(".py"))}.c`] = code[f];
-        delete newCode[f];
-        delete filesMetadata[f];
-      }
-      if (language === "python" && f.includes(".c")) {
-        newCode[`${f.substring(0, f.lastIndexOf(".c"))}.py`] = code[f];
-        delete newCode[f];
-        delete filesMetadata[f];
-      }
+      });
     });
     const editor = getNewSelectedEditor(newCode);
 
@@ -226,7 +213,7 @@ class MultipleTabsEditor extends React.Component<Props, State> {
       delete newCode[prevFileName];
       delete newMetadata[prevFileName];
     } else {
-      newCode[newFileName] = `${commentByLanguage[language]} file ${newFileName}`;
+      newCode[newFileName] = `${constants.languages[language].comment} file ${newFileName}`;
       newMetadata[newFileName] = { display: FILE_DISPLAY_MODE.READ_WRITE };
     }
     this.setState({
