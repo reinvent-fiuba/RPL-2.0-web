@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: gcr.io/rpl-alelevininge/rpl-web:latest
+        image: gcr.io/rpl2-fiuba/rpl-web:latest
         resources:
           requests:
             cpu: 10m
