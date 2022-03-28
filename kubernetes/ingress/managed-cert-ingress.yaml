@@ -1,10 +1,12 @@
 apiVersion: networking.k8s.io/v1
-kind: Ingress
+kind: Ingress  # Basicamente crea un Cloud Load Balancer en GCE y lo apunta al nginx
 metadata:
   name: managed-cert-ingress
   annotations:
+    # Por alguna razon no pude configurar una static IP existente, de todos modos al deployar esto se crea una. OJO que si se deploya multiples veces se van a crear constantemente nuevas IPs
     # kubernetes.io/ingress.regional-static-ip-name: rpl2-ssl-ingress
     networking.gke.io/managed-certificates: managed-cert
+    # Notar que el encriptado SSL (HTTPS) va hasta el LoadBalancer manejado por google. Osea que el trafico que le llega al nginx ya es HTTP
     kubernetes.io/ingress.class: "gce"
 spec:
   defaultBackend:

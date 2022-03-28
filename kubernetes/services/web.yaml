@@ -10,4 +10,4 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
-  type: LoadBalancer                # Exposes the service by opening a port on each node
+  type: NodePort      # Exposes the service by opening a port on each node
