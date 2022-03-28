@@ -26,7 +26,7 @@ env:
   IMAGE: rpl-web
   REGISTRY_HOSTNAME: gcr.io
   DEPLOYMENT_NAME: webapp
-  API_BASE_URL: http://myrpl.ar
+  API_BASE_URL: https://myrpl.ar
   CLOUDINARY_UPLOAD_PRESET: ${{ secrets.CLOUDINARY_UPLOAD_PRESET }}
   CLOUDINARY_URL: https://api.cloudinary.com/v1_1/tutecano22/image/upload
 
