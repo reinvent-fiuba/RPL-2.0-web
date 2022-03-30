@@ -6,6 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
 import Fiuba from "./fiuba.jpg";
+import logo from "../../logo_large.png";
 
 const styles = theme => ({
   root: {
@@ -35,6 +36,16 @@ const styles = theme => ({
   footerText: {
     fontSize: theme.typography.pxToRem(12),
     color: "lightgrey",
+  },
+  bottomPush: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    textAlign: "center",
+    marginRight: theme.spacing(2),
+  },
+  logo: {
+    marginBottom: theme.spacing(10),
   },
 });
 
@@ -69,8 +80,19 @@ class HomePage extends React.Component {
         </Grid>
         <Grid item xs={12} sm={8} md={5} elevation={6} square component={Paper}>
           <div className={classes.paper}>
+            <img width="30%" src={logo} alt="logo" className={classes.logo} />
             <Form history={history} />
           </div>
+          <div className={classes.bottomPush}>
+          <a href="https://cafecito.app/rpl" rel="noopener noreferrer" target="_blank">
+            <img
+              srcset="https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x"
+              src="https://cdn.cafecito.app/imgs/buttons/button_5.png"
+              alt="Invitame un café en cafecito.app"
+            />
+          </a>
+        </div>
+
         </Grid>
       </Grid>
     );
