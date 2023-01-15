@@ -25,11 +25,10 @@ class TestMethods(unittest.TestCase):
   def test_2(self):
     self.assertTrue(assignment_main.hola_mundo())`;
 
-const testCodeGo = `package tp0
+const testCodeGo = `package main
 import (
 	"testing"
-
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )`;
 
 module.exports = {
