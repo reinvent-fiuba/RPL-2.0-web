@@ -61,6 +61,35 @@ exports.edit = (
     method: "PUT",
   });
 
+exports.clone = (
+  id: number,
+  name: string,
+  university: string,
+  universityCourseId: string,
+  semester: string,
+  semesterStartDate: string,
+  semesterEndDate: string,
+  courseAdminId: string,
+  description: string,
+  imgUri: string
+) =>
+  request({
+    url: `${producer.base_url}/api/courses`,
+    body: JSON.stringify({
+      id,
+      name,
+      university,
+      university_course_id: universityCourseId,
+      semester,
+      semester_start_date: semesterStartDate,
+      semester_end_date: semesterEndDate,
+      course_admin_id: courseAdminId,
+      description,
+      img_uri: imgUri,
+    }),
+    method: "POST",
+  });
+
 exports.get = (courseId: number): Promise<Course> =>
   request({
     url: `${producer.base_url}/api/courses/${courseId}`,

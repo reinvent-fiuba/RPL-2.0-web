@@ -17,6 +17,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { Link, withRouter } from "react-router-dom";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import List from "@material-ui/core/List";
 import { withState } from "../../utils/State";
 
@@ -54,6 +55,7 @@ const actionIcons = {
   Perfil: AccountCircleIcon,
   "Configuracion de Curso": SettingsIcon,
   Usuarios: RecentActorsIcon,
+  "Clonar Curso": FileCopyIcon,
   "Cerrar Sesión": ExitToAppIcon,
 };
 
@@ -83,6 +85,7 @@ class SideBar extends React.PureComponent<Props> {
 
     if (context.profile && context.profile.is_admin) {
       itemsLinks.Usuarios = `/users`;
+      itemsLinks["Clonar Curso"] = `/courses/clone`;
     }
 
     if (courseId) {

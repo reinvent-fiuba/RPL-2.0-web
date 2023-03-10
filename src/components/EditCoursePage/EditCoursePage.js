@@ -11,7 +11,7 @@ class EditCoursePage extends React.Component {
     const { history, context } = this.props;
     return (
       <div>
-        <CourseForm course={context.course} history={history} />
+        <CourseForm course={context.course} history={history} editMode />
       </div>
     );
   }

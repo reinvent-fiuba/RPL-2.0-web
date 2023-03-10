@@ -15,6 +15,7 @@ import usersService from "../../services/usersService";
 import cloudinaryService from "../../services/cloudinaryService";
 import { validate } from "../../utils/inputValidator";
 import authenticationService from "../../services/authenticationService";
+import type { Course } from "../../types";
 
 const styles = theme => ({
   avatar: {
@@ -48,6 +49,9 @@ const styles = theme => ({
 type Props = {
   classes: any,
   history: any,
+  course: ?Course,
+  cloneMode: boolean,
+  editMode: boolean,
 };
 
 type State = {
@@ -89,17 +93,28 @@ class CourseForm extends React.Component<Props, State> {
       if (!course) {
         return this.loadUsers("");
       }
+    });
+  }
 
-      this.setState({
-        name: course.name,
-        university: universities.find(university => university.name === course.university),
-        universityCourseId: course.university_course_id,
-        semester: course.semester,
-        semesterStart: new Date(course.semester_start_date),
-        semesterEnd: new Date(course.semester_end_date),
-        imgUri: course.img_uri,
-        description: course.description,
-      });
+  componentDidUpdate(prevProps) {
+    const { course } = this.props;
+
+    if (course !== prevProps.course) {
+      this.updateFillCourseFields(course);
+    }
+  }
+
+  updateFillCourseFields(course) {
+    const { universities } = this.state;
+    this.setState({
+      name: course.name,
+      university: universities.find(university => university.name === course.university),
+      universityCourseId: course.university_course_id,
+      semester: course.semester,
+      semesterStart: new Date(course.semester_start_date),
+      semesterEnd: new Date(course.semester_end_date),
+      imgUri: course.img_uri,
+      description: course.description,
     });
   }
 
@@ -129,6 +144,69 @@ class CourseForm extends React.Component<Props, State> {
   handleCancelClick(event) {
     event.preventDefault();
     this.props.history.push("/courses");
+  }
+
+  handleCloneClick(event) {
+    event.preventDefault();
+    const {
+      name,
+      university,
+      universityCourseId,
+      semester,
+      semesterStart,
+      semesterEnd,
+      description,
+      courseAdminId,
+      courseImg,
+      imgUri,
+      error,
+    } = this.state;
+
+    const {course} = this.props;
+    const {id} = course;
+
+    if (error.invalidFields.size !== 0 || !university) {
+      this.setState(prevState => ({
+        error: {
+          open: true,
+          message: "El formulario cuenta con campos invalidos",
+          invalidFields: prevState.error.invalidFields,
+        },
+      }));
+      return;
+    }
+
+    let courseImgPromise = Promise.resolve();
+    if (imgUri !== course.img_uri && courseImg !== null) {
+      courseImgPromise = cloudinaryService.uploadFile(courseImg);
+    }
+    courseImgPromise
+      .then(courseImgAsset => {
+        return coursesService.clone(
+          id,
+          name,
+          university.name,
+          universityCourseId,
+          semester,
+          semesterStart.toLocaleDateString("sv-SE"),
+          semesterEnd.toLocaleDateString("sv-SE"),
+          courseAdminId,
+          description,
+          (courseImgAsset && courseImgAsset.url) || imgUri
+        );
+      })
+      .then(() => {
+        this.props.history.push("/courses");
+      })
+      .catch(() => {
+        this.setState({
+          error: {
+            open: true,
+            message:
+              "Hubo un error al clonar el curso, revisa que los datos ingresados sean validos.",
+          },
+        });
+      });
   }
 
   handleCreateClick(event) {
@@ -241,7 +319,7 @@ class CourseForm extends React.Component<Props, State> {
     if (!files || !files[0]) return;
     const file = files[0];
     const reader = new FileReader();
-    reader.onload = () => this.setState({ courseImg: reader.result });
+    reader.onload = () => this.setState({ courseImg: reader.result, imgUri: null });
     reader.readAsDataURL(file);
   }
 
@@ -256,8 +334,7 @@ class CourseForm extends React.Component<Props, State> {
       description,
       courseAdminId,
     } = this.state;
-    const { course } = this.props;
-    const editMode = !!course;
+    const { course, editMode } = this.props;
 
     if (
       !name ||
@@ -275,9 +352,24 @@ class CourseForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, course } = this.props;
-    const editMode = !!course;
+    const { classes, course, editMode, cloneMode } = this.props;
     const { error, users, university, universities } = this.state;
+
+    let mode = "createMode";
+    if (editMode) mode = "editMode";
+    if (cloneMode) mode = "cloneMode";
+
+    const actionTitle = {
+      createMode: "Crear",
+      editMode: "Guardar",
+      cloneMode: `Clonar Curso ${course?.id}`,
+    };
+
+    const actionTask = {
+      createMode: e => this.handleCreateClick(e),
+      editMode: e => this.handleSaveClick(e),
+      cloneMode: e => this.handleCloneClick(e),
+    };
 
     return (
       <div>
@@ -438,9 +530,9 @@ class CourseForm extends React.Component<Props, State> {
                 color="primary"
                 className={classes.createButton}
                 disabled={!this.canSaveCourse()}
-                onClick={e => (editMode ? this.handleSaveClick(e) : this.handleCreateClick(e))}
+                onClick={actionTask[mode]}
               >
-                {editMode ? "Guardar" : "Crear"}
+                {actionTitle[mode]}
               </Button>
             </Grid>
           </Grid>
