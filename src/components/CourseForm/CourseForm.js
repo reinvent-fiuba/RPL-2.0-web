@@ -219,6 +219,7 @@ class CourseForm extends React.Component<Props, State> {
               "Hubo un error al clonar el curso, revisa que los datos ingresados sean validos. Chequea la consola para más detalle",
             invalidFields: prevState.error.invalidFields,
           },
+          waiting: false,
         }));
       });
   }
@@ -279,6 +280,7 @@ class CourseForm extends React.Component<Props, State> {
               "Hubo un error al crear el curso, revisa que los datos ingresados sean validos.",
             invalidFields: prevState.error.invalidFields,
           },
+          waiting: false,
         }));
       });
   }
@@ -327,6 +329,7 @@ class CourseForm extends React.Component<Props, State> {
               "Hubo un error al guardar el curso, revisa que los datos ingresados sean validos.",
             invalidFields: prevState.error.invalidFields,
           },
+          waiting: false,
         }));
       });
   }
