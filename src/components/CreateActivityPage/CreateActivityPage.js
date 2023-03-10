@@ -21,6 +21,7 @@ import MultipleTabsEditor from "../MultipleTabsEditor/MultipleTabsEditor.react";
 import AddMainFileModal from "./AddMainFileModal.react";
 import type { Activity, Category } from "../../types";
 import { validate } from "../../utils/inputValidator";
+import constants from "../../utils/constants";
 
 // Styles
 import "github-markdown-css";
@@ -133,8 +134,6 @@ type State = {
   isAddMainFileModalActive: boolean,
 };
 
-const mainFileByLanguage = { c: "main.c", python: "assignment_main.py", java: "main.java" };
-
 class CreateActivityPage extends React.Component<Props, State> {
   state = {
     error: { open: false, message: null, invalidFields: new Set() },
@@ -205,7 +204,7 @@ class CreateActivityPage extends React.Component<Props, State> {
   }
 
   static activityHasMainFile(language: string, code: { [string]: string }) {
-    return Object.keys(code).includes(mainFileByLanguage[language]);
+    return Object.keys(code).includes(constants.languages[language].main);
   }
 
   canSaveActivity() {
@@ -348,7 +347,7 @@ class CreateActivityPage extends React.Component<Props, State> {
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
         <AddMainFileModal
           open={isAddMainFileModalActive}
-          mainFileByLanguage={mainFileByLanguage}
+          mainFileByLanguage={constants.languages}
           language={language}
           onClickHide={() => this.setState({ isAddMainFileModalActive: false })}
         />
@@ -410,15 +409,11 @@ class CreateActivityPage extends React.Component<Props, State> {
                   onChange={event => this.setState({ language: event.target.value })}
                 >
                   400
-                  <MenuItem key={0} value="c">
-                    C
-                  </MenuItem>
-                  <MenuItem key={1} value="python">
-                    Python
-                  </MenuItem>
-                  {/* <MenuItem key={2} value="java">
-                    Java
-                  </MenuItem> */}
+                  {Object.keys(constants.languages).map((lang, i) => (
+                    <MenuItem key={i} value={lang}>
+                      {lang}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
               <FormControl>

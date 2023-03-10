@@ -9,41 +9,7 @@ import ErrorNotification from "../../utils/ErrorNotification";
 import activitiesService from "../../services/activitiesService";
 import { withState } from "../../utils/State";
 import type { Activity } from "../../types";
-
-const initialUnitTestCode = {
-  c: `#include <criterion/criterion.h>  // No borrar esto!
-#include "api.h"  // Modificar con el nombre de la api que se le entrega al alumno!
-
-Test(misc, testName1) {
-    cr_assert(fooNoRepetido() == 1);
-}
-
-Test(misc, testName2) {
-    cr_assert(barNoRepetido() == 2);
-}
-`,
-  python: `import unittest  # No borrar esto!
-import timeout_decorator
-import assignment_main # Modificar con el nombre de la api que se le entrega al alumno!
-
-# Accede a las funciones del alumno desde el modulo assignment_main
-
-
-class TestMethods(unittest.TestCase):
-
-  @timeout_decorator.timeout(5)  # segundos
-  def test_1(self):
-    self.assertTrue(assignment_main.hola_mundo())
-
-  def test_2(self):
-    self.assertTrue(assignment_main.hola_mundo())
-`,
-};
-
-const documentationByLangugage = {
-  c: "https://criterion.readthedocs.io/en/master/assert.html",
-  python: "https://docs.python.org/3/library/unittest.html#assert-methods",
-};
+import constants from "../../utils/constants";
 
 const styles = theme => ({
   divider: {
@@ -94,7 +60,8 @@ class UnitTestsCorrection extends React.Component<Props, State> {
       .then(response => {
         this.setState({
           activity: response,
-          unitTestCode: response.activity_unit_tests || initialUnitTestCode[response.language],
+          unitTestCode:
+            response.activity_unit_tests || constants.languages[response.language].testCode,
         });
       })
       .catch(err => {
@@ -133,7 +100,7 @@ class UnitTestsCorrection extends React.Component<Props, State> {
               {`Utiliza las funciones que desarrollaron los alumnos para comprobar que funcionan
           correctamente. Documentación de la `}
               <a
-                href={documentationByLangugage[activity.language]}
+                href={constants.languages[activity.language].testDocs}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -172,7 +139,7 @@ class UnitTestsCorrection extends React.Component<Props, State> {
             }}
             language={activity.language}
             theme="vs-dark"
-            defaultValue={initialUnitTestCode[activity.language]}
+            defaultValue={constants.languages[activity.language].testCode}
             value={unitTestCode}
             onChange={codeChanged => {
               this.setState({ unitTestCode: codeChanged });
