@@ -1,7 +1,10 @@
 // @flow
 import React from "react";
 import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -44,6 +47,12 @@ const styles = theme => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  waitingDialog: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 type Props = {
@@ -55,7 +64,7 @@ type Props = {
 };
 
 type State = {
-  error: { open: boolean, message: ?string },
+  error: { open: boolean, message: ?string, invalidFields: any },
   name: string,
   university: any,
   universityCourseId: string,
@@ -67,6 +76,7 @@ type State = {
   users: Array<any>,
   imgUri: string,
   universities: Array<any>,
+  waiting: boolean,
 };
 
 class CourseForm extends React.Component<Props, State> {
@@ -84,6 +94,7 @@ class CourseForm extends React.Component<Props, State> {
     imgUri: "",
     users: [],
     universities: [],
+    waiting: false,
   };
 
   componentDidMount() {
@@ -163,8 +174,8 @@ class CourseForm extends React.Component<Props, State> {
       error,
     } = this.state;
 
-    const {course} = this.props;
-    const {id} = course;
+    const { course } = this.props;
+    const { id } = course;
 
     if (error.invalidFields.size !== 0 || !university) {
       this.setState(prevState => ({
@@ -199,14 +210,16 @@ class CourseForm extends React.Component<Props, State> {
       .then(() => {
         this.props.history.push("/courses");
       })
-      .catch(() => {
-        this.setState({
+      .catch(err => {
+        console.log(err);
+        this.setState(prevState => ({
           error: {
             open: true,
             message:
-              "Hubo un error al clonar el curso, revisa que los datos ingresados sean validos.",
+              "Hubo un error al clonar el curso, revisa que los datos ingresados sean validos. Chequea la consola para más detalle",
+            invalidFields: prevState.error.invalidFields,
           },
-        });
+        }));
       });
   }
 
@@ -259,13 +272,14 @@ class CourseForm extends React.Component<Props, State> {
         this.props.history.push("/courses");
       })
       .catch(() => {
-        this.setState({
+        this.setState(prevState => ({
           error: {
             open: true,
             message:
               "Hubo un error al crear el curso, revisa que los datos ingresados sean validos.",
+            invalidFields: prevState.error.invalidFields,
           },
-        });
+        }));
       });
   }
 
@@ -306,13 +320,14 @@ class CourseForm extends React.Component<Props, State> {
         this.props.history.push(`/courses/${course.id}/dashboard`);
       })
       .catch(() => {
-        this.setState({
+        this.setState(prevState => ({
           error: {
             open: true,
             message:
               "Hubo un error al guardar el curso, revisa que los datos ingresados sean validos.",
+            invalidFields: prevState.error.invalidFields,
           },
-        });
+        }));
       });
   }
 
@@ -352,9 +367,20 @@ class CourseForm extends React.Component<Props, State> {
     return true;
   }
 
+  handleActionButton(e, mode) {
+    const actionTask = {
+      createMode: e => this.handleCreateClick(e),
+      editMode: e => this.handleSaveClick(e),
+      cloneMode: e => this.handleCloneClick(e),
+    };
+
+    this.setState({ waiting: true });
+    actionTask[mode](e);
+  }
+
   render() {
     const { classes, course, editMode, cloneMode } = this.props;
-    const { error, users, university, universities } = this.state;
+    const { error, users, university, universities, waiting } = this.state;
 
     let mode = "createMode";
     if (editMode) mode = "editMode";
@@ -364,12 +390,6 @@ class CourseForm extends React.Component<Props, State> {
       createMode: "Crear",
       editMode: "Guardar",
       cloneMode: `Clonar Curso ${course?.id}`,
-    };
-
-    const actionTask = {
-      createMode: e => this.handleCreateClick(e),
-      editMode: e => this.handleSaveClick(e),
-      cloneMode: e => this.handleCloneClick(e),
     };
 
     return (
@@ -392,7 +412,8 @@ class CourseForm extends React.Component<Props, State> {
                 "El nombre del curso estar formado por letras y numeros"
               }
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))}
+                this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))
+              }
             />
             <Autocomplete
               margin="normal"
@@ -420,7 +441,8 @@ class CourseForm extends React.Component<Props, State> {
                 "El Id del Curso debe estar formada por letras, numeros, guiones (_ ó -) o puntos (.)"
               }
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_.-]+$/, "string"))}
+                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_.-]+$/, "string"))
+              }
             />
             <Grid container className={classes.semesterFields} xs={12} spacing={2}>
               <Grid item xs={6}>
@@ -439,7 +461,8 @@ class CourseForm extends React.Component<Props, State> {
                     "El semestre debe estar formada por letras, numeros, guiones (_ ó -) o puntos (.)"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))}
+                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))
+                  }
                 />
               </Grid>
               <Grid item xs={3}>
@@ -513,30 +536,40 @@ class CourseForm extends React.Component<Props, State> {
               onChange={files => this.handleAddFile(files)}
             />
           </form>
-          <Grid container>
-            <Grid item xs>
-              <Button
-                variant="contained"
-                color="secondary"
-                className={classes.cancelButton}
-                onClick={e => this.handleCancelClick(e)}
-              >
-                Cancelar
-              </Button>
+          {waiting && (
+            <DialogContent dividers className={classes.waitingDialog}>
+              <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
+                Esto puede tardar unos segundos
+              </DialogContentText>
+              <CircularProgress />
+            </DialogContent>
+          )}
+          {!waiting && (
+            <Grid container>
+              <Grid item xs>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className={classes.cancelButton}
+                  onClick={e => this.handleCancelClick(e)}
+                >
+                  Cancelar
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className={classes.createButton}
+                  disabled={!this.canSaveCourse()}
+                  onClick={e => this.handleActionButton(e, mode)}
+                >
+                  {actionTitle[mode]}
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.createButton}
-                disabled={!this.canSaveCourse()}
-                onClick={actionTask[mode]}
-              >
-                {actionTitle[mode]}
-              </Button>
-            </Grid>
-          </Grid>
+          )}
         </MuiPickersUtilsProvider>
       </div>
     );

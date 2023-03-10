@@ -2,11 +2,22 @@
 import React from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
+import { withStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import { withState } from "../../utils/State";
 import CourseForm from "../CourseForm/CourseForm";
 import type { Course } from "../../types";
 import ErrorNotification from "../../utils/ErrorNotification";
 import coursesService from "../../services/coursesService";
+
+const styles = theme => ({
+  coursePicker: {
+    marginTop: theme.spacing(1),
+    marginLeft: theme.spacing(40),
+    marginRight: theme.spacing(40),
+    padding: `0px ${theme.spacing(4)}px`,
+  },
+});
 
 type Props = {
   classes: any,
@@ -48,13 +59,23 @@ class CloneCoursePage extends React.Component<Props, State> {
   }
 
   render() {
-    const { history } = this.props;
+    const { classes, history } = this.props;
     const { courses, error, courseToClone } = this.state;
     return (
       <div>
+        <Typography
+          display="inline"
+          variant="h6"
+          color="textPrimary"
+          component="h1"
+          className={classes.coursePicker}
+        >
+          Nota: No pueden existir dos cursos para el mismo semestre con el mismo nombre.
+        </Typography>
         {error.open && <ErrorNotification open={error.open} message={error.message} />}
         {/* <CourseSelector /> */}
         <Autocomplete
+          className={classes.coursePicker}
           margin="normal"
           options={courses}
           id="courseToClone"
@@ -70,4 +91,4 @@ class CloneCoursePage extends React.Component<Props, State> {
   }
 }
 
-export default withState(CloneCoursePage);
+export default withState(withStyles(styles)(CloneCoursePage));
