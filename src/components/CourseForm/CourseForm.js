@@ -93,6 +93,7 @@ class CourseForm extends React.Component<Props, State> {
       if (!course) {
         return this.loadUsers("");
       }
+      this.updateFillCourseFields(course);
     });
   }
 
