@@ -1,7 +1,10 @@
 // @flow
 import React from "react";
 import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -15,6 +18,7 @@ import usersService from "../../services/usersService";
 import cloudinaryService from "../../services/cloudinaryService";
 import { validate } from "../../utils/inputValidator";
 import authenticationService from "../../services/authenticationService";
+import type { Course } from "../../types";
 
 const styles = theme => ({
   avatar: {
@@ -43,15 +47,24 @@ const styles = theme => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  waitingDialog: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 type Props = {
   classes: any,
   history: any,
+  course: ?Course,
+  cloneMode: boolean,
+  editMode: boolean,
 };
 
 type State = {
-  error: { open: boolean, message: ?string },
+  error: { open: boolean, message: ?string, invalidFields: any },
   name: string,
   university: any,
   universityCourseId: string,
@@ -63,6 +76,7 @@ type State = {
   users: Array<any>,
   imgUri: string,
   universities: Array<any>,
+  waiting: boolean,
 };
 
 class CourseForm extends React.Component<Props, State> {
@@ -80,6 +94,7 @@ class CourseForm extends React.Component<Props, State> {
     imgUri: "",
     users: [],
     universities: [],
+    waiting: false,
   };
 
   componentDidMount() {
@@ -89,17 +104,29 @@ class CourseForm extends React.Component<Props, State> {
       if (!course) {
         return this.loadUsers("");
       }
+      this.updateFillCourseFields(course);
+    });
+  }
 
-      this.setState({
-        name: course.name,
-        university: universities.find(university => university.name === course.university),
-        universityCourseId: course.university_course_id,
-        semester: course.semester,
-        semesterStart: new Date(course.semester_start_date),
-        semesterEnd: new Date(course.semester_end_date),
-        imgUri: course.img_uri,
-        description: course.description,
-      });
+  componentDidUpdate(prevProps) {
+    const { course } = this.props;
+
+    if (course !== prevProps.course) {
+      this.updateFillCourseFields(course);
+    }
+  }
+
+  updateFillCourseFields(course) {
+    const { universities } = this.state;
+    this.setState({
+      name: course.name,
+      university: universities.find(university => university.name === course.university),
+      universityCourseId: course.university_course_id,
+      semester: course.semester,
+      semesterStart: new Date(course.semester_start_date),
+      semesterEnd: new Date(course.semester_end_date),
+      imgUri: course.img_uri,
+      description: course.description,
     });
   }
 
@@ -129,6 +156,72 @@ class CourseForm extends React.Component<Props, State> {
   handleCancelClick(event) {
     event.preventDefault();
     this.props.history.push("/courses");
+  }
+
+  handleCloneClick(event) {
+    event.preventDefault();
+    const {
+      name,
+      university,
+      universityCourseId,
+      semester,
+      semesterStart,
+      semesterEnd,
+      description,
+      courseAdminId,
+      courseImg,
+      imgUri,
+      error,
+    } = this.state;
+
+    const { course } = this.props;
+    const { id } = course;
+
+    if (error.invalidFields.size !== 0 || !university) {
+      this.setState(prevState => ({
+        error: {
+          open: true,
+          message: "El formulario cuenta con campos invalidos",
+          invalidFields: prevState.error.invalidFields,
+        },
+      }));
+      return;
+    }
+
+    let courseImgPromise = Promise.resolve();
+    if (imgUri !== course.img_uri && courseImg !== null) {
+      courseImgPromise = cloudinaryService.uploadFile(courseImg);
+    }
+    courseImgPromise
+      .then(courseImgAsset => {
+        return coursesService.clone(
+          id,
+          name,
+          university.name,
+          universityCourseId,
+          semester,
+          semesterStart.toLocaleDateString("sv-SE"),
+          semesterEnd.toLocaleDateString("sv-SE"),
+          courseAdminId,
+          description,
+          (courseImgAsset && courseImgAsset.url) || imgUri
+        );
+      })
+      .then(() => {
+        this.props.history.push("/courses");
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState(prevState => ({
+          error: {
+            open: true,
+            message:
+              "Hubo un error al clonar el curso, revisa que los datos ingresados sean validos. Chequea la consola para más detalle",
+            invalidFields: prevState.error.invalidFields,
+          },
+          waiting: false,
+        }));
+      });
   }
 
   handleCreateClick(event) {
@@ -180,13 +273,15 @@ class CourseForm extends React.Component<Props, State> {
         this.props.history.push("/courses");
       })
       .catch(() => {
-        this.setState({
+        this.setState(prevState => ({
           error: {
             open: true,
             message:
               "Hubo un error al crear el curso, revisa que los datos ingresados sean validos.",
+            invalidFields: prevState.error.invalidFields,
           },
-        });
+          waiting: false,
+        }));
       });
   }
 
@@ -227,13 +322,15 @@ class CourseForm extends React.Component<Props, State> {
         this.props.history.push(`/courses/${course.id}/dashboard`);
       })
       .catch(() => {
-        this.setState({
+        this.setState(prevState => ({
           error: {
             open: true,
             message:
               "Hubo un error al guardar el curso, revisa que los datos ingresados sean validos.",
+            invalidFields: prevState.error.invalidFields,
           },
-        });
+          waiting: false,
+        }));
       });
   }
 
@@ -241,7 +338,7 @@ class CourseForm extends React.Component<Props, State> {
     if (!files || !files[0]) return;
     const file = files[0];
     const reader = new FileReader();
-    reader.onload = () => this.setState({ courseImg: reader.result });
+    reader.onload = () => this.setState({ courseImg: reader.result, imgUri: null });
     reader.readAsDataURL(file);
   }
 
@@ -256,8 +353,7 @@ class CourseForm extends React.Component<Props, State> {
       description,
       courseAdminId,
     } = this.state;
-    const { course } = this.props;
-    const editMode = !!course;
+    const { course, editMode } = this.props;
 
     if (
       !name ||
@@ -274,10 +370,30 @@ class CourseForm extends React.Component<Props, State> {
     return true;
   }
 
+  handleActionButton(e, mode) {
+    const actionTask = {
+      createMode: e => this.handleCreateClick(e),
+      editMode: e => this.handleSaveClick(e),
+      cloneMode: e => this.handleCloneClick(e),
+    };
+
+    this.setState({ waiting: true });
+    actionTask[mode](e);
+  }
+
   render() {
-    const { classes, course } = this.props;
-    const editMode = !!course;
-    const { error, users, university, universities } = this.state;
+    const { classes, course, editMode, cloneMode } = this.props;
+    const { error, users, university, universities, waiting } = this.state;
+
+    let mode = "createMode";
+    if (editMode) mode = "editMode";
+    if (cloneMode) mode = "cloneMode";
+
+    const actionTitle = {
+      createMode: "Crear",
+      editMode: "Guardar",
+      cloneMode: `Clonar Curso ${course?.id}`,
+    };
 
     return (
       <div>
@@ -299,7 +415,8 @@ class CourseForm extends React.Component<Props, State> {
                 "El nombre del curso estar formado por letras y numeros"
               }
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))}
+                this.handleChange(e, validate(e.target.value, /^[0-9A-zÀ-ÿ\s]+$/, "string"))
+              }
             />
             <Autocomplete
               margin="normal"
@@ -327,7 +444,8 @@ class CourseForm extends React.Component<Props, State> {
                 "El Id del Curso debe estar formada por letras, numeros, guiones (_ ó -) o puntos (.)"
               }
               onChange={e =>
-                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_.-]+$/, "string"))}
+                this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_.-]+$/, "string"))
+              }
             />
             <Grid container className={classes.semesterFields} xs={12} spacing={2}>
               <Grid item xs={6}>
@@ -346,7 +464,8 @@ class CourseForm extends React.Component<Props, State> {
                     "El semestre debe estar formada por letras, numeros, guiones (_ ó -) o puntos (.)"
                   }
                   onChange={e =>
-                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))}
+                    this.handleChange(e, validate(e.target.value, /^[0-9a-zA-Z_-]+$/, "string"))
+                  }
                 />
               </Grid>
               <Grid item xs={3}>
@@ -420,30 +539,40 @@ class CourseForm extends React.Component<Props, State> {
               onChange={files => this.handleAddFile(files)}
             />
           </form>
-          <Grid container>
-            <Grid item xs>
-              <Button
-                variant="contained"
-                color="secondary"
-                className={classes.cancelButton}
-                onClick={e => this.handleCancelClick(e)}
-              >
-                Cancelar
-              </Button>
+          {waiting && (
+            <DialogContent dividers className={classes.waitingDialog}>
+              <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
+                Esto puede tardar unos segundos
+              </DialogContentText>
+              <CircularProgress />
+            </DialogContent>
+          )}
+          {!waiting && (
+            <Grid container>
+              <Grid item xs>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className={classes.cancelButton}
+                  onClick={e => this.handleCancelClick(e)}
+                >
+                  Cancelar
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className={classes.createButton}
+                  disabled={!this.canSaveCourse()}
+                  onClick={e => this.handleActionButton(e, mode)}
+                >
+                  {actionTitle[mode]}
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.createButton}
-                disabled={!this.canSaveCourse()}
-                onClick={e => (editMode ? this.handleSaveClick(e) : this.handleCreateClick(e))}
-              >
-                {editMode ? "Guardar" : "Crear"}
-              </Button>
-            </Grid>
-          </Grid>
+          )}
         </MuiPickersUtilsProvider>
       </div>
     );

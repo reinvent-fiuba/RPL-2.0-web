@@ -12,11 +12,11 @@ import CoursesPage from "./components/CoursesPage/CoursesPage";
 import ProfilePage from "./components/ProfilePage/ProfilePage";
 import UsersPage from "./components/UsersPage/UsersPage";
 import CreateCoursePage from "./components/CreateCoursePage/CreateCoursePage";
+import CloneCoursePage from "./components/CloneCoursePage/CloneCoursePage";
 import CourseIndex from "./courseIndex";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import PageWrapper from "./utils/PageWrapper";
-
 
 showdown.setFlavor("github");
 
@@ -65,6 +65,12 @@ const routing = (
             /courses/:courseId/activities/:activityId/edit
             /courses/:courseId/activities/:activityId/edit/correction
       */}
+      <PrivateRoute
+        path="/courses/clone"
+        component={CloneCoursePage}
+        layout={PageWrapper}
+        title="Clonar Curso"
+      />
     </BrowserRouter>
   </StateProvider>
 );
