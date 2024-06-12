@@ -40,7 +40,7 @@ const styles = theme => ({
   },
   topDiv: {
     height: "100vh",
-    overflow: "auto",
+    // overflow: "auto",
   },
   splitPaneStyle: {
     height: "80vh",
