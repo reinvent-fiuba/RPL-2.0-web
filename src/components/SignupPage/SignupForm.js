@@ -49,6 +49,7 @@ type State = {
   success: boolean,
   universities: Array<any>,
   studentId: string,
+  confirmEmailOpen: boolean,
 };
 
 class Signup extends React.Component<Props, State> {
@@ -64,6 +65,7 @@ class Signup extends React.Component<Props, State> {
     success: false,
     universities: [],
     studentId: "",
+    confirmEmailOpen: false,
   };
 
   componentDidMount() {
@@ -91,52 +93,60 @@ class Signup extends React.Component<Props, State> {
 
   handleSignUpClick(event) {
     event.preventDefault();
-    const {
-      username,
-      email,
-      password,
-      name,
-      surname,
-      degree,
-      university,
-      studentId: student_id,
-      error,
-    } = this.state;
+    this.setState({ confirmEmailOpen: true });
+  }
 
-    if (error.invalidFields.size !== 0 || !university || !degree) {
-      this.setState(prevState => ({
-        error: {
-          open: true,
-          message: "El formulario cuenta con campos invalidos",
-          invalidFields: prevState.error.invalidFields,
-        },
-      }));
-      return;
-    }
-
-    authenticationService
-      .signup({
+  handleConfirmEmail(confirm) {
+    if (confirm) {
+      const {
         username,
         email,
         password,
         name,
         surname,
         degree,
-        university: university && university.name,
-        student_id,
-      })
-      .then(() => {
-        this.setState({ success: true });
-      })
-      .catch(() => {
-        this.setState({
+        university,
+        studentId: student_id,
+        error,
+      } = this.state;
+
+      if (error.invalidFields.size !== 0 || !university || !degree) {
+        this.setState(prevState => ({
           error: {
             open: true,
-            message: "Hubo un error de sign up, revisa que los datos ingresados sean validos.",
-            invalidFields: new Set(),
+            message: "El formulario cuenta con campos invalidos",
+            invalidFields: prevState.error.invalidFields,
           },
+        }));
+        return;
+      }
+
+      authenticationService
+        .signup({
+          username,
+          email,
+          password,
+          name,
+          surname,
+          degree,
+          university: university && university.name,
+          student_id,
+        })
+        .then(() => {
+          this.setState({ success: true });
+        })
+        .catch(() => {
+          this.setState({
+            error: {
+              open: true,
+              message: "Hubo un error de sign up, revisa que los datos ingresados sean validos.",
+              invalidFields: new Set(),
+            },
+          });
         });
-      });
+    }
+
+    this.setState({ confirmEmailOpen: false });
   }
 
   canSignUp() {
@@ -170,7 +180,7 @@ class Signup extends React.Component<Props, State> {
 
   render() {
     const { classes, history } = this.props;
-    const { error, success, universities, university } = this.state;
+    const { error, success, universities, university, confirmEmailOpen, email } = this.state;
 
     return (
       <div>
@@ -183,7 +193,7 @@ class Signup extends React.Component<Props, State> {
         >
           <DialogTitle id="alert-dialog-title">Valida tu email</DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description">
+          <DialogContentText id="alert-dialog-description">
               Revisá tu bandeja de entrada y seguí las instrucciones en el email. Puede tardar unos
               minutos en llegar.
             </DialogContentText>
@@ -194,6 +204,21 @@ class Signup extends React.Component<Props, State> {
           <DialogActions>
             <Button onClick={() => history.push("/login")} color="primary">
               Volver al inicio
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={confirmEmailOpen}>
+          <DialogTitle>Confirmación de Email</DialogTitle>
+          <DialogContent>
+            <DialogContentText>¿Estás seguro de que este es tu correo: {email}?</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.handleConfirmEmail(false)} color="primary">
+              Cancelar
+            </Button>
+            <Button onClick={() => this.handleConfirmEmail(true)} color="primary">
+              Confirmar
             </Button>
           </DialogActions>
         </Dialog>
